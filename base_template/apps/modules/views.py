@@ -104,9 +104,11 @@ class UserMenuView(APIView):
             children = []
             for child_perm in child_permissions:
                 children.append({
+                    'id': child_perm.module.id,
                     'module_name': child_perm.module.name,
                     'icon': child_perm.module.icon,
                     'path': child_perm.module.path,
+                    'order': child_perm.module.order,
                     'permissions': {
                         'can_view': child_perm.can_view,
                         'can_add': child_perm.can_add,
@@ -116,9 +118,11 @@ class UserMenuView(APIView):
                 })
             
             menu.append({
+                'id': module.id,
                 'module_name': module.name,
                 'icon': module.icon,
                 'path': module.path,
+                'order': module.order,
                 'permissions': {
                     'can_view': perm.can_view,
                     'can_add': perm.can_add,
