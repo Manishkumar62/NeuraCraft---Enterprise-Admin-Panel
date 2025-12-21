@@ -15,7 +15,7 @@ class DepartmentListCreateView(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request):
-        departments = Department.objects.filter(is_active=True)
+        departments = Department.objects.all()
         serializer = DepartmentSerializer(departments, many=True)
         return Response(serializer.data)
     

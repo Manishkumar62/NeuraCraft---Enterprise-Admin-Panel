@@ -5,7 +5,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
 
-from .serializers import UserRegistrationSerializer, UserProfileSerializer
+from .serializers import UserRegistrationSerializer, UserProfileSerializer, UserSerializer
 
 User = get_user_model()
 
@@ -55,3 +55,53 @@ class LogoutView(APIView):
             return Response({'message': 'Logged out successfully'}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+        
+class UserListView(APIView):
+    """
+    GET /api/users/ - List all users
+    """
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        users = User.objects.all().select_related('role', 'department')
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
+
+
+class UserDetailView(APIView):
+    """
+    GET    /api/users/<id>/ - Get single user
+    PUT    /api/users/<id>/ - Update user
+    DELETE /api/users/<id>/ - Delete user
+    """
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self, pk):
+        try:
+            return User.objects.select_related('role', 'department').get(pk=pk)
+        except User.DoesNotExist:
+            return None
+    
+    def get(self, request, pk):
+        user = self.get_object(pk)
+        if not user:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+    
+    def put(self, request, pk):
+        user = self.get_object(pk)
+        if not user:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, pk):
+        user = self.get_object(pk)
+        if not user:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        user.delete()
+        return Response({'message': 'User deleted successfully'}, status=status.HTTP_204_NO_CONTENT)

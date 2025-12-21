@@ -15,7 +15,7 @@ class RoleListCreateView(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request):
-        roles = Role.objects.filter(is_active=True)
+        roles = Role.objects.all()
         serializer = RoleSerializer(roles, many=True)
         return Response(serializer.data)
     

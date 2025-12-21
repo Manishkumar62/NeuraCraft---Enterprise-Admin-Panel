@@ -26,9 +26,11 @@ export interface Role {
 export interface Department {
   id: number;
   name: string;
+  code: string;
   description: string;
   is_active: boolean;
   created_at: string;
+  updated_at: string;
 }
 
 // Module types

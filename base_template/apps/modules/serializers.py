@@ -14,7 +14,7 @@ class ModuleSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
     
     def get_children(self, obj):
-        children = obj.children.filter(is_active=True).order_by('order')
+        children = obj.children.all().order_by('order')
         return ModuleSerializer(children, many=True).data
 
 

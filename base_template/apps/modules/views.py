@@ -16,7 +16,7 @@ class ModuleListCreateView(APIView):
     
     def get(self, request):
         # Get only parent modules (no parent), children come nested
-        modules = Module.objects.filter(is_active=True, parent=None).order_by('order')
+        modules = Module.objects.filter(parent=None).order_by('order')
         serializer = ModuleSerializer(modules, many=True)
         return Response(serializer.data)
     
