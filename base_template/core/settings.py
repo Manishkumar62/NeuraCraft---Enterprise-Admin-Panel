@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'apps.roles',
     'apps.departments',
     'apps.modules',
+    'apps.dashboard',
 ]
 
 MIDDLEWARE = [
