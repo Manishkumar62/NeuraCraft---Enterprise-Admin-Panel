@@ -7,6 +7,7 @@ import UserList from '../modules/users/UserList';
 import UserForm from '../modules/users/UserForm';
 import RoleList from '../modules/roles/RoleList';
 import RoleForm from '../modules/roles/RoleForm';
+import RolePermissions from '../modules/roles/RolePermissions';
 import DepartmentList from '../modules/departments/DepartmentList';
 import DepartmentForm from '../modules/departments/DepartmentForm';
 import ModuleList from '../modules/modules/ModuleList';
@@ -33,6 +34,7 @@ const AppRoutes = () => {
         <Route path="/roles" element={<RoleList />} />
         <Route path="/roles/add" element={<RoleForm />} />
         <Route path="/roles/edit/:id" element={<RoleForm />} />
+        <Route path="/roles/:id/permissions" element={<RolePermissions />} />
 
         {/* Departments Routes */}
         <Route path="/departments" element={<DepartmentList />} />

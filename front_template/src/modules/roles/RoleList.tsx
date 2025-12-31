@@ -7,6 +7,7 @@ import {
     PlusIcon,
     PencilSquareIcon,
     TrashIcon,
+    KeyIcon,
 } from '@heroicons/react/24/outline';
 
 const RoleList = () => {
@@ -118,6 +119,13 @@ const RoleList = () => {
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <Link
+    to={`/roles/${role.id}/permissions`}
+    className="text-green-600 hover:text-green-900 mr-4"
+    title="Manage Permissions"
+  >
+    <KeyIcon className="w-5 h-5 inline" />
+  </Link>
                                         {canEdit && (
                                             <Link
                                                 to={`/roles/edit/${role.id}`}
