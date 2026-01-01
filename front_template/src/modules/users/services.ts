@@ -9,8 +9,8 @@ export interface CreateUserData {
   last_name?: string;
   phone?: string;
   employee_id?: string;
-  role?: number | null;
-  department?: number | null;
+  role_ids?: number[];
+  department_id?: number | null;
 }
 
 export interface UpdateUserData {
@@ -20,8 +20,8 @@ export interface UpdateUserData {
   last_name?: string;
   phone?: string;
   employee_id?: string;
-  role?: number | null;
-  department?: number | null;
+  role_ids?: number[];
+  department_id?: number | null;
   is_active?: boolean;
 }
 

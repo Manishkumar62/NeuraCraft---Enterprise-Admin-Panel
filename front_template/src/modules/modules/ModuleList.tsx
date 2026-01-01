@@ -36,7 +36,7 @@ const ModuleList = () => {
         if (window.confirm(`Are you sure you want to delete "${name}"? This will also delete all child modules.`)) {
             try {
                 await moduleService.delete(id);
-                fetchModules(); // Refresh to update nested structure
+                fetchModules();
             } catch (err) {
                 setError('Failed to delete module');
             }
@@ -49,11 +49,15 @@ const ModuleList = () => {
         return (
             <div key={module.id}>
                 <div
-                    className={`flex items-center justify-between py-3 px-4 hover:bg-gray-50 border-b border-gray-100 ${level > 0 ? 'bg-gray-50' : ''
-                        }`}
-                    style={{ paddingLeft: `${level * 24 + 16}px` }}
+                    className={`grid grid-cols-12 items-center py-3 px-4 hover:bg-gray-50 border-b border-gray-100 ${
+                        level > 0 ? 'bg-gray-50' : ''
+                    }`}
                 >
-                    <div className="flex items-center gap-3">
+                    {/* Module Info - 7 columns */}
+                    <div 
+                        className="col-span-7 flex items-center gap-3"
+                        style={{ paddingLeft: `${level * 24}px` }}
+                    >
                         {hasChildren && (
                             <ChevronRightIcon className="w-4 h-4 text-gray-400" />
                         )}
@@ -75,19 +79,26 @@ const ModuleList = () => {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    {/* Status - 2 columns */}
+                    <div className="col-span-2 flex justify-center">
                         <span
-                            className={`px-2 py-1 text-xs font-medium rounded-full ${module.is_active
+                            className={`px-2 py-1 text-xs font-medium rounded-full ${
+                                module.is_active
                                     ? 'bg-green-100 text-green-800'
                                     : 'bg-red-100 text-red-800'
-                                }`}
+                            }`}
                         >
                             {module.is_active ? 'Active' : 'Inactive'}
                         </span>
+                    </div>
+
+                    {/* Actions - 3 columns */}
+                    <div className="col-span-3 flex justify-end gap-3">
                         {canEdit && (
                             <Link
                                 to={`/modules/edit/${module.id}`}
                                 className="text-blue-600 hover:text-blue-900"
+                                title="Edit"
                             >
                                 <PencilSquareIcon className="w-5 h-5" />
                             </Link>
@@ -96,9 +107,13 @@ const ModuleList = () => {
                             <button
                                 onClick={() => handleDelete(module.id, module.name)}
                                 className="text-red-600 hover:text-red-900"
+                                title="Delete"
                             >
                                 <TrashIcon className="w-5 h-5" />
                             </button>
+                        )}
+                        {!canEdit && !canDelete && (
+                            <span className="text-gray-400 text-sm">-</span>
                         )}
                     </div>
                 </div>
@@ -140,13 +155,20 @@ const ModuleList = () => {
             )}
 
             <div className="bg-white rounded-lg shadow overflow-hidden">
-                <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
-                    <div className="flex items-center justify-between text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        <span>Module</span>
-                        <span>Actions</span>
+                {/* Header */}
+                <div className="grid grid-cols-12 items-center px-4 py-3 bg-gray-50 border-b border-gray-200">
+                    <div className="col-span-7 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Module
+                    </div>
+                    <div className="col-span-2 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">
+                        Status
+                    </div>
+                    <div className="col-span-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">
+                        Actions
                     </div>
                 </div>
 
+                {/* Body */}
                 {modules.length === 0 ? (
                     <div className="px-6 py-4 text-center text-gray-500">
                         No modules found

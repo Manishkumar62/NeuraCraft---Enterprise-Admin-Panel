@@ -25,7 +25,7 @@ const UserForm = () => {
     last_name: '',
     phone: '',
     employee_id: '',
-    role: '',
+    selectedRoles: [] as number[],  // Changed: array of role IDs
     department: '',
     is_active: true,
   });
@@ -62,7 +62,7 @@ const UserForm = () => {
         last_name: user.last_name || '',
         phone: user.phone || '',
         employee_id: user.employee_id || '',
-        role: user.role?.id?.toString() || '',
+        selectedRoles: user.roles?.map((r: Role) => r.id) || [],  // Changed: extract role IDs
         department: user.department?.id?.toString() || '',
         is_active: user.is_active,
       });
@@ -83,6 +83,19 @@ const UserForm = () => {
     });
   };
 
+  // Handle role checkbox change
+  const handleRoleChange = (roleId: number) => {
+    setFormData((prev) => {
+      const isSelected = prev.selectedRoles.includes(roleId);
+      return {
+        ...prev,
+        selectedRoles: isSelected
+          ? prev.selectedRoles.filter((id) => id !== roleId)  // Remove if already selected
+          : [...prev.selectedRoles, roleId],  // Add if not selected
+      };
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -97,8 +110,8 @@ const UserForm = () => {
           last_name: formData.last_name,
           phone: formData.phone,
           employee_id: formData.employee_id,
-          role: formData.role ? Number(formData.role) : null,
-          department: formData.department ? Number(formData.department) : null,
+          role_ids: formData.selectedRoles,  // Changed: send array
+          department_id: formData.department ? Number(formData.department) : null,
           is_active: formData.is_active,
         };
         await userService.update(Number(id), updateData);
@@ -111,8 +124,8 @@ const UserForm = () => {
           last_name: formData.last_name,
           phone: formData.phone,
           employee_id: formData.employee_id,
-          role: formData.role ? Number(formData.role) : null,
-          department: formData.department ? Number(formData.department) : null,
+          role_ids: formData.selectedRoles,  // Changed: send array
+          department_id: formData.department ? Number(formData.department) : null,
         };
         await userService.create(createData);
       }
@@ -262,26 +275,6 @@ const UserForm = () => {
               />
             </div>
 
-            {/* Role */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Role
-              </label>
-              <select
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Select Role</option>
-                {roles.map((role) => (
-                  <option key={role.id} value={role.id}>
-                    {role.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
             {/* Department */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -316,6 +309,53 @@ const UserForm = () => {
                   Active
                 </label>
               </div>
+            )}
+          </div>
+
+          {/* Roles - Multi-select with Checkboxes */}
+          <div className="mt-6">
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              Roles (Select one or more)
+            </label>
+            <div className="border border-gray-300 rounded-lg p-4 max-h-60 overflow-y-auto">
+              {roles.length === 0 ? (
+                <p className="text-gray-500 text-sm">No roles available</p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {roles.map((role) => (
+                    <label
+                      key={role.id}
+                      className={`flex items-center p-3 rounded-lg border cursor-pointer transition-colors ${
+                        formData.selectedRoles.includes(role.id)
+                          ? 'bg-blue-50 border-blue-500'
+                          : 'bg-white border-gray-200 hover:bg-gray-50'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={formData.selectedRoles.includes(role.id)}
+                        onChange={() => handleRoleChange(role.id)}
+                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      />
+                      <div className="ml-3">
+                        <span className="text-sm font-medium text-gray-900">
+                          {role.name}
+                        </span>
+                        {role.department_name && (
+                          <span className="block text-xs text-gray-500">
+                            {role.department_name}
+                          </span>
+                        )}
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+            {formData.selectedRoles.length > 0 && (
+              <p className="mt-2 text-sm text-gray-600">
+                {formData.selectedRoles.length} role(s) selected
+              </p>
             )}
           </div>
 

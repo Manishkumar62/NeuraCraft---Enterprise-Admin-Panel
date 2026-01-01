@@ -82,7 +82,7 @@ const UserList = () => {
                 Email
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Role
+                Roles
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Department
@@ -123,8 +123,27 @@ const UserList = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                     {user.email}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {user.role?.name || '-'}
+                  <td className="px-6 py-4">
+                    <div className="flex flex-wrap gap-1">
+                      {user.roles && user.roles.length > 0 ? (
+                        user.roles.map((role) => (
+                          <span
+                            key={role.id}
+                            className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800"
+                            title={role.department_name ? `Department: ${role.department_name}` : 'Global Role'}
+                          >
+                            {role.name}
+                            {role.department_name && (
+                              <span className="ml-1 text-purple-500">
+                                ({role.department_name})
+                              </span>
+                            )}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-sm text-gray-400">No roles</span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                     {user.department?.name || '-'}

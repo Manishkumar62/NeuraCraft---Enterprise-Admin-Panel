@@ -7,7 +7,7 @@ export interface User {
   last_name: string;
   phone: string;
   employee_id: string;
-  role: Role | null;
+  roles: Role[];
   department: Department | null;
   is_active: boolean;
   date_joined: string;
@@ -18,8 +18,11 @@ export interface Role {
   id: number;
   name: string;
   description: string;
+  department?: number | null;
+  department_name?: string;
   is_active: boolean;
   created_at: string;
+  updated_at?: string;
 }
 
 // Department types

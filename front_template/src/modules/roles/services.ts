@@ -4,12 +4,14 @@ import type { Role } from '../../types';
 export interface CreateRoleData {
   name: string;
   description?: string;
+  department?: number | null;
   is_active?: boolean;
 }
 
 export interface UpdateRoleData {
   name?: string;
   description?: string;
+  department?: number | null;
   is_active?: boolean;
 }
 

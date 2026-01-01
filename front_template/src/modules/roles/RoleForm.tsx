@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import roleService, { type CreateRoleData, type UpdateRoleData } from './services';
+import type { Department } from '../../types';
+import api from '../../api/axios';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 const RoleForm = () => {
@@ -12,17 +14,30 @@ const RoleForm = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [departments, setDepartments] = useState<Department[]>([]);
+
   const [formData, setFormData] = useState({
     name: '',
     description: '',
+    department: '',  // Added: department ID
     is_active: true,
   });
 
   useEffect(() => {
+    fetchDepartments();
     if (isEdit) {
       fetchRole();
     }
   }, [id]);
+
+  const fetchDepartments = async () => {
+    try {
+      const response = await api.get('/departments/');
+      setDepartments(response.data);
+    } catch (err) {
+      console.error('Failed to fetch departments');
+    }
+  };
 
   const fetchRole = async () => {
     try {
@@ -31,6 +46,7 @@ const RoleForm = () => {
       setFormData({
         name: role.name,
         description: role.description || '',
+        department: role.department?.toString() || '',  // Added: set department
         is_active: role.is_active,
       });
     } catch (err) {
@@ -41,7 +57,7 @@ const RoleForm = () => {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value, type } = e.target;
     setFormData({
@@ -60,6 +76,7 @@ const RoleForm = () => {
         const updateData: UpdateRoleData = {
           name: formData.name,
           description: formData.description,
+          department: formData.department ? Number(formData.department) : null,  // Added
           is_active: formData.is_active,
         };
         await roleService.update(Number(id), updateData);
@@ -67,6 +84,7 @@ const RoleForm = () => {
         const createData: CreateRoleData = {
           name: formData.name,
           description: formData.description,
+          department: formData.department ? Number(formData.department) : null,  // Added
           is_active: formData.is_active,
         };
         await roleService.create(createData);
@@ -113,7 +131,7 @@ const RoleForm = () => {
 
       <div className="bg-white rounded-lg shadow p-6">
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -129,8 +147,31 @@ const RoleForm = () => {
               />
             </div>
 
-            {/* Description */}
+            {/* Department */}
             <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Department
+              </label>
+              <select
+                name="department"
+                value={formData.department}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">No Department (Global Role)</option>
+                {departments.map((dept) => (
+                  <option key={dept.id} value={dept.id}>
+                    {dept.name}
+                  </option>
+                ))}
+              </select>
+              <p className="mt-1 text-xs text-gray-500">
+                Leave empty for global roles that apply to all departments
+              </p>
+            </div>
+
+            {/* Description */}
+            <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Description
               </label>

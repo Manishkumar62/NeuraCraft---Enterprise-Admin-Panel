@@ -80,6 +80,9 @@ const RoleList = () => {
                                 Name
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Department
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Description
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -93,7 +96,7 @@ const RoleList = () => {
                     <tbody className="bg-white divide-y divide-gray-200">
                         {roles.length === 0 ? (
                             <tr>
-                                <td colSpan={4} className="px-6 py-4 text-center text-gray-500">
+                                <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
                                     No roles found
                                 </td>
                             </tr>
@@ -105,27 +108,38 @@ const RoleList = () => {
                                             {role.name}
                                         </div>
                                     </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        {role.department_name ? (
+                                            <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+                                                {role.department_name}
+                                            </span>
+                                        ) : (
+                                            <span className="text-sm text-gray-400">Global</span>
+                                        )}
+                                    </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                                         {role.description || '-'}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span
                                             className={`px-2 py-1 text-xs font-medium rounded-full ${role.is_active
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-red-100 text-red-800'
+                                                ? 'bg-green-100 text-green-800'
+                                                : 'bg-red-100 text-red-800'
                                                 }`}
                                         >
                                             {role.is_active ? 'Active' : 'Inactive'}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <Link
-    to={`/roles/${role.id}/permissions`}
-    className="text-green-600 hover:text-green-900 mr-4"
-    title="Manage Permissions"
-  >
-    <KeyIcon className="w-5 h-5 inline" />
-  </Link>
+                                        {canEdit && (
+                                            <Link
+                                                to={`/roles/${role.id}/permissions`}
+                                                className="text-green-600 hover:text-green-900 mr-4"
+                                                title="Manage Permissions"
+                                            >
+                                                <KeyIcon className="w-5 h-5 inline" />
+                                            </Link>
+                                        )}
                                         {canEdit && (
                                             <Link
                                                 to={`/roles/edit/${role.id}`}

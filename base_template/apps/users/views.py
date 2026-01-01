@@ -63,7 +63,7 @@ class UserListView(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request):
-        users = User.objects.all().select_related('role', 'department')
+        users = User.objects.select_related('department').prefetch_related('roles')  # Fixed: added 'users ='
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
 
@@ -78,7 +78,7 @@ class UserDetailView(APIView):
     
     def get_object(self, pk):
         try:
-            return User.objects.select_related('role', 'department').get(pk=pk)
+            return User.objects.select_related('department').prefetch_related('roles').get(pk=pk)  # Fixed: 'role' → 'roles' with prefetch_related
         except User.DoesNotExist:
             return None
     

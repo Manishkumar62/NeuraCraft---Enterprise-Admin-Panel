@@ -15,11 +15,9 @@ class User(AbstractUser):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
-    # Link to Role
-    role = models.ForeignKey(
+    # Link to Roles (CHANGED: ForeignKey → ManyToManyField)
+    roles = models.ManyToManyField(
         'roles.Role',
-        on_delete=models.SET_NULL,
-        null=True,
         blank=True,
         related_name='users'
     )
