@@ -72,9 +72,10 @@ const Sidebar = ({ menu }: SidebarProps) => {
                   key={child.id}
                   to={child.path}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${isActive
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                    `flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
+                      isActive
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-400 hover:bg-gray-700 hover:text-white'
                     }`
                   }
                 >
@@ -93,9 +94,10 @@ const Sidebar = ({ menu }: SidebarProps) => {
         key={item.id}
         to={item.path}
         className={({ isActive }) =>
-          `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive
-            ? 'bg-blue-600 text-white'
-            : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+          `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+            isActive
+              ? 'bg-blue-600 text-white'
+              : 'text-gray-300 hover:bg-gray-700 hover:text-white'
           }`
         }
       >
@@ -106,15 +108,22 @@ const Sidebar = ({ menu }: SidebarProps) => {
   };
 
   return (
-    <aside className="w-64 bg-gray-800 min-h-screen p-4">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white text-center">ATS</h1>
+    <aside className="w-64 bg-gray-800 flex flex-col flex-shrink-0">
+      {/* Logo - Fixed */}
+      <div className="p-4 border-b border-gray-700">
+        <h1 className="text-2xl font-bold text-white text-center">NeuraCraft</h1>
         <p className="text-gray-400 text-sm text-center">Admin Panel</p>
       </div>
 
-      <nav className="space-y-2">
+      {/* Navigation - Scrollable */}
+      <nav className="flex-1 overflow-y-auto p-4 space-y-2">
         {menu.map((item) => renderMenuItem(item))}
       </nav>
+
+      {/* Sidebar Footer */}
+      <div className="p-4 border-t border-gray-700">
+        <p className="text-gray-500 text-xs text-center">v1.0.0</p>
+      </div>
     </aside>
   );
 };
