@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
+import ThemeToggle from './ui/ThemeToggle';
 import {
   UserCircleIcon,
   ArrowRightOnRectangleIcon,
@@ -8,8 +9,6 @@ import {
   Cog6ToothIcon,
   BellIcon,
   MagnifyingGlassIcon,
-  SunIcon,
-  MoonIcon,
 } from '@heroicons/react/24/outline';
 
 const Header = () => {
@@ -91,6 +90,9 @@ const Header = () => {
             {/* Notification Badge */}
             <span className="absolute top-2 right-2 w-2 h-2 bg-[var(--color-error)] rounded-full" />
           </button>
+
+          {/* Theme Toggle */}
+          <ThemeToggle />
 
           {/* Divider */}
           <div className="w-px h-8 bg-[var(--color-border)] mx-2" />

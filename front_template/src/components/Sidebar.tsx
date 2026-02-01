@@ -169,7 +169,8 @@ const Sidebar = ({ menu }: SidebarProps) => {
       flex flex-col flex-shrink-0 transition-all duration-300
     `}>
       {/* Logo Section */}
-      <div className="p-4 border-b border-[var(--color-border)]">
+      {/* <div className="p-4 border-b border-[var(--color-border)]"> */}
+      <div className="p-4">
         <div className="flex items-center gap-3">
           {/* Logo Icon */}
           <div className="relative flex-shrink-0">
@@ -204,7 +205,8 @@ const Sidebar = ({ menu }: SidebarProps) => {
       </nav>
 
       {/* Collapse Toggle Button */}
-      <div className="p-3 border-t border-[var(--color-border)]">
+      {/* <div className="p-3 border-t border-[var(--color-border)]"> */}
+      <div className="p-3">
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="w-full flex items-center justify-center gap-2 px-3 py-2 
@@ -218,7 +220,7 @@ const Sidebar = ({ menu }: SidebarProps) => {
       </div>
 
       {/* Sidebar Footer */}
-      {!isCollapsed && (
+      {/* {!isCollapsed && (
         <div className="p-4 border-t border-[var(--color-border)]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -230,7 +232,7 @@ const Sidebar = ({ menu }: SidebarProps) => {
             </span>
           </div>
         </div>
-      )}
+      )} */}
     </aside>
   );
 };
