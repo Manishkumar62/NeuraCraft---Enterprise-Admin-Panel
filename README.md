@@ -383,7 +383,7 @@ Run `python manage.py seed_data --flush` to create these test users:
 ![Manage Permissions](screenshots/manage-permission.png)
 
 ### Edit Module
-![Module Edit](screenshots/manage-edit.png)
+![Module Edit](screenshots/module-edit.png)
 
 </details>
 
