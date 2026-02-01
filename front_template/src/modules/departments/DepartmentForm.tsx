@@ -1,7 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import departmentService, { type CreateDepartmentData, type UpdateDepartmentData } from './services';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
+import {
+  ArrowLeftIcon,
+  BuildingOfficeIcon,
+  CodeBracketIcon,
+  DocumentTextIcon,
+  ExclamationTriangleIcon,
+  XMarkIcon,
+} from '@heroicons/react/24/outline';
 
 const DepartmentForm = () => {
   const navigate = useNavigate();
@@ -77,122 +84,160 @@ const DepartmentForm = () => {
       }
       navigate('/departments');
     } catch (err: any) {
-      const message = err.response?.data?.detail ||
-                      err.response?.data?.message ||
-                      Object.values(err.response?.data || {}).flat().join(', ') ||
-                      'Failed to save department';
+      const message =
+        err.response?.data?.detail ||
+        err.response?.data?.message ||
+        Object.values(err.response?.data || {}).flat().join(', ') ||
+        'Failed to save department';
       setError(message);
     } finally {
       setSaving(false);
     }
   };
 
+  // Loading State
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-gray-600">Loading...</div>
+      <div className="space-y-6 max-w-2xl">
+        <div className="flex items-center gap-4">
+          <div className="skeleton w-10 h-10 rounded-xl" />
+          <div className="skeleton h-8 w-40 rounded-lg" />
+        </div>
+        <div className="card p-5 space-y-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="space-y-1.5">
+              <div className="skeleton h-3 w-20 rounded" />
+              <div className="skeleton h-10 w-full rounded-lg" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
-    <div>
-      <div className="flex items-center gap-4 mb-6">
+    <div className="space-y-6 max-w-2xl">
+      {/* Header */}
+      <div className="flex items-center gap-4 animate-fade-in">
         <button
           onClick={() => navigate('/departments')}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          className="p-2.5 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-hover)] rounded-xl transition-colors"
         >
-          <ArrowLeftIcon className="w-5 h-5 text-gray-600" />
+          <ArrowLeftIcon className="w-5 h-5" />
         </button>
-        <h1 className="text-2xl font-bold text-gray-800">
-          {isEdit ? 'Edit Department' : 'Add Department'}
-        </h1>
+        <div>
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
+            {isEdit ? 'Edit Department' : 'Add Department'}
+          </h1>
+          <p className="text-sm text-[var(--color-text-muted)] mt-0.5">
+            {isEdit ? 'Update department information' : 'Create a new department'}
+          </p>
+        </div>
       </div>
 
+      {/* Error */}
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
+        <div className="alert alert-error animate-fade-in-down">
+          <ExclamationTriangleIcon className="w-5 h-5 flex-shrink-0" />
+          <span>{error}</span>
+          <button onClick={() => setError(null)} className="ml-auto p-1 hover:opacity-70">
+            <XMarkIcon className="w-4 h-4" />
+          </button>
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow p-6">
+      {/* Form Card */}
+      <div className="card animate-fade-in-up">
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Name */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Name *
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            {/* Code */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Code *
-              </label>
-              <input
-                type="text"
-                name="code"
-                value={formData.code}
-                onChange={handleChange}
-                required
-                placeholder="e.g. HR, IT, FIN"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+          <div className="p-5 space-y-4">
+            {/* Row 1: Name & Code */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="label text-xs">Name <span className="text-[var(--color-error)]">*</span></label>
+                <div className="relative">
+                  <BuildingOfficeIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-muted)]" />
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    placeholder="Department name"
+                    className="input pl-10 py-2 text-sm"
+                  />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <label className="label text-xs">Code <span className="text-[var(--color-error)]">*</span></label>
+                <div className="relative">
+                  <CodeBracketIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-muted)]" />
+                  <input
+                    type="text"
+                    name="code"
+                    value={formData.code}
+                    onChange={handleChange}
+                    required
+                    placeholder="HR, IT, FIN"
+                    className="input pl-10 py-2 text-sm font-mono uppercase"
+                  />
+                </div>
+              </div>
             </div>
 
             {/* Description */}
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Description
-              </label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                rows={3}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+            <div className="space-y-1.5">
+              <label className="label text-xs">Description</label>
+              <div className="relative">
+                <DocumentTextIcon className="absolute left-3 top-3 w-4 h-4 text-[var(--color-text-muted)]" />
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  rows={3}
+                  placeholder="Brief description of the department"
+                  className="input pl-10 py-2 text-sm min-h-[80px] resize-y"
+                />
+              </div>
             </div>
 
-            {/* Is Active */}
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                name="is_active"
-                checked={formData.is_active}
-                onChange={handleChange}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <label className="ml-2 text-sm font-medium text-gray-700">
-                Active
+            {/* Active Toggle */}
+            <div className="space-y-1.5">
+              <label className="flex items-center gap-3 cursor-pointer p-3 rounded-xl border border-[var(--color-border)] hover:border-[var(--color-border-hover)] transition-colors">
+                <div className="relative">
+                  <input
+                    type="checkbox"
+                    name="is_active"
+                    checked={formData.is_active}
+                    onChange={handleChange}
+                    className="peer sr-only"
+                  />
+                  <div className="w-9 h-5 bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-full peer-checked:bg-[var(--color-success)] peer-checked:border-[var(--color-success)] transition-all" />
+                  <div className="absolute top-0.5 left-0.5 w-4 h-4 bg-[var(--color-text-muted)] rounded-full peer-checked:translate-x-4 peer-checked:bg-white transition-all" />
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-[var(--color-text-primary)]">Active Status</span>
+                  <p className="text-xs text-[var(--color-text-muted)]">
+                    {formData.is_active ? 'Department is active' : 'Department is inactive'}
+                  </p>
+                </div>
               </label>
             </div>
           </div>
 
-          {/* Buttons */}
-          <div className="flex items-center gap-4 mt-6">
-            <button
-              type="submit"
-              disabled={saving}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed transition-colors"
-            >
-              {saving ? 'Saving...' : isEdit ? 'Update Department' : 'Create Department'}
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate('/departments')}
-              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-            >
+          {/* Actions */}
+          <div className="px-5 py-4 border-t border-[var(--color-border)] flex items-center justify-end gap-3 bg-[var(--color-surface-elevated)]/30">
+            <button type="button" onClick={() => navigate('/departments')} className="btn btn-secondary">
               Cancel
+            </button>
+            <button type="submit" disabled={saving} className="btn btn-primary min-w-[140px]">
+              {saving ? (
+                <>
+                  <div className="spinner" />
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <span>{isEdit ? 'Update Department' : 'Create Department'}</span>
+              )}
             </button>
           </div>
         </form>
