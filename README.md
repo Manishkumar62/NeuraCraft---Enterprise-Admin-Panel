@@ -372,13 +372,18 @@ Run `python manage.py seed_data --flush` to create these test users:
 ![Login](screenshots/login.png)
 
 ### Dashboard
-![Dashboard](screenshots/dashboard.png)
+![Dashboard Dark](screenshots/dashboard-dark.png)
+![Dashboard Light](screenshots/dashboard-light.png)
 
 ### Users List
-![Users](screenshots/users.png)
+![Users List](screenshots/users-list.png)
+![Users Edit](screenshots/user-edit.png)
 
 ### Role Permissions
-![Permissions](screenshots/permissions.png)
+![Manage Permissions](screenshots/manage-permission.png)
+
+### Edit Module
+![Module Edit](screenshots/manage-edit.png)
 
 </details>
 
