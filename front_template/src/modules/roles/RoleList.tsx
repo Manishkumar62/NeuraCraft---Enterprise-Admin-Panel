@@ -14,7 +14,7 @@ const RoleList = () => {
     const [roles, setRoles] = useState<Role[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const { canAdd, canEdit, canDelete } = usePermissions('/roles');
+    const { canAdd, canEdit, canDelete, hasPermission } = usePermissions('/roles');
 
     useEffect(() => {
         fetchRoles();
@@ -131,7 +131,7 @@ const RoleList = () => {
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        {canEdit && (
+                                        {hasPermission('assign_permissions') && (
                                             <Link
                                                 to={`/roles/${role.id}/permissions`}
                                                 className="text-green-600 hover:text-green-900 mr-4"

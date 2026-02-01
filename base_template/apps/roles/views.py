@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from apps.modules.models import Module, RoleModulePermission
+from apps.modules.models import Module, ModulePermission, RoleModulePermission
 
 from .models import Role
 from .serializers import RoleSerializer
@@ -65,12 +65,35 @@ class RoleDetailView(APIView):
             return Response({'error': 'Role not found'}, status=status.HTTP_404_NOT_FOUND)
         role.delete()
         return Response({'message': 'Role deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
-    
-    
+
+
 class RolePermissionsView(APIView):
     """
     GET  /api/roles/<id>/permissions/ - Get all module permissions for a role
-    POST /api/roles/<id>/permissions/ - Update permissions for a role
+    POST /api/roles/<id>/permissions/ - Update permissions for a role (dynamic)
+    
+    GET Response format:
+    [
+        {
+            "module_id": 1,
+            "module_name": "Users",
+            "available_permissions": [
+                {"id": 1, "codename": "view", "label": "Can View", "category": "crud"},
+                {"id": 5, "codename": "view_email", "label": "View Email Column", "category": "column"},
+                ...
+            ],
+            "granted_permissions": ["view", "add", "view_email"],
+            "children": [...]
+        }
+    ]
+    
+    POST Request format:
+    {
+        "permissions": [
+            {"module_id": 1, "granted": ["view", "add", "edit", "view_email"]},
+            {"module_id": 2, "granted": ["view"]},
+        ]
+    }
     """
     permission_classes = [IsAuthenticated]
     
@@ -85,34 +108,44 @@ class RolePermissionsView(APIView):
         
         permissions_data = []
         for module in modules:
-            # Get permission for this role-module
-            perm = RoleModulePermission.objects.filter(role=role, module=module).first()
+            module_data = self._get_module_permission_data(role, module)
             
             # Get children
             children_data = []
             children = module.children.filter(is_active=True).order_by('order')
             for child in children:
-                child_perm = RoleModulePermission.objects.filter(role=role, module=child).first()
-                children_data.append({
-                    'module_id': child.id,
-                    'module_name': child.name,
-                    'can_view': child_perm.can_view if child_perm else False,
-                    'can_add': child_perm.can_add if child_perm else False,
-                    'can_edit': child_perm.can_edit if child_perm else False,
-                    'can_delete': child_perm.can_delete if child_perm else False,
-                })
+                children_data.append(self._get_module_permission_data(role, child))
             
-            permissions_data.append({
-                'module_id': module.id,
-                'module_name': module.name,
-                'can_view': perm.can_view if perm else False,
-                'can_add': perm.can_add if perm else False,
-                'can_edit': perm.can_edit if perm else False,
-                'can_delete': perm.can_delete if perm else False,
-                'children': children_data,
-            })
+            module_data['children'] = children_data
+            permissions_data.append(module_data)
         
         return Response(permissions_data)
+    
+    def _get_module_permission_data(self, role, module):
+        """Build permission data for a single module."""
+        # Get all available permissions for this module
+        available = module.available_permissions.all().order_by('category', 'order')
+        
+        # Get granted permissions for this role-module
+        rmp = RoleModulePermission.objects.filter(role=role, module=module).first()
+        granted_codenames = []
+        if rmp:
+            granted_codenames = list(rmp.granted_permissions.values_list('codename', flat=True))
+        
+        return {
+            'module_id': module.id,
+            'module_name': module.name,
+            'available_permissions': [
+                {
+                    'id': perm.id,
+                    'codename': perm.codename,
+                    'label': perm.label,
+                    'category': perm.category,
+                }
+                for perm in available
+            ],
+            'granted_permissions': granted_codenames,
+        }
     
     def post(self, request, pk):
         try:
@@ -124,21 +157,27 @@ class RolePermissionsView(APIView):
         
         for perm_data in permissions:
             module_id = perm_data.get('module_id')
+            granted_codenames = perm_data.get('granted', [])
+            
             try:
                 module = Module.objects.get(pk=module_id)
             except Module.DoesNotExist:
                 continue
             
-            # Update or create permission
-            RoleModulePermission.objects.update_or_create(
+            # Get or create the RoleModulePermission link
+            rmp, _ = RoleModulePermission.objects.get_or_create(
                 role=role,
                 module=module,
-                defaults={
-                    'can_view': perm_data.get('can_view', False),
-                    'can_add': perm_data.get('can_add', False),
-                    'can_edit': perm_data.get('can_edit', False),
-                    'can_delete': perm_data.get('can_delete', False),
-                }
             )
+            
+            # Set the granted permissions by codename
+            if granted_codenames:
+                perms = ModulePermission.objects.filter(
+                    module=module,
+                    codename__in=granted_codenames,
+                )
+                rmp.granted_permissions.set(perms)
+            else:
+                rmp.granted_permissions.clear()
         
         return Response({'message': 'Permissions updated successfully'})

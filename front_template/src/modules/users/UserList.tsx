@@ -13,7 +13,7 @@ const UserList = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { canAdd, canEdit, canDelete } = usePermissions('/users');
+  const { canAdd, canEdit, canDelete, hasPermission } = usePermissions('/users');
 
   useEffect(() => {
     fetchUsers();
@@ -78,9 +78,11 @@ const UserList = () => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 User
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Email
-              </th>
+              {hasPermission('view_email') && (
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Email
+                </th>
+              )}
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Roles
               </th>
@@ -120,9 +122,11 @@ const UserList = () => {
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {user.email}
-                  </td>
+                  {hasPermission('view_email') && (
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      {user.email}
+                    </td>
+                  )}
                   <td className="px-6 py-4">
                     <div className="flex flex-wrap gap-1">
                       {user.roles && user.roles.length > 0 ? (

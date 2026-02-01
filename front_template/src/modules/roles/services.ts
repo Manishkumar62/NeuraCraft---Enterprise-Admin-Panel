@@ -15,22 +15,27 @@ export interface UpdateRoleData {
   is_active?: boolean;
 }
 
+// Available permission definition (from backend)
+export interface AvailablePermission {
+  id: number;
+  codename: string;
+  label: string;
+  category: 'crud' | 'column' | 'component' | 'action' | 'field';
+}
+
+// Module with its permissions (for role assignment screen)
 export interface ModulePermission {
   module_id: number;
   module_name: string;
-  can_view: boolean;
-  can_add: boolean;
-  can_edit: boolean;
-  can_delete: boolean;
+  available_permissions: AvailablePermission[];
+  granted_permissions: string[];  // codenames that are granted
   children?: ModulePermission[];
 }
 
+// Request type for updating permissions
 export interface UpdatePermissionData {
   module_id: number;
-  can_view: boolean;
-  can_add: boolean;
-  can_edit: boolean;
-  can_delete: boolean;
+  granted: string[];  // Array of permission codenames
 }
 
 const roleService = {
@@ -58,7 +63,7 @@ const roleService = {
     await api.delete(`/roles/${id}/`);
   },
 
-  // Permissions
+  // Permissions (dynamic)
   getPermissions: async (roleId: number): Promise<ModulePermission[]> => {
     const response = await api.get(`/roles/${roleId}/permissions/`);
     return response.data;

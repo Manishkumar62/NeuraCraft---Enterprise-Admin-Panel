@@ -1,8 +1,11 @@
 import useAuthStore from '../store/authStore';
-import type { MenuPermissions } from '../types';
 
 interface UsePermissionsReturn {
-  permissions: MenuPermissions | null;
+  permissions: string[];
+  hasPermission: (permission: string) => boolean;
+  hasAnyPermission: (permissions: string[]) => boolean;
+  hasAllPermissions: (permissions: string[]) => boolean;
+  // Convenience methods for common CRUD operations
   canView: boolean;
   canAdd: boolean;
   canEdit: boolean;
@@ -12,16 +15,8 @@ interface UsePermissionsReturn {
 const usePermissions = (path: string): UsePermissionsReturn => {
   const { menu } = useAuthStore();
 
-  // Default permissions (no access)
-  const defaultPermissions: MenuPermissions = {
-    can_view: false,
-    can_add: false,
-    can_edit: false,
-    can_delete: false,
-  };
-
   // Find the module by path (check both parent and children)
-  let permissions: MenuPermissions | null = null;
+  let permissions: string[] = [];
 
   for (const item of menu) {
     // Check parent module
@@ -40,12 +35,29 @@ const usePermissions = (path: string): UsePermissionsReturn => {
     }
   }
 
+  // Helper functions
+  const hasPermission = (permission: string): boolean => {
+    return permissions.includes(permission);
+  };
+
+  const hasAnyPermission = (perms: string[]): boolean => {
+    return perms.some((p) => permissions.includes(p));
+  };
+
+  const hasAllPermissions = (perms: string[]): boolean => {
+    return perms.every((p) => permissions.includes(p));
+  };
+
   return {
     permissions,
-    canView: permissions?.can_view ?? false,
-    canAdd: permissions?.can_add ?? false,
-    canEdit: permissions?.can_edit ?? false,
-    canDelete: permissions?.can_delete ?? false,
+    hasPermission,
+    hasAnyPermission,
+    hasAllPermissions,
+    // Convenience for CRUD
+    canView: permissions.includes('view'),
+    canAdd: permissions.includes('add'),
+    canEdit: permissions.includes('edit'),
+    canDelete: permissions.includes('delete'),
   };
 };
 

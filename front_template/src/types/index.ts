@@ -48,22 +48,32 @@ export interface Module {
   children?: Module[];
 }
 
-// Menu item from /my-menu/ API
-export interface MenuPermissions {
-  can_view: boolean;
-  can_add: boolean;
-  can_edit: boolean;
-  can_delete: boolean;
-}
-
+// Menu item from /my-menu/ API (UPDATED: permissions is now string array)
 export interface MenuItem {
   id: number;
   module_name: string;
   icon: string;
   path: string;
   order: number;
-  permissions: MenuPermissions;
+  permissions: string[];  // Changed from MenuPermissions object to string[]
   children: MenuItem[];
+}
+
+// Available permission definition (for role assignment screen)
+export interface AvailablePermission {
+  id: number;
+  codename: string;
+  label: string;
+  category: 'crud' | 'column' | 'component' | 'action' | 'field';
+}
+
+// Module with its available permissions (for role assignment screen)
+export interface ModulePermissionConfig {
+  module_id: number;
+  module_name: string;
+  available_permissions: AvailablePermission[];
+  granted_permissions: string[];  // codenames that are granted
+  children?: ModulePermissionConfig[];
 }
 
 // Auth types

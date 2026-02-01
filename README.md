@@ -43,15 +43,19 @@
 ### 🛡️ Role-Based Access Control (RBAC)
 - **Department-specific roles** - Same role name, different departments (e.g., "Manager" in Sales vs HR)
 - **Multiple roles per user** - Users can have multiple roles with merged permissions
-- **Granular permissions** - View, Add, Edit, Delete per module
+- **Dynamic permissions per module** - Define custom permissions when creating modules
+- **Permission categories** - CRUD, Column visibility, Component visibility, Actions, Field access
 - **OR logic permission merging** - If ANY role has permission, user gets it
 - **Dynamic sidebar** - Shows only permitted modules
+- **Granular UI control** - Hide/show columns, buttons, cards based on permissions
 
 ### 📦 Module Management
 - Parent-child module hierarchy
 - Dynamic menu generation
 - Icon and path configuration
 - Order-based sorting
+- **Define permissions per module** - Add custom permissions (e.g., export_pdf, view_salary)
+- **Permission presets** - Quick-add common permissions (CRUD, export, import)
 
 ### 🏢 Department Management
 - Department CRUD operations
@@ -102,13 +106,18 @@
 neuracraft/
 ├── base_template/              # Django Backend
 │   ├── apps/
+│   │   ├── common/             # Shared utilities & management commands
+│   │   │   └── management/
+│   │   │       └── commands/
+│   │   │           └── seed_data.py   # Database seeder
 │   │   ├── users/              # User management & auth
-│   │   ├── roles/              # Role & permissions
+│   │   ├── roles/              # Role management
 │   │   ├── departments/        # Department management
-│   │   └── modules/            # Module & menu management
+│   │   └── modules/            # Module & dynamic permissions
 │   ├── core/
 │   │   ├── settings.py
 │   │   └── urls.py
+│   ├── requirements.txt        # Python dependencies
 │   └── manage.py
 │
 ├── front_template/             # React Frontend
@@ -158,17 +167,30 @@ venv\Scripts\activate
 source venv/bin/activate
 
 # Install dependencies
-pip install django djangorestframework djangorestframework-simplejwt django-cors-headers
+pip install -r requirements.txt
 
 # Run migrations
 python manage.py makemigrations
 python manage.py migrate
 
-# Create superuser
-python manage.py createsuperuser
+# Seed the database with test data
+python manage.py seed_data --flush
 
 # Start server
 python manage.py runserver
+```
+
+### Seeder Commands
+```bash
+# Seed everything (with flush)
+python manage.py seed_data --flush
+
+# Seed only specific targets
+python manage.py seed_data --only departments roles
+python manage.py seed_data --only users
+
+# List available seed targets
+python manage.py seed_data --list
 ```
 
 ### Frontend Setup
@@ -250,22 +272,65 @@ npm run dev
 
 ### How It Works
 
-1. **Create Departments** (IT, HR, Sales, etc.)
-2. **Create Roles** with optional department link
-3. **Assign Module Permissions** to roles (View, Add, Edit, Delete)
-4. **Assign Roles to Users** (multiple roles supported)
-5. **Permissions Merge** automatically using OR logic
+1. **Create Modules** with their available permissions (CRUD + custom)
+2. **Create Departments** (IT, HR, Sales, etc.)
+3. **Create Roles** with optional department link
+4. **Assign Module Permissions** to roles (select from module's available permissions)
+5. **Assign Roles to Users** (multiple roles supported)
+6. **Permissions Merge** automatically using OR logic
+
+### Dynamic Permissions
+
+Each module defines its own available permissions:
+```
+Module: Users
+├── CRUD Permissions
+│   ├── view - Can View
+│   ├── add - Can Add
+│   ├── edit - Can Edit
+│   └── delete - Can Delete
+├── Column Permissions
+│   ├── view_email - View Email Column
+│   ├── view_phone - View Phone Column
+│   └── view_salary - View Salary Column
+└── Action Permissions
+    ├── export_csv - Export CSV
+    ├── export_pdf - Export PDF
+    └── reset_password - Reset User Password
+```
+
+### Permission Categories
+
+| Category | Purpose | Example |
+|----------|---------|---------|
+| `crud` | Basic operations | view, add, edit, delete |
+| `column` | Table column visibility | view_email, view_salary |
+| `component` | UI component visibility | view_revenue_card, view_analytics |
+| `action` | Action buttons/features | export_csv, reset_password |
+| `field` | Form field access | edit_role, edit_department |
+
+### Frontend Usage
+```tsx
+const { hasPermission, canView, canEdit } = usePermissions('/users');
+
+// Basic CRUD
+{canEdit && <EditButton />}
+
+// Custom permissions
+{hasPermission('view_email') && <td>{user.email}</td>}
+{hasPermission('export_csv') && <ExportCSVButton />}
+```
 
 ### Permission Merging Example
 ```
 User: John
 ├── Role 1: IT Developer
-│   └── Users Module: View ✅, Add ❌, Edit ❌, Delete ❌
+│   └── Users Module: view ✅, view_email ✅
 ├── Role 2: Team Lead
-│   └── Users Module: View ✅, Add ✅, Edit ✅, Delete ❌
+│   └── Users Module: view ✅, add ✅, edit ✅, export_csv ✅
 │
 └── Final Permissions (OR merged):
-    └── Users Module: View ✅, Add ✅, Edit ✅, Delete ❌
+    └── Users Module: view ✅, add ✅, edit ✅, view_email ✅, export_csv ✅
 ```
 
 ### Department-Specific Roles
@@ -280,14 +345,21 @@ Role: "Manager"
 
 ## 🧪 Test Users
 
-Use these credentials to test different access levels:
+Run `python manage.py seed_data --flush` to create these test users:
 
 | Username | Password | Roles | Access Level |
 |----------|----------|-------|--------------|
-| superadmin | Admin@123 | Super Admin | Full access |
-| john_it | Test@123 | IT Manager | IT modules |
-| viewer1 | Test@123 | Viewer | Read-only |
-| multi_role | Test@123 | Developer + HR Staff | Merged access |
+| superadmin | Test@1234 | Super Admin | Full access to everything |
+| john_it | Test@1234 | IT Manager | Dashboard, Users (CRUD + export), Roles, Modules |
+| mike_dev | Test@1234 | IT Developer | Dashboard (analytics), Users (view + email), Modules (view) |
+| sarah_hr | Test@1234 | HR Manager | Dashboard (user stats), Users (CRUD + salary + export), Departments |
+| lisa_hr | Test@1234 | HR Staff | Dashboard (user stats), Users (view + email/phone), Departments (view) |
+| tom_sales | Test@1234 | Sales Manager | Dashboard (revenue), Users (view/add/edit + email/phone) |
+| viewer1 | Test@1234 | Viewer | View-only access to Dashboard, Users, Roles, Departments |
+| multi_role | Test@1234 | IT Developer + HR Staff | Merged permissions from both roles |
+| manager_combo | Test@1234 | IT Manager + Sales Manager | Cross-department merged permissions |
+
+> ⚠️ **Note:** Change all passwords before deploying to production!
 
 ---
 

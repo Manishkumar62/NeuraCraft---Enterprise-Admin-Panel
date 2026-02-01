@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
+import usePermissions from '../../hooks/usePermissions';
 import dashboardService, { type DashboardStats } from './services';
 import {
   UsersIcon,
@@ -13,6 +14,8 @@ import {
 
 const DashboardPage = () => {
   const { user } = useAuthStore();
+  const { hasPermission } = usePermissions('/dashboard');
+  
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -57,6 +60,12 @@ const DashboardPage = () => {
     );
   }
 
+  // Check if any card is visible
+  const hasAnyCard = hasPermission('total_users') || 
+                     hasPermission('total_roles') || 
+                     hasPermission('total_departments') || 
+                     hasPermission('total_modules');
+
   return (
     <div>
       {/* Welcome Section */}
@@ -70,154 +79,173 @@ const DashboardPage = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {/* Users Card */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Total Users</p>
-              <p className="text-3xl font-bold text-gray-800 mt-1">
-                {stats?.total_users}
-              </p>
-              <p className="text-sm text-gray-500 mt-1">
-                <span className="text-green-600">{stats?.active_users} active</span>
-                {' · '}
-                <span className="text-red-600">{stats?.inactive_users} inactive</span>
-              </p>
-            </div>
-            <div className="p-3 bg-blue-100 rounded-full">
-              <UsersIcon className="w-8 h-8 text-blue-600" />
-            </div>
-          </div>
-          <Link
-            to="/users"
-            className="flex items-center gap-1 text-blue-600 text-sm mt-4 hover:underline"
-          >
-            View all users
-            <ArrowRightIcon className="w-4 h-4" />
-          </Link>
-        </div>
-
-        {/* Roles Card */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Total Roles</p>
-              <p className="text-3xl font-bold text-gray-800 mt-1">
-                {stats?.total_roles}
-              </p>
-              <p className="text-sm text-gray-500 mt-1">
-                <span className="text-green-600">{stats?.active_roles} active</span>
-              </p>
-            </div>
-            <div className="p-3 bg-purple-100 rounded-full">
-              <ShieldCheckIcon className="w-8 h-8 text-purple-600" />
-            </div>
-          </div>
-          <Link
-            to="/roles"
-            className="flex items-center gap-1 text-purple-600 text-sm mt-4 hover:underline"
-          >
-            View all roles
-            <ArrowRightIcon className="w-4 h-4" />
-          </Link>
-        </div>
-
-        {/* Departments Card */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Total Departments</p>
-              <p className="text-3xl font-bold text-gray-800 mt-1">
-                {stats?.total_departments}
-              </p>
-              <p className="text-sm text-gray-500 mt-1">
-                <span className="text-green-600">{stats?.active_departments} active</span>
-              </p>
-            </div>
-            <div className="p-3 bg-green-100 rounded-full">
-              <BuildingOfficeIcon className="w-8 h-8 text-green-600" />
-            </div>
-          </div>
-          <Link
-            to="/departments"
-            className="flex items-center gap-1 text-green-600 text-sm mt-4 hover:underline"
-          >
-            View all departments
-            <ArrowRightIcon className="w-4 h-4" />
-          </Link>
-        </div>
-
-        {/* Modules Card */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Total Modules</p>
-              <p className="text-3xl font-bold text-gray-800 mt-1">
-                {stats?.total_modules}
-              </p>
-              <p className="text-sm text-gray-500 mt-1">
-                <span className="text-green-600">{stats?.active_modules} active</span>
-              </p>
-            </div>
-            <div className="p-3 bg-orange-100 rounded-full">
-              <Squares2X2Icon className="w-8 h-8 text-orange-600" />
-            </div>
-          </div>
-          <Link
-            to="/modules"
-            className="flex items-center gap-1 text-orange-600 text-sm mt-4 hover:underline"
-          >
-            View all modules
-            <ArrowRightIcon className="w-4 h-4" />
-          </Link>
-        </div>
-      </div>
-
-      {/* Recent Users Section */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-800">Recent Users</h2>
-          <Link
-            to="/users/add"
-            className="flex items-center gap-1 text-blue-600 text-sm hover:underline"
-          >
-            <UserPlusIcon className="w-4 h-4" />
-            Add User
-          </Link>
-        </div>
-        <div className="divide-y divide-gray-100">
-          {stats?.recent_users.length === 0 ? (
-            <div className="px-6 py-4 text-center text-gray-500">
-              No users found
-            </div>
-          ) : (
-            stats?.recent_users.map((recentUser) => (
-              <div
-                key={recentUser.id}
-                className="px-6 py-4 flex items-center justify-between hover:bg-gray-50"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                    <span className="text-blue-600 font-medium">
-                      {recentUser.first_name?.[0] || recentUser.username[0].toUpperCase()}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">
-                      {recentUser.first_name} {recentUser.last_name || recentUser.username}
-                    </p>
-                    <p className="text-xs text-gray-500">{recentUser.email}</p>
-                  </div>
+      {hasAnyCard && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {/* Users Card */}
+          {hasPermission('total_users') && (
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Total Users</p>
+                  <p className="text-3xl font-bold text-gray-800 mt-1">
+                    {stats?.total_users}
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    <span className="text-green-600">{stats?.active_users} active</span>
+                    {' · '}
+                    <span className="text-red-600">{stats?.inactive_users} inactive</span>
+                  </p>
                 </div>
-                <div className="text-sm text-gray-500">
-                  Joined {formatDate(recentUser.date_joined)}
+                <div className="p-3 bg-blue-100 rounded-full">
+                  <UsersIcon className="w-8 h-8 text-blue-600" />
                 </div>
               </div>
-            ))
+              <Link
+                to="/users"
+                className="flex items-center gap-1 text-blue-600 text-sm mt-4 hover:underline"
+              >
+                View all users
+                <ArrowRightIcon className="w-4 h-4" />
+              </Link>
+            </div>
+          )}
+
+          {/* Roles Card */}
+          {hasPermission('total_roles') && (
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Total Roles</p>
+                  <p className="text-3xl font-bold text-gray-800 mt-1">
+                    {stats?.total_roles}
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    <span className="text-green-600">{stats?.active_roles} active</span>
+                  </p>
+                </div>
+                <div className="p-3 bg-purple-100 rounded-full">
+                  <ShieldCheckIcon className="w-8 h-8 text-purple-600" />
+                </div>
+              </div>
+              <Link
+                to="/roles"
+                className="flex items-center gap-1 text-purple-600 text-sm mt-4 hover:underline"
+              >
+                View all roles
+                <ArrowRightIcon className="w-4 h-4" />
+              </Link>
+            </div>
+          )}
+
+          {/* Departments Card */}
+          {hasPermission('total_departments') && (
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Total Departments</p>
+                  <p className="text-3xl font-bold text-gray-800 mt-1">
+                    {stats?.total_departments}
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    <span className="text-green-600">{stats?.active_departments} active</span>
+                  </p>
+                </div>
+                <div className="p-3 bg-green-100 rounded-full">
+                  <BuildingOfficeIcon className="w-8 h-8 text-green-600" />
+                </div>
+              </div>
+              <Link
+                to="/departments"
+                className="flex items-center gap-1 text-green-600 text-sm mt-4 hover:underline"
+              >
+                View all departments
+                <ArrowRightIcon className="w-4 h-4" />
+              </Link>
+            </div>
+          )}
+
+          {/* Modules Card */}
+          {hasPermission('total_modules') && (
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Total Modules</p>
+                  <p className="text-3xl font-bold text-gray-800 mt-1">
+                    {stats?.total_modules}
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    <span className="text-green-600">{stats?.active_modules} active</span>
+                  </p>
+                </div>
+                <div className="p-3 bg-orange-100 rounded-full">
+                  <Squares2X2Icon className="w-8 h-8 text-orange-600" />
+                </div>
+              </div>
+              <Link
+                to="/modules"
+                className="flex items-center gap-1 text-orange-600 text-sm mt-4 hover:underline"
+              >
+                View all modules
+                <ArrowRightIcon className="w-4 h-4" />
+              </Link>
+            </div>
           )}
         </div>
-      </div>
+      )}
+
+      {/* Recent Users Section */}
+      {hasPermission('recent_users') && (
+        <div className="bg-white rounded-lg shadow">
+          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-800">Recent Users</h2>
+            <Link
+              to="/users/add"
+              className="flex items-center gap-1 text-blue-600 text-sm hover:underline"
+            >
+              <UserPlusIcon className="w-4 h-4" />
+              Add User
+            </Link>
+          </div>
+          <div className="divide-y divide-gray-100">
+            {stats?.recent_users.length === 0 ? (
+              <div className="px-6 py-4 text-center text-gray-500">
+                No users found
+              </div>
+            ) : (
+              stats?.recent_users.map((recentUser) => (
+                <div
+                  key={recentUser.id}
+                  className="px-6 py-4 flex items-center justify-between hover:bg-gray-50"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                      <span className="text-blue-600 font-medium">
+                        {recentUser.first_name?.[0] || recentUser.username[0].toUpperCase()}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">
+                        {recentUser.first_name} {recentUser.last_name || recentUser.username}
+                      </p>
+                      <p className="text-xs text-gray-500">{recentUser.email}</p>
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    Joined {formatDate(recentUser.date_joined)}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* No permissions message */}
+      {/* {!hasAnyCard && !hasPermission('recent_users') && (
+        <div className="bg-gray-50 rounded-lg p-8 text-center">
+          <p className="text-gray-500">You don't have permission to view any dashboard widgets.</p>
+        </div>
+      )} */}
     </div>
   );
 };

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'corsheaders',
 
     # Our apps
+    'apps.common',
     'apps.users',
     'apps.roles',
     'apps.departments',
