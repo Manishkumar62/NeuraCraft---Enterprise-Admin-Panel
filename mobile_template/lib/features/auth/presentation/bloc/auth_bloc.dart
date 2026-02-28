@@ -10,6 +10,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(this.repository) : super(AuthInitial()) {
     on<LoginRequested>(_onLoginRequested);
     on<LogoutRequested>(_onLogoutRequested);
+    on<AppStarted>(_onAppStarted);
   }
 
   Future<void> _onLoginRequested(
@@ -48,5 +49,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     await repository.logout();
     emit(AuthUnauthenticated());
+  }
+
+  Future<void> _onAppStarted(AppStarted event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
+
+    try {
+      final user = await repository.getProfile();
+      final menuJson = await repository.getMyMenu();
+
+      final modules = menuJson
+          .map<AppModule>((e) => AppModule.fromJson(e))
+          .toList();
+
+      emit(AuthAuthenticated(user: user, modules: modules));
+    } catch (_) {
+      await repository.logout();
+      emit(AuthUnauthenticated());
+    }
   }
 }

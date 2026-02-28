@@ -5,6 +5,7 @@ import 'core/di/injection.dart';
 import 'core/router/app_router.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/bloc/auth_state.dart';
+import 'features/auth/presentation/bloc/auth_event.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +19,7 @@ class NeuraCraftApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => sl<AuthBloc>(),
+      create: (_) => sl<AuthBloc>()..add(AppStarted()),
       child: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           final isAuthenticated = state is AuthAuthenticated;
