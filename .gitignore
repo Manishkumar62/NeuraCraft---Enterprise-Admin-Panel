@@ -14,3 +14,30 @@ build/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Flutter/Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+
+# Android-specific
+.gradle/
+local.properties
+*.shared
+*.keystore
+*.jks
+.cxx/
+capture_content_test_results/
+
+# iOS-specific
+ios/.generated/
+ios/Flutter/Ephemeral.xcframework
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+ios/ServiceDefinitions.json
+Pods/
+.symlinks/
