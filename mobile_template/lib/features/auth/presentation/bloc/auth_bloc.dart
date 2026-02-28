@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../menu/domain/models/module_model.dart';
 import '../../domain/auth_repository.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
@@ -27,14 +28,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       // 2️⃣ Fetch Profile
       final user = await repository.getProfile();
 
-      // 3️⃣ Fetch Menu
-      final menu = await repository.getMyMenu();
+      final menuJson = await repository.getMyMenu();
 
-      emit(AuthAuthenticated(
-        user: user,
-        menu: menu,
-      ));
+      final modules = menuJson
+          .map<AppModule>((e) => AppModule.fromJson(e))
+          .toList();
+
+      emit(AuthAuthenticated(user: user, modules: modules));
     } catch (e) {
+      print("LOGIN ERROR: $e");
       emit(const AuthFailure("Login failed"));
       emit(AuthUnauthenticated());
     }
