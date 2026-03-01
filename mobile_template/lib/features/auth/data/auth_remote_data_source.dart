@@ -1,7 +1,6 @@
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/network/token_storage.dart';
 
-
 class AuthRemoteDataSource {
   final DioClient dioClient;
   final TokenStorage tokenStorage;
@@ -11,10 +10,7 @@ class AuthRemoteDataSource {
   Future<void> login(String username, String password) async {
     final response = await dioClient.dio.post(
       "users/login/",
-      data: {
-        "username": username,
-        "password": password,
-      },
+      data: {"username": username, "password": password},
     );
 
     await tokenStorage.saveTokens(
@@ -34,6 +30,20 @@ class AuthRemoteDataSource {
   }
 
   Future<void> logout() async {
+    try {
+      final refreshToken = await tokenStorage.getRefreshToken();
+
+      if (refreshToken != null) {
+        await dioClient.dio.post(
+          "users/logout/",
+          data: {"refresh": refreshToken},
+        );
+      }
+    } catch (_) {
+      // even if API fails, continue logout
+    }
+
+    // Always clear locally
     await tokenStorage.clear();
   }
 }
