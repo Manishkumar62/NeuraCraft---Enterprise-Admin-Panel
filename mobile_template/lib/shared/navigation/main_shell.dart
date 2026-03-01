@@ -60,6 +60,8 @@ class _MainShellState extends State<MainShell> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
+        backgroundColor: const Color(0xFF1C2128),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text("Logout"),
         content: const Text("Are you sure you want to logout?"),
         actions: [
@@ -67,7 +69,7 @@ class _MainShellState extends State<MainShell> {
             onPressed: () => Navigator.pop(context),
             child: const Text("Cancel"),
           ),
-          TextButton(
+          ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
               context.read<AuthBloc>().add(LogoutRequested());
@@ -92,10 +94,15 @@ class _MainShellState extends State<MainShell> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text(modules[_currentIndex].moduleName),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: Text(
+            modules[_currentIndex].moduleName,
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+          ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.logout),
+              icon: const Icon(Icons.logout_rounded),
               onPressed: () => _confirmLogout(context),
             ),
           ],
@@ -112,22 +119,20 @@ class _MainShellState extends State<MainShell> {
   }
 
   Widget _buildStyledScrollableNav(List<AppModule> modules) {
-    return Container(
-      margin: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: const Color(0xFF161B22),
-        borderRadius: BorderRadius.circular(22),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 8),
-        ],
-      ),
+    return Padding(
+      padding: const EdgeInsets.all(14),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(22),
-        child: SizedBox(
-          height: 65,
+        borderRadius: BorderRadius.circular(26),
+        child: Container(
+          height: 72,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(26),
+            border: Border.all(color: Colors.white.withOpacity(0.08)),
+          ),
           child: Stack(
             children: [
-              /// 🔥 SCROLLABLE NAV
+              /// 🔥 Scrollable Nav Items
               LayoutBuilder(
                 builder: (context, constraints) {
                   final itemWidth = constraints.maxWidth / 4;
@@ -140,7 +145,7 @@ class _MainShellState extends State<MainShell> {
                         final module = modules[index];
                         final isSelected = _currentIndex == index;
 
-                        return InkWell(
+                        return GestureDetector(
                           onTap: () {
                             if (module.children.isNotEmpty) {
                               _showChildren(context, module);
@@ -150,33 +155,62 @@ class _MainShellState extends State<MainShell> {
                           },
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 250),
+                            curve: Curves.easeInOut,
                             width: itemWidth,
                             padding: const EdgeInsets.symmetric(vertical: 6),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? const Color(0xFF7C3AED).withOpacity(0.15)
-                                  : Colors.transparent,
-                            ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(
-                                  _mapIconData(module.icon),
-                                  size: 20,
-                                  color: isSelected
-                                      ? const Color(0xFF7C3AED)
-                                      : Colors.grey,
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  module.moduleName,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 11,
+                                /// 🔥 Icon with glow effect
+                                AnimatedContainer(
+                                  duration: const Duration(milliseconds: 250),
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: isSelected
+                                        ? const Color(
+                                            0xFF7C3AED,
+                                          ).withOpacity(0.15)
+                                        : Colors.transparent,
+                                  ),
+                                  child: Icon(
+                                    _mapIconData(module.icon),
+                                    size: isSelected ? 22 : 20,
                                     color: isSelected
                                         ? const Color(0xFF7C3AED)
                                         : Colors.grey,
+                                  ),
+                                ),
+
+                                /// 🔥 Title
+                                AnimatedDefaultTextStyle(
+                                  duration: const Duration(milliseconds: 250),
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w600
+                                        : FontWeight.w400,
+                                    color: isSelected
+                                        ? const Color(0xFF7C3AED)
+                                        : Colors.grey,
+                                  ),
+                                  child: Text(
+                                    module.moduleName,
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+
+                                const SizedBox(height: 4),
+
+                                /// 🔥 Bottom Indicator Line
+                                AnimatedContainer(
+                                  duration: const Duration(milliseconds: 250),
+                                  height: 3,
+                                  width: isSelected ? 24 : 0,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF7C3AED),
+                                    borderRadius: BorderRadius.circular(2),
                                   ),
                                 ),
                               ],
@@ -192,7 +226,7 @@ class _MainShellState extends State<MainShell> {
               /// ⬅ LEFT OVERLAY ARROW
               if (modules.length > 4)
                 Positioned(
-                  left: 4,
+                  left: 6,
                   top: 0,
                   bottom: 0,
                   child: AnimatedOpacity(
@@ -203,15 +237,19 @@ class _MainShellState extends State<MainShell> {
                       child: GestureDetector(
                         onTap: () {
                           _scrollController.animateTo(
-                            _scrollController.offset - 120,
+                            _scrollController.offset - 140,
                             duration: const Duration(milliseconds: 300),
                             curve: Curves.easeInOut,
                           );
                         },
-                        child: const Icon(
-                          Icons.chevron_left,
-                          size: 18,
-                          color: Colors.grey,
+                        child: Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                          child: const Icon(
+                            Icons.chevron_left,
+                            size: 18,
+                            color: Colors.grey,
+                          ),
                         ),
                       ),
                     ),
@@ -221,7 +259,7 @@ class _MainShellState extends State<MainShell> {
               /// ➡ RIGHT OVERLAY ARROW
               if (modules.length > 4)
                 Positioned(
-                  right: 4,
+                  right: 6,
                   top: 0,
                   bottom: 0,
                   child: AnimatedOpacity(
@@ -232,15 +270,19 @@ class _MainShellState extends State<MainShell> {
                       child: GestureDetector(
                         onTap: () {
                           _scrollController.animateTo(
-                            _scrollController.offset + 120,
+                            _scrollController.offset + 140,
                             duration: const Duration(milliseconds: 300),
                             curve: Curves.easeInOut,
                           );
                         },
-                        child: const Icon(
-                          Icons.chevron_right,
-                          size: 18,
-                          color: Colors.grey,
+                        child: Container(
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                          child: const Icon(
+                            Icons.chevron_right,
+                            size: 18,
+                            color: Colors.grey,
+                          ),
                         ),
                       ),
                     ),
@@ -290,21 +332,27 @@ class _MainShellState extends State<MainShell> {
   void _showChildren(BuildContext context, AppModule module) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF161B22),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
+      backgroundColor: Colors.transparent,
       builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.all(16),
+        return Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF161B22),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+          ),
+          padding: const EdgeInsets.all(20),
           child: ListView.builder(
             itemCount: module.children.length,
             itemBuilder: (context, index) {
               final child = module.children[index];
 
-              return Card(
+              return Container(
+                margin: const EdgeInsets.symmetric(vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 child: ListTile(
-                  leading: const Icon(Icons.arrow_forward),
+                  leading: const Icon(Icons.arrow_forward_ios, size: 16),
                   title: Text(child.moduleName),
                   onTap: () {
                     Navigator.pop(context);
@@ -325,18 +373,33 @@ class _MainShellState extends State<MainShell> {
     switch (module.path) {
       case '/users':
         return FloatingActionButton(
+          backgroundColor: const Color(0xFF7C3AED),
+          elevation: 6,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           onPressed: () => context.push('/users/add'),
           child: const Icon(Icons.add),
         );
 
       case '/roles':
         return FloatingActionButton(
+          backgroundColor: const Color(0xFF7C3AED),
+          elevation: 6,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           onPressed: () => context.push('/roles/add'),
           child: const Icon(Icons.add),
         );
 
       case '/departments':
         return FloatingActionButton(
+          backgroundColor: const Color(0xFF7C3AED),
+          elevation: 6,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           onPressed: () => context.push('/departments/add'),
           child: const Icon(Icons.add),
         );
