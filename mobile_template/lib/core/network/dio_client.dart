@@ -6,14 +6,25 @@ class DioClient {
   final TokenStorage tokenStorage;
 
   DioClient(this.tokenStorage)
-      : dio = Dio(
-          BaseOptions(
-            // baseUrl: "http://192.168.1.2:8000/api/",
-            baseUrl: "http://127.0.0.1:8000/api/",
-            connectTimeout: const Duration(seconds: 10),
-            receiveTimeout: const Duration(seconds: 10),
-          ),
-        ) {
+    : dio = Dio(
+        BaseOptions(
+          baseUrl: "http://192.168.1.2:8000/api/",
+          // baseUrl: "http://127.0.0.1:8000/api/",
+          connectTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 10),
+        ),
+      ) {
+    dio.interceptors.add(
+      LogInterceptor(
+        request: true, // Print request info
+        requestHeader: true, // Print request headers
+        requestBody: true, // Print request payload (POST/PUT data)
+        responseHeader: false, // Set to true if you need response headers
+        responseBody: true, // Print the JSON response from server
+        error: true, // Print errors
+      ),
+    );
+
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
@@ -47,15 +58,12 @@ class DioClient {
       if (refreshToken == null) return false;
 
       final response = await dio.post(
-        "token/refresh/",
+        "users/token/refresh/",
         data: {"refresh": refreshToken},
       );
 
       final newAccess = response.data["access"];
-      await tokenStorage.saveTokens(
-        access: newAccess,
-        refresh: refreshToken,
-      );
+      await tokenStorage.saveTokens(access: newAccess, refresh: refreshToken);
 
       return true;
     } catch (_) {

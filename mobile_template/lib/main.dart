@@ -19,7 +19,7 @@ class NeuraCraftApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => sl<AuthBloc>()..add(AppStarted()),
+      create: (_) => getIt<AuthBloc>()..add(AppStarted()),
       child: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           final isAuthenticated = state is AuthAuthenticated;

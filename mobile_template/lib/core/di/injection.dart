@@ -7,29 +7,50 @@ import '../../features/auth/data/auth_repository_impl.dart';
 import '../../features/auth/domain/auth_repository.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
 
-final sl = GetIt.instance;
+import '../../features/dashboard/data/datasources/dashboard_remote_ds.dart';
+import '../../features/dashboard/data/repositories/dashboard_repo_impl.dart';
+import '../../features/dashboard/domain/repositories/dashboard_repository.dart';
+import '../../features/dashboard/domain/usecases/get_dashboard_stats.dart';
+
+final getIt = GetIt.instance;
 
 Future<void> initDependencies() async {
-  sl.registerLazySingleton<TokenStorage>(() => TokenStorage());
+  getIt.registerLazySingleton<TokenStorage>(() => TokenStorage());
 
-  sl.registerLazySingleton<DioClient>(
-    () => DioClient(sl<TokenStorage>()),
+  getIt.registerLazySingleton<DioClient>(
+    () => DioClient(getIt<TokenStorage>()),
   );
 
-  sl.registerLazySingleton<AuthRemoteDataSource>(
+  getIt.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSource(
-      sl<DioClient>(),
-      sl<TokenStorage>(),
+      getIt<DioClient>(),
+      getIt<TokenStorage>(),
     ),
   );
 
-  sl.registerLazySingleton<AuthRepository>(
+  getIt.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
-      sl<AuthRemoteDataSource>(),
+      getIt<AuthRemoteDataSource>(),
     ),
   );
 
-  sl.registerFactory<AuthBloc>(
-    () => AuthBloc(sl<AuthRepository>()),
+  getIt.registerFactory<AuthBloc>(
+    () => AuthBloc(getIt<AuthRepository>()),
+  );
+
+  getIt.registerLazySingleton<DashboardRemoteDataSource>(
+    () => DashboardRemoteDataSource(getIt<DioClient>()),
+  );
+
+  getIt.registerLazySingleton<DashboardRepository>(
+    () => DashboardRepositoryImpl(
+      getIt<DashboardRemoteDataSource>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<GetDashboardStats>(
+    () => GetDashboardStats(
+      getIt<DashboardRepository>(),
+    ),
   );
 }
