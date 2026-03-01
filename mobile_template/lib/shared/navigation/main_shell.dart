@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:get_it/get_it.dart';
+import '../../core/di/injection.dart';
 import '../../core/services/permission_service.dart';
 import '../../features/dashboard/domain/usecases/get_dashboard_stats.dart';
 import '../../features/dashboard/presentation/bloc/dashboard_bloc.dart';
@@ -10,6 +10,9 @@ import '../../features/dashboard/presentation/pages/dashboard_page.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../features/auth/presentation/bloc/auth_state.dart';
 import '../../features/menu/domain/models/module_model.dart';
+import '../../features/users/presentation/bloc/user_bloc.dart';
+import '../../features/users/presentation/bloc/user_event.dart';
+import '../../features/users/presentation/pages/user_list_page.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -230,11 +233,34 @@ class _MainShellState extends State<MainShell> {
             final permissionService = PermissionService(authState.modules);
 
             return DashboardBloc(
-              getDashboardStats: GetIt.instance<GetDashboardStats>(),
+              getDashboardStats: getIt<GetDashboardStats>(),
               permissionService: permissionService,
             )..add(LoadDashboard());
           },
           child: const DashboardPage(),
+        );
+
+      case '/users':
+        return BlocProvider(
+          create: (context) {
+            final authState = context.read<AuthBloc>().state;
+
+            if (authState is! AuthAuthenticated) {
+              throw Exception("User not authenticated");
+            }
+
+            final permissionService = PermissionService(authState.modules);
+
+            return UserBloc(
+              getUsers: getIt(),
+              getUserById: getIt(),
+              createUser: getIt(),
+              updateUser: getIt(),
+              deleteUser: getIt(),
+              permissionService: permissionService,
+            )..add(LoadUsers());
+          },
+          child: const UserListPage(),
         );
 
       default:
