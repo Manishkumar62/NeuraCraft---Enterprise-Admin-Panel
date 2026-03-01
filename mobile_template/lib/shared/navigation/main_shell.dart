@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../core/session/session_manager.dart';
 import '../../core/di/injection.dart';
 import '../../core/services/permission_service.dart';
+
+import '../../features/auth/presentation/bloc/auth_bloc.dart';
+import '../../features/auth/presentation/bloc/auth_event.dart';
+
 import '../../features/dashboard/domain/usecases/get_dashboard_stats.dart';
 import '../../features/dashboard/presentation/bloc/dashboard_bloc.dart';
 import '../../features/dashboard/presentation/bloc/dashboard_event.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
-import '../../features/auth/presentation/bloc/auth_bloc.dart';
-import '../../features/auth/presentation/bloc/auth_state.dart';
+
 import '../../features/menu/domain/models/module_model.dart';
+
 import '../../features/users/presentation/bloc/user_bloc.dart';
 import '../../features/users/presentation/bloc/user_event.dart';
 import '../../features/users/presentation/pages/user_list_page.dart';
@@ -50,18 +56,50 @@ class _MainShellState extends State<MainShell> {
     super.dispose();
   }
 
+  void _confirmLogout(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Logout"),
+        content: const Text("Are you sure you want to logout?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              context.read<AuthBloc>().add(LogoutRequested());
+            },
+            child: const Text("Logout"),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final state = context.watch<AuthBloc>().state;
+    final session = getIt<SessionManager>();
 
-    if (state is! AuthAuthenticated) {
+    if (!session.isAuthenticated) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    final modules = state.modules;
+    final modules = session.modules;
 
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          title: Text(modules[_currentIndex].moduleName),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: () => _confirmLogout(context),
+            ),
+          ],
+        ),
         body: IndexedStack(
           index: _currentIndex,
           children: modules.map((m) => _buildPage(m)).toList(),
@@ -162,20 +200,18 @@ class _MainShellState extends State<MainShell> {
                     opacity: _showLeftArrow ? 1 : 0,
                     child: IgnorePointer(
                       ignoring: !_showLeftArrow,
-                      child: Center(
-                        child: GestureDetector(
-                          onTap: () {
-                            _scrollController.animateTo(
-                              _scrollController.offset - 120,
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                          },
-                          child: const Icon(
-                            Icons.chevron_left,
-                            size: 18,
-                            color: Colors.grey,
-                          ),
+                      child: GestureDetector(
+                        onTap: () {
+                          _scrollController.animateTo(
+                            _scrollController.offset - 120,
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        },
+                        child: const Icon(
+                          Icons.chevron_left,
+                          size: 18,
+                          color: Colors.grey,
                         ),
                       ),
                     ),
@@ -193,20 +229,18 @@ class _MainShellState extends State<MainShell> {
                     opacity: _showRightArrow ? 1 : 0,
                     child: IgnorePointer(
                       ignoring: !_showRightArrow,
-                      child: Center(
-                        child: GestureDetector(
-                          onTap: () {
-                            _scrollController.animateTo(
-                              _scrollController.offset + 120,
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                          },
-                          child: const Icon(
-                            Icons.chevron_right,
-                            size: 18,
-                            color: Colors.grey,
-                          ),
+                      child: GestureDetector(
+                        onTap: () {
+                          _scrollController.animateTo(
+                            _scrollController.offset + 120,
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        },
+                        child: const Icon(
+                          Icons.chevron_right,
+                          size: 18,
+                          color: Colors.grey,
                         ),
                       ),
                     ),
@@ -220,46 +254,29 @@ class _MainShellState extends State<MainShell> {
   }
 
   Widget _buildPage(AppModule module) {
+    final session = getIt<SessionManager>();
+    final permissionService = PermissionService(session.modules);
+
     switch (module.path) {
       case "/dashboard":
         return BlocProvider(
-          create: (context) {
-            final authState = context.read<AuthBloc>().state;
-
-            if (authState is! AuthAuthenticated) {
-              throw Exception("User not authenticated");
-            }
-
-            final permissionService = PermissionService(authState.modules);
-
-            return DashboardBloc(
-              getDashboardStats: getIt<GetDashboardStats>(),
-              permissionService: permissionService,
-            )..add(LoadDashboard());
-          },
+          create: (_) => DashboardBloc(
+            getDashboardStats: getIt<GetDashboardStats>(),
+            permissionService: permissionService,
+          )..add(LoadDashboard()),
           child: const DashboardPage(),
         );
 
       case '/users':
         return BlocProvider(
-          create: (context) {
-            final authState = context.read<AuthBloc>().state;
-
-            if (authState is! AuthAuthenticated) {
-              throw Exception("User not authenticated");
-            }
-
-            final permissionService = PermissionService(authState.modules);
-
-            return UserBloc(
-              getUsers: getIt(),
-              getUserById: getIt(),
-              createUser: getIt(),
-              updateUser: getIt(),
-              deleteUser: getIt(),
-              permissionService: permissionService,
-            )..add(LoadUsers());
-          },
+          create: (_) => UserBloc(
+            getUsers: getIt(),
+            getUserById: getIt(),
+            createUser: getIt(),
+            updateUser: getIt(),
+            deleteUser: getIt(),
+            permissionService: permissionService,
+          )..add(LoadUsers()),
           child: const UserListPage(),
         );
 
@@ -308,25 +325,19 @@ class _MainShellState extends State<MainShell> {
     switch (module.path) {
       case '/users':
         return FloatingActionButton(
-          onPressed: () {
-            context.push('/users/add');
-          },
+          onPressed: () => context.push('/users/add'),
           child: const Icon(Icons.add),
         );
 
       case '/roles':
         return FloatingActionButton(
-          onPressed: () {
-            context.push('/roles/add');
-          },
+          onPressed: () => context.push('/roles/add'),
           child: const Icon(Icons.add),
         );
 
       case '/departments':
         return FloatingActionButton(
-          onPressed: () {
-            context.push('/departments/add');
-          },
+          onPressed: () => context.push('/departments/add'),
           child: const Icon(Icons.add),
         );
 

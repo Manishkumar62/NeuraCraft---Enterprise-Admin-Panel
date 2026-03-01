@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'core/theme/app_theme.dart';
 import 'core/di/injection.dart';
 import 'core/router/app_router.dart';
+
 import 'features/auth/presentation/bloc/auth_bloc.dart';
-import 'features/auth/presentation/bloc/auth_state.dart';
 import 'features/auth/presentation/bloc/auth_event.dart';
 
 void main() async {
@@ -20,11 +21,9 @@ class NeuraCraftApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => getIt<AuthBloc>()..add(AppStarted()),
-      child: BlocBuilder<AuthBloc, AuthState>(
-        builder: (context, state) {
-          final isAuthenticated = state is AuthAuthenticated;
-
-          final router = createRouter(isAuthenticated);
+      child: Builder(
+        builder: (context) {
+          final router = createRouter(); // 🔥 No bool
 
           return MaterialApp.router(
             debugShowCheckedModeBanner: false,

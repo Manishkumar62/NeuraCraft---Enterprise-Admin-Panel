@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../features/auth/presentation/bloc/auth_bloc.dart';
-import '../../../../features/auth/presentation/bloc/auth_state.dart';
+import '../../../../core/di/injection.dart';
+import '../../../../core/session/session_manager.dart';
 import '../../../../core/services/permission_service.dart';
 import '../bloc/user_bloc.dart';
 import '../bloc/user_event.dart';
@@ -155,56 +155,48 @@ class UserListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authState = context.watch<AuthBloc>().state;
+    final session = getIt<SessionManager>();
+    final permissionService = PermissionService(session.modules);
 
-    if (authState is! AuthAuthenticated) {
-      return const SizedBox();
-    }
+    return BlocBuilder<UserBloc, UserState>(
+      builder: (context, state) {
+        if (state is UserLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-    final permissionService = PermissionService(authState.modules);
+        if (state is UserError) {
+          return _ErrorView(
+            message: state.message,
+            onRetry: () => context.read<UserBloc>().add(LoadUsers()),
+          );
+        }
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Users')),
-      body: BlocBuilder<UserBloc, UserState>(
-        builder: (context, state) {
-          if (state is UserLoading) {
-            return const Center(child: CircularProgressIndicator());
+        if (state is UserListLoaded) {
+          if (state.users.isEmpty) {
+            return const _EmptyView();
           }
 
-          if (state is UserError) {
-            return _ErrorView(
-              message: state.message,
-              onRetry: () => context.read<UserBloc>().add(LoadUsers()),
-            );
-          }
-
-          if (state is UserListLoaded) {
-            if (state.users.isEmpty) {
-              return const _EmptyView();
-            }
-
-            return RefreshIndicator(
-              onRefresh: () async {
-                context.read<UserBloc>().add(LoadUsers());
+          return RefreshIndicator(
+            onRefresh: () async {
+              context.read<UserBloc>().add(LoadUsers());
+            },
+            child: ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: state.users.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                final user = state.users[index];
+                return _UserCard(
+                  user: user,
+                  permissionService: permissionService,
+                );
               },
-              child: ListView.separated(
-                padding: const EdgeInsets.all(16),
-                itemCount: state.users.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
-                itemBuilder: (context, index) {
-                  final user = state.users[index];
-                  return _UserCard(
-                    user: user,
-                    permissionService: permissionService,
-                  );
-                },
-              ),
-            );
-          }
+            ),
+          );
+        }
 
-          return const SizedBox();
-        },
-      ),
+        return const SizedBox();
+      },
     );
   }
 }

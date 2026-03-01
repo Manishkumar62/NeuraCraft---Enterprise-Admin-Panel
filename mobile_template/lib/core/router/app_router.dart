@@ -1,37 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../core/di/injection.dart';
+import '../../core/session/session_manager.dart';
+
 import '../../features/auth/presentation/login_page.dart';
 import '../../shared/navigation/main_shell.dart';
 
-GoRouter createRouter(bool isAuthenticated) {
+GoRouter createRouter() {
+  final session = getIt<SessionManager>();
+
   return GoRouter(
     initialLocation: "/",
-    redirect: (context, state) {
-      final isLoggingIn = state.fullPath == "/login";
 
-      if (!isAuthenticated && !isLoggingIn) {
+    // 🔥 THIS makes router reactive to login/logout
+    refreshListenable: session,
+
+    redirect: (context, state) {
+      final isLoggedIn = session.isAuthenticated;
+      final isLoggingIn = state.matchedLocation == "/login";
+
+      if (!isLoggedIn && !isLoggingIn) {
         return "/login";
       }
 
-      if (isAuthenticated && isLoggingIn) {
+      if (isLoggedIn && isLoggingIn) {
         return "/";
       }
 
       return null;
     },
+
     routes: [
-
       /// 🔐 LOGIN
-      GoRoute(
-        path: "/login",
-        builder: (context, state) => const LoginPage(),
-      ),
+      GoRoute(path: "/login", builder: (context, state) => const LoginPage()),
 
-      /// 🏠 MAIN SHELL (Bottom Navigation Root)
-      GoRoute(
-        path: "/",
-        builder: (context, state) => const MainShell(),
-      ),
+      /// 🏠 MAIN SHELL
+      GoRoute(path: "/", builder: (context, state) => const MainShell()),
 
       /// 🔥 DYNAMIC MODULE ROUTES
       GoRoute(
@@ -39,9 +44,7 @@ GoRouter createRouter(bool isAuthenticated) {
         builder: (context, state) {
           final moduleName = state.pathParameters["module"] ?? "";
 
-          return _DynamicModuleScreen(
-            title: moduleName,
-          );
+          return _DynamicModuleScreen(title: moduleName);
         },
       ),
     ],
@@ -57,14 +60,9 @@ class _DynamicModuleScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title.toUpperCase()),
-      ),
+      appBar: AppBar(title: Text(title.toUpperCase())),
       body: Center(
-        child: Text(
-          "Screen for /$title",
-          style: const TextStyle(fontSize: 22),
-        ),
+        child: Text("Screen for /$title", style: const TextStyle(fontSize: 22)),
       ),
     );
   }

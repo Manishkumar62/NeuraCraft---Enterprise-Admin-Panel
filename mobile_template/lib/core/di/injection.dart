@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 
 import '../network/dio_client.dart';
 import '../network/token_storage.dart';
+import '../session/session_manager.dart';
 
 import '../../features/auth/data/auth_remote_data_source.dart';
 import '../../features/auth/data/auth_repository_impl.dart';
@@ -27,6 +28,8 @@ final getIt = GetIt.instance;
 
 Future<void> initDependencies() async {
   getIt.registerLazySingleton<TokenStorage>(() => TokenStorage());
+
+  getIt.registerLazySingleton<SessionManager>(() => SessionManager());
 
   getIt.registerLazySingleton<DioClient>(
     () => DioClient(getIt<TokenStorage>()),
