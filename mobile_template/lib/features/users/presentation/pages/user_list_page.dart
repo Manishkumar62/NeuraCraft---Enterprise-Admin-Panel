@@ -165,14 +165,6 @@ class UserListPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Users')),
-      floatingActionButton: permissionService.canAdd('/users')
-          ? FloatingActionButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/users/add');
-              },
-              child: const Icon(Icons.add),
-            )
-          : null,
       body: BlocBuilder<UserBloc, UserState>(
         builder: (context, state) {
           if (state is UserLoading) {

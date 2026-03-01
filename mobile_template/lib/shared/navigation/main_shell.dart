@@ -303,13 +303,36 @@ class _MainShellState extends State<MainShell> {
   }
 
   Widget? _buildFab(AppModule module) {
-    if (module.children.isEmpty && module.permissions.contains("add")) {
-      return FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.add),
-      );
+    if (!module.permissions.contains("add")) return null;
+
+    switch (module.path) {
+      case '/users':
+        return FloatingActionButton(
+          onPressed: () {
+            context.push('/users/add');
+          },
+          child: const Icon(Icons.add),
+        );
+
+      case '/roles':
+        return FloatingActionButton(
+          onPressed: () {
+            context.push('/roles/add');
+          },
+          child: const Icon(Icons.add),
+        );
+
+      case '/departments':
+        return FloatingActionButton(
+          onPressed: () {
+            context.push('/departments/add');
+          },
+          child: const Icon(Icons.add),
+        );
+
+      default:
+        return null;
     }
-    return null;
   }
 
   IconData _mapIconData(String iconName) {
