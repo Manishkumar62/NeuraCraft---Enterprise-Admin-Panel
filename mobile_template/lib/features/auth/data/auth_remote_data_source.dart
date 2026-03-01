@@ -46,4 +46,9 @@ class AuthRemoteDataSource {
     // Always clear locally
     await tokenStorage.clear();
   }
+
+  Future<String?> getStoredAccessToken() async{
+    String? refreshToken = await tokenStorage.getAccessToken();
+    return refreshToken;
+  }
 }

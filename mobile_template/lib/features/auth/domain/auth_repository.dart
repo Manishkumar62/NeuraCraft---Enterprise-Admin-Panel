@@ -9,4 +9,6 @@ abstract class AuthRepository {
   Future<List<dynamic>> getMyMenu();
 
   Future<void> logout();
+
+  Future<String?> getStoredAccessToken();
 }

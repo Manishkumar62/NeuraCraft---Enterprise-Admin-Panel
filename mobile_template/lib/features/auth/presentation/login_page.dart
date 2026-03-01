@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../../shared/widgets/app_loader.dart';
+import '../../../../shared/widgets/glass_container.dart';
+
 import './bloc/auth_bloc.dart';
 import './bloc/auth_event.dart';
 import './bloc/auth_state.dart';
-import '../../../../shared/widgets/app_loader.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -24,18 +26,16 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    _loadSavedCredentials();
+    _loadSavedUsername();
   }
 
-  Future<void> _loadSavedCredentials() async {
+  Future<void> _loadSavedUsername() async {
     final prefs = await SharedPreferences.getInstance();
     final savedUsername = prefs.getString('username');
-    final savedPassword = prefs.getString('password');
     final savedRemember = prefs.getBool('remember_me') ?? false;
 
-    if (savedRemember) {
-      usernameController.text = savedUsername ?? '';
-      passwordController.text = savedPassword ?? '';
+    if (savedRemember && savedUsername != null) {
+      usernameController.text = savedUsername;
       setState(() => rememberMe = true);
     }
   }
@@ -45,10 +45,10 @@ class _LoginPageState extends State<LoginPage> {
 
     if (rememberMe) {
       await prefs.setString('username', usernameController.text.trim());
-      await prefs.setString('password', passwordController.text.trim());
       await prefs.setBool('remember_me', true);
     } else {
-      await prefs.clear();
+      await prefs.remove('username');
+      await prefs.setBool('remember_me', false);
     }
   }
 
@@ -59,82 +59,85 @@ class _LoginPageState extends State<LoginPage> {
         listener: (context, state) {
           if (state is AuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
+              SnackBar(
+                content: Text(state.message),
+                behavior: SnackBarBehavior.floating,
+              ),
             );
           }
         },
         builder: (context, state) {
           return Stack(
             children: [
+              /// 🌌 Animated Gradient Background
               Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Color(0xFF0F172A),
-                      Color(0xFF1E293B),
+                      Color(0xFF0F1115),
+                      Color(0xFF141922),
+                      Color(0xFF1C2128),
                     ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
                 ),
               ),
 
+              /// 🧊 Glass Card Center
               Center(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(24),
-                  child: Container(
-                    padding: const EdgeInsets.all(28),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: GlassContainer(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // 🔥 Replace with your logo
+                        /// 🔥 Logo
                         Image.asset(
                           "assets/images/logo.png",
-                          height: 80,
+                          height: 90,
                         ),
 
                         const SizedBox(height: 20),
 
                         const Text(
-                          "Welcome Back",
+                          "NeuraCraft",
                           style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
 
-                        const SizedBox(height: 30),
+                        const SizedBox(height: 6),
 
+                        Text(
+                          "Enterprise RBAC System",
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.white.withOpacity(0.6),
+                          ),
+                        ),
+
+                        const SizedBox(height: 32),
+
+                        /// 👤 Username
                         TextField(
                           controller: usernameController,
-                          decoration: InputDecoration(
-                            labelText: "Username",
-                            prefixIcon: const Icon(Icons.person),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+                          decoration: const InputDecoration(
+                            hintText: "Username",
+                            prefixIcon: Icon(Icons.person_outline),
                           ),
                         ),
 
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 20),
 
+                        /// 🔒 Password
                         TextField(
                           controller: passwordController,
                           obscureText: obscurePassword,
                           decoration: InputDecoration(
-                            labelText: "Password",
-                            prefixIcon: const Icon(Icons.lock),
+                            hintText: "Password",
+                            prefixIcon: const Icon(Icons.lock_outline),
                             suffixIcon: IconButton(
                               icon: Icon(
                                 obscurePassword
@@ -147,14 +150,12 @@ class _LoginPageState extends State<LoginPage> {
                                 });
                               },
                             ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
                           ),
                         ),
 
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 16),
 
+                        /// ☑ Remember Username
                         Row(
                           children: [
                             Checkbox(
@@ -165,38 +166,47 @@ class _LoginPageState extends State<LoginPage> {
                                 });
                               },
                             ),
-                            const Text("Remember Me"),
+                            const Text("Remember Username"),
                           ],
                         ),
 
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 24),
 
+                        /// 🚀 Login Button
                         SizedBox(
                           width: double.infinity,
-                          height: 50,
+                          height: 52,
                           child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF0F172A),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            onPressed: () async {
-                              await _handleRememberMe();
+                            onPressed: state is AuthLoading
+                                ? null
+                                : () async {
+                                    await _handleRememberMe();
 
-                              context.read<AuthBloc>().add(
-                                    LoginRequested(
-                                      username:
-                                          usernameController.text.trim(),
-                                      password:
-                                          passwordController.text.trim(),
+                                    context.read<AuthBloc>().add(
+                                          LoginRequested(
+                                            username: usernameController.text
+                                                .trim(),
+                                            password: passwordController.text
+                                                .trim(),
+                                          ),
+                                        );
+                                  },
+                            child: state is AuthLoading
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
                                     ),
-                                  );
-                            },
-                            child: const Text(
-                              "Login",
-                              style: TextStyle(fontSize: 16),
-                            ),
+                                  )
+                                : const Text(
+                                    "Login",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      letterSpacing: 1,
+                                    ),
+                                  ),
                           ),
                         ),
                       ],
@@ -205,6 +215,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
 
+              /// ⏳ Overlay Loader (optional full screen)
               if (state is AuthLoading)
                 const Center(child: AppLoader()),
             ],

@@ -67,8 +67,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onAppStarted(AppStarted event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
 
+    final accessToken = await repository.getStoredAccessToken();
+
+    if (accessToken == null) {
+      emit(AuthInitial());
+      return;
+    }
+
     try {
-      // Try auto-login via stored tokens
       final user = await repository.getProfile();
       final menuJson = await repository.getMyMenu();
 
@@ -76,15 +82,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           .map<AppModule>((e) => AppModule.fromJson(e))
           .toList();
 
-      // Store session
       getIt<SessionManager>().setSession(user: user, modules: modules);
 
       emit(AuthSuccess());
     } catch (_) {
-      // Token invalid or expired
       await repository.logout();
       getIt<SessionManager>().clearSession();
-
       emit(AuthInitial());
     }
   }
