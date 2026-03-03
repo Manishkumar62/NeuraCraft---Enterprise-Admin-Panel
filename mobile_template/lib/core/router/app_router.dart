@@ -6,39 +6,56 @@ import '../../core/session/session_manager.dart';
 
 import '../../features/auth/presentation/login_page.dart';
 import '../../shared/navigation/main_shell.dart';
+import '../../shared/splash_screen.dart';
 
 GoRouter createRouter() {
   final session = getIt<SessionManager>();
 
   return GoRouter(
-    initialLocation: "/",
+    initialLocation: "/splash",
 
     // 🔥 THIS makes router reactive to login/logout
     refreshListenable: session,
 
     redirect: (context, state) {
+      final session = getIt<SessionManager>();
+
       final isLoggedIn = session.isAuthenticated;
+      final isBootstrapped = session.isBootstrapped;
+
+      final isSplash = state.matchedLocation == "/splash";
       final isLoggingIn = state.matchedLocation == "/login";
 
-      if (!isLoggedIn && !isLoggingIn) {
-        return "/login";
+      // ⏳ While bootstrapping → stay on splash
+      if (!isBootstrapped) {
+        return isSplash ? null : "/splash";
       }
 
-      if (isLoggedIn && isLoggingIn) {
+      // ✅ After bootstrap finished
+
+      // If logged in and on splash or login → go to dashboard
+      if (isLoggedIn && (isSplash || isLoggingIn)) {
         return "/";
+      }
+
+      // If not logged in and not on login → go to login
+      if (!isLoggedIn && !isLoggingIn) {
+        return "/login";
       }
 
       return null;
     },
 
     routes: [
-      /// 🔐 LOGIN
+      GoRoute(
+        path: "/splash",
+        builder: (context, state) => const SplashScreen(),
+      ),
+
       GoRoute(path: "/login", builder: (context, state) => const LoginPage()),
 
-      /// 🏠 MAIN SHELL
       GoRoute(path: "/", builder: (context, state) => const MainShell()),
 
-      /// 🔥 DYNAMIC MODULE ROUTES
       GoRoute(
         path: "/:module",
         builder: (context, state) {

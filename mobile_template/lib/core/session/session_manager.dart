@@ -5,7 +5,10 @@ class SessionManager extends ChangeNotifier {
   Map<String, dynamic>? _user;
   List<AppModule> _modules = [];
 
+  bool _isBootstrapped = false; 
+
   bool get isAuthenticated => _user != null;
+  bool get isBootstrapped => _isBootstrapped;
 
   Map<String, dynamic>? get user => _user;
 
@@ -23,6 +26,11 @@ class SessionManager extends ChangeNotifier {
   void clearSession() {
     _user = null;
     _modules = [];
+    notifyListeners();
+  }
+
+  void markBootstrapped() {
+    _isBootstrapped = true;
     notifyListeners();
   }
 }

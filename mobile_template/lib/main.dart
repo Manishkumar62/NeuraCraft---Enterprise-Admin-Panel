@@ -20,7 +20,7 @@ class NeuraCraftApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => getIt<AuthBloc>()..add(AppStarted()),
+      create: (_) => getIt<AuthBloc>(),
       child: Builder(
         builder: (context) {
           final router = createRouter(); // 🔥 No bool

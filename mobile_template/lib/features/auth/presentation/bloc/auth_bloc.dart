@@ -41,7 +41,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       // 4️⃣ Store in SessionManager
       getIt<SessionManager>().setSession(user: user, modules: modules);
 
-      emit(AuthSuccess());
+      // emit(AuthSuccess());
     } catch (e) {
       await repository.logout();
       emit(AuthFailure("Login failed"));
@@ -52,24 +52,26 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     LogoutRequested event,
     Emitter<AuthState> emit,
   ) async {
+    // Clear session
+    getIt<SessionManager>().clearSession();
+
+    emit(AuthInitial());
+    
     try {
       await repository.logout(); // blacklist refresh token
     } catch (_) {
       // even if API fails, continue logout locally
     }
-
-    // Clear session
-    getIt<SessionManager>().clearSession();
-
-    emit(AuthInitial());
   }
 
   Future<void> _onAppStarted(AppStarted event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
 
+    final session = getIt<SessionManager>();
     final accessToken = await repository.getStoredAccessToken();
 
     if (accessToken == null) {
+      session.markBootstrapped();
       emit(AuthInitial());
       return;
     }
@@ -82,12 +84,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           .map<AppModule>((e) => AppModule.fromJson(e))
           .toList();
 
-      getIt<SessionManager>().setSession(user: user, modules: modules);
+      session.setSession(user: user, modules: modules);
 
+      session.markBootstrapped();
       emit(AuthSuccess());
     } catch (_) {
       await repository.logout();
-      getIt<SessionManager>().clearSession();
+      session.clearSession();
+
+      session.markBootstrapped();
       emit(AuthInitial());
     }
   }
