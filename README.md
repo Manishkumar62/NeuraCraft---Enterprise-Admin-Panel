@@ -23,7 +23,7 @@
 - **Craft** - Inspired by Vishwakarma (divine craftsman): Representing careful craftsmanship in code
 
 ### 👨‍💻 Creator
-**Manish Kumar Vishwakarma** - Project Founder & Developer
+**Manishkumar Vishwakarma** - Project Founder & Developer
 
 ---
 
