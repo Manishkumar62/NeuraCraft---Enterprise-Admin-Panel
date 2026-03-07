@@ -10,6 +10,8 @@ class UserModel extends UserEntity {
     super.phone,
     super.employeeId,
     required super.isActive,
+    super.departmentId,
+    super.roleIds,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -21,7 +23,13 @@ class UserModel extends UserEntity {
       lastName: json['last_name'],
       phone: json['phone'],
       employeeId: json['employee_id'],
-      isActive: json['is_active'] ?? true,
+      isActive: json['is_active'],
+
+      departmentId: json['department_id'],
+
+      roleIds: (json['role_ids'] as List?)
+          ?.map((e) => e as int)
+          .toList(),
     );
   }
 }

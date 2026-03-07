@@ -8,6 +8,9 @@ class UserEntity {
   final String? employeeId;
   final bool isActive;
 
+  final int? departmentId;
+  final List<int>? roleIds;
+
   UserEntity({
     required this.id,
     required this.username,
@@ -17,5 +20,7 @@ class UserEntity {
     this.phone,
     this.employeeId,
     required this.isActive,
+    this.departmentId,
+    this.roleIds,
   });
 }

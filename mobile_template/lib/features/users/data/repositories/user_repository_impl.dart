@@ -31,4 +31,14 @@ class UserRepositoryImpl implements UserRepository {
   Future<void> deleteUser(int id) {
     return remoteDataSource.deleteUser(id);
   }
+
+  @override
+  Future<List<Map<String, dynamic>>> getRoles() {
+    return remoteDataSource.getRoles();
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getDepartments() {
+    return remoteDataSource.getDepartments();
+  }
 }

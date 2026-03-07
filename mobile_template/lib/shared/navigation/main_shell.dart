@@ -311,14 +311,8 @@ class _MainShellState extends State<MainShell> {
 
       case '/users':
         return BlocProvider(
-          create: (_) => UserBloc(
-            getUsers: getIt(),
-            getUserById: getIt(),
-            createUser: getIt(),
-            updateUser: getIt(),
-            deleteUser: getIt(),
-            permissionService: permissionService,
-          )..add(LoadUsers()),
+          create: (_) =>
+              getIt<UserBloc>(param1: permissionService)..add(LoadUsers()),
           child: const UserListPage(),
         );
 

@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import '../services/permission_service.dart';
 
 import '../network/dio_client.dart';
 import '../network/token_storage.dart';
@@ -23,6 +24,8 @@ import '../../features/users/domain/usecases/create_user.dart';
 import '../../features/users/domain/usecases/delete_user.dart';
 import '../../features/users/domain/usecases/get_user_by_id.dart';
 import '../../features/users/domain/usecases/update_user.dart';
+import '../../features/users/domain/usecases/get_departments.dart';
+import '../../features/users/domain/usecases/get_roles.dart';
 
 final getIt = GetIt.instance;
 
@@ -71,15 +74,19 @@ Future<void> initDependencies() async {
   getIt.registerLazySingleton(() => CreateUser(getIt()));
   getIt.registerLazySingleton(() => UpdateUser(getIt()));
   getIt.registerLazySingleton(() => DeleteUser(getIt()));
+  getIt.registerLazySingleton(() => GetRoles(getIt()));
+  getIt.registerLazySingleton(() => GetDepartments(getIt()));
 
-  getIt.registerFactory(
-    () => UserBloc(
-      getUsers: getIt(),
-      getUserById: getIt(),
-      createUser: getIt(),
-      updateUser: getIt(),
-      deleteUser: getIt(),
-      permissionService: getIt(),
-    ),
-  );
+  getIt.registerFactoryParam<UserBloc, PermissionService, void>(
+  (permissionService, _) => UserBloc(
+    getUsers: getIt(),
+    getUserById: getIt(),
+    createUser: getIt(),
+    updateUser: getIt(),
+    deleteUser: getIt(),
+    getRoles: getIt(),
+    getDepartments: getIt(),
+    permissionService: permissionService,
+  ),
+);
 }

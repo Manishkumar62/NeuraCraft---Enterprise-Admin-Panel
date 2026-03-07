@@ -10,4 +10,8 @@ abstract class UserRepository {
   Future<UserEntity> updateUser(int id, Map<String, dynamic> data);
 
   Future<void> deleteUser(int id);
+
+  Future<List<Map<String, dynamic>>> getRoles();
+
+  Future<List<Map<String, dynamic>>> getDepartments();
 }

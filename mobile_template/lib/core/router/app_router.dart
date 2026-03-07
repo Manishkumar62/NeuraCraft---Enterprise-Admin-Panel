@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/di/injection.dart';
 import '../../core/session/session_manager.dart';
+import '../../core/services/permission_service.dart';
 
-import '../../features/auth/presentation/login_page.dart';
 import '../../shared/navigation/main_shell.dart';
 import '../../shared/splash_screen.dart';
+
+import '../../features/auth/presentation/login_page.dart';
+import '../../features/users/presentation/pages/user_form_page.dart';
+import '../../features/users/presentation/bloc/user_bloc.dart';
+import '../../features/users/presentation/bloc/user_event.dart';
 
 GoRouter createRouter() {
   final session = getIt<SessionManager>();
@@ -55,6 +61,36 @@ GoRouter createRouter() {
       GoRoute(path: "/login", builder: (context, state) => const LoginPage()),
 
       GoRoute(path: "/", builder: (context, state) => const MainShell()),
+
+      GoRoute(
+        path: "/users/add",
+        builder: (context, state) {
+          final session = getIt<SessionManager>();
+          final permissionService = PermissionService(session.modules);
+
+          return BlocProvider(
+            create: (_) => getIt<UserBloc>(param1: permissionService),
+            child: const UserFormPage(),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: "/users/edit/:id",
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters["id"]!);
+
+          final session = getIt<SessionManager>();
+          final permissionService = PermissionService(session.modules);
+
+          return BlocProvider(
+            create: (_) =>
+                getIt<UserBloc>(param1: permissionService)
+                  ..add(LoadUserById(id)),
+            child: UserFormPage(userId: id),
+          );
+        },
+      ),
 
       GoRoute(
         path: "/:module",

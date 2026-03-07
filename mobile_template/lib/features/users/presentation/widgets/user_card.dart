@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/services/permission_service.dart';
 import '../../domain/entities/user_entity.dart';
@@ -75,11 +76,7 @@ class UserCard extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.edit),
                   onPressed: () {
-                    Navigator.pushNamed(
-                      context,
-                      '/users/edit',
-                      arguments: user.id,
-                    );
+                    context.push('/users/edit/${user.id}');
                   },
                 ),
               if (permissionService.canDelete('/users'))

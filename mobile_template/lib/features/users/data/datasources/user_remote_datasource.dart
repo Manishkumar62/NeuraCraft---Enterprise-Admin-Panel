@@ -8,9 +8,7 @@ class UserRemoteDataSource {
 
   Future<List<UserModel>> getUsers() async {
     final response = await dioClient.dio.get('/users/');
-    return (response.data as List)
-        .map((e) => UserModel.fromJson(e))
-        .toList();
+    return (response.data as List).map((e) => UserModel.fromJson(e)).toList();
   }
 
   Future<UserModel> getUserById(int id) async {
@@ -19,20 +17,28 @@ class UserRemoteDataSource {
   }
 
   Future<UserModel> createUser(Map<String, dynamic> data) async {
-    final response =
-        await dioClient.dio.post('/users/register/', data: data);
+    final response = await dioClient.dio.post('/users/register/', data: data);
 
     return UserModel.fromJson(response.data['user']);
   }
 
   Future<UserModel> updateUser(int id, Map<String, dynamic> data) async {
-    final response =
-        await dioClient.dio.put('/users/$id/', data: data);
+    final response = await dioClient.dio.put('/users/$id/', data: data);
 
     return UserModel.fromJson(response.data);
   }
 
   Future<void> deleteUser(int id) async {
     await dioClient.dio.delete('/users/$id/');
+  }
+
+  Future<List<Map<String, dynamic>>> getRoles() async {
+    final response = await dioClient.dio.get('/roles/');
+    return List<Map<String, dynamic>>.from(response.data);
+  }
+
+  Future<List<Map<String, dynamic>>> getDepartments() async {
+    final response = await dioClient.dio.get('/departments/');
+    return List<Map<String, dynamic>>.from(response.data);
   }
 }
