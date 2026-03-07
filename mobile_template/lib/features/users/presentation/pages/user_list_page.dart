@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/session/session_manager.dart';
 import '../../../../core/services/permission_service.dart';
@@ -30,7 +31,9 @@ class _ErrorView extends StatelessWidget {
 }
 
 class _EmptyView extends StatelessWidget {
-  const _EmptyView();
+  final VoidCallback? onCreate;
+
+  const _EmptyView({this.onCreate});
 
   @override
   Widget build(BuildContext context) {
@@ -39,19 +42,21 @@ class _EmptyView extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.people_outline, size: 60, color: Colors.grey.shade400),
-
           const SizedBox(height: 14),
-
           const Text(
             "No users found",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
-
           const SizedBox(height: 6),
-
           Text(
             "Create your first user",
             style: TextStyle(color: Colors.grey.shade600),
+          ),
+          const SizedBox(height: 14),
+          ElevatedButton.icon(
+            icon: const Icon(Icons.add),
+            label: const Text("Create User"),
+            onPressed: onCreate,
           ),
         ],
       ),
@@ -117,6 +122,15 @@ class _UserListPageState extends State<UserListPage> {
                 decoration: InputDecoration(
                   hintText: "Search users...",
                   prefixIcon: const Icon(Icons.search),
+                  suffixIcon: _query.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () {
+                            _searchController.clear();
+                            setState(() => _query = "");
+                          },
+                        )
+                      : null,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
@@ -142,21 +156,40 @@ class _UserListPageState extends State<UserListPage> {
                   itemBuilder: (_, __) {
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),
-                      height: 80,
+                      padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(16),
                         color: Colors.white.withOpacity(0.05),
                       ),
+                      child: Row(
+                        children: [
+                          const CircleAvatar(
+                            radius: 22,
+                            backgroundColor: Colors.black26,
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  height: 12,
+                                  width: 120,
+                                  color: Colors.black26,
+                                ),
+                                const SizedBox(height: 6),
+                                Container(
+                                  height: 10,
+                                  width: 180,
+                                  color: Colors.black26,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     );
                   },
-                );
-              }
-
-              /// ERROR
-              if (state is UserError) {
-                return _ErrorView(
-                  message: state.message,
-                  onRetry: () => context.read<UserBloc>().add(LoadUsers()),
                 );
               }
 
@@ -178,7 +211,7 @@ class _UserListPageState extends State<UserListPage> {
                 }
 
                 if (users.isEmpty) {
-                  return const _EmptyView();
+                  return _EmptyView(onCreate: () => context.push('/users/add'));
                 }
 
                 return RefreshIndicator(
@@ -186,19 +219,19 @@ class _UserListPageState extends State<UserListPage> {
                     context.read<UserBloc>().add(LoadUsers());
                   },
 
-                  child: ListView.separated(
+                  child: ListView.builder(
                     padding: const EdgeInsets.all(16),
-
                     itemCount: users.length,
-
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
-
                     itemBuilder: (context, index) {
                       final user = users[index];
 
-                      return UserCard(
-                        user: user,
-                        permissionService: permissionService,
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 250),
+                        margin: const EdgeInsets.only(bottom: 12),
+                        child: UserCard(
+                          user: user,
+                          permissionService: permissionService,
+                        ),
                       );
                     },
                   ),

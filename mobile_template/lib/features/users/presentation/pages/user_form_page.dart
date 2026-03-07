@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../shared/widgets/chip_multi_selector.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../presentation/bloc/user_bloc.dart';
 import '../../presentation/bloc/user_event.dart';
@@ -184,39 +185,51 @@ class _UserFormPageState extends State<UserFormPage> {
   }
 
   Widget _buildHeader() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        CircleAvatar(
-          radius: 30,
-          child: Text(
-            _displayName.isEmpty ? "U" : _displayName[0].toUpperCase(),
-            style: const TextStyle(fontSize: 24),
+    final initials = _displayName.isEmpty
+        ? "U"
+        : _displayName.trim()[0].toUpperCase();
+
+    return Center(
+      child: Column(
+        children: [
+          CircleAvatar(
+            radius: 36,
+            backgroundColor: Theme.of(
+              context,
+            ).colorScheme.primary.withOpacity(0.15),
+            child: Text(
+              initials,
+              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            ),
           ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          _displayName.isEmpty ? "New User" : _displayName,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        if (_emailController.text.isNotEmpty)
+
+          const SizedBox(height: 10),
+
           Text(
-            _emailController.text,
-            style: TextStyle(color: Colors.grey.shade600),
+            _displayName.isEmpty ? "New User" : _displayName,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
-      ],
+
+          if (_emailController.text.isNotEmpty)
+            Text(
+              _emailController.text,
+              style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+            ),
+        ],
+      ),
     );
   }
 
   Widget _buildSectionTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
+      padding: const EdgeInsets.fromLTRB(4, 14, 4, 6),
       child: Text(
-        title.toUpperCase(),
+        title,
         style: TextStyle(
-          fontWeight: FontWeight.bold,
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
           color: Theme.of(context).colorScheme.primary,
-          letterSpacing: 0.8,
+          letterSpacing: 0.6,
         ),
       ),
     );
@@ -224,13 +237,11 @@ class _UserFormPageState extends State<UserFormPage> {
 
   Widget _buildCard(List<Widget> children) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(12),
         color: Theme.of(context).colorScheme.surface,
-        boxShadow: [
-          BoxShadow(blurRadius: 10, color: Colors.black.withOpacity(0.05)),
-        ],
+        border: Border.all(color: Colors.white.withOpacity(0.06)),
       ),
       child: Column(children: children),
     );
@@ -246,11 +257,15 @@ class _UserFormPageState extends State<UserFormPage> {
       controller: controller,
       obscureText: obscure,
       keyboardType: keyboard,
+      style: const TextStyle(fontSize: 14),
       decoration: InputDecoration(
         labelText: label,
         isDense: true,
+        filled: true,
+        fillColor: Colors.white.withOpacity(0.02),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         contentPadding: const EdgeInsets.symmetric(
-          vertical: 12,
+          vertical: 10,
           horizontal: 12,
         ),
       ),
@@ -267,10 +282,15 @@ class _UserFormPageState extends State<UserFormPage> {
   Widget _buildDepartmentDropdown() {
     return DropdownButtonFormField<int>(
       value: _selectedDepartment,
-      decoration: const InputDecoration(labelText: "Department"),
+      decoration: InputDecoration(
+        labelText: "Department",
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        filled: true,
+        fillColor: Colors.white.withOpacity(0.02),
+      ),
       items: _departments.map<DropdownMenuItem<int>>((dept) {
         return DropdownMenuItem<int>(
-          value: dept['id'] as int,
+          value: dept['id'],
           child: Text(dept['name']),
         );
       }).toList(),
@@ -283,62 +303,14 @@ class _UserFormPageState extends State<UserFormPage> {
   }
 
   Widget _buildRolesSelector() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        GestureDetector(
-          onTap: _openRolesSelector,
-          child: InputDecorator(
-            decoration: const InputDecoration(
-              labelText: "Roles",
-              border: OutlineInputBorder(),
-            ),
-            child: Text(
-              _selectedRoles.isEmpty
-                  ? "Select roles"
-                  : "${_selectedRoles.length} role(s) selected",
-            ),
-          ),
-        ),
-
-        if (_selectedRoles.isNotEmpty) ...[
-          const SizedBox(height: 10),
-          Wrap(
-            spacing: 6,
-            runSpacing: 4,
-            children: _selectedRoles.map((id) {
-              final role = _roles.firstWhere((r) => r['id'] == id);
-              return Chip(label: Text(role['name']));
-            }).toList(),
-          ),
-        ],
-      ],
-    );
-  }
-
-  void _openRolesSelector() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return ListView(
-          children: _roles.map((role) {
-            final int id = role['id'] as int;
-
-            return CheckboxListTile(
-              title: Text(role['name']),
-              value: _selectedRoles.contains(id),
-              onChanged: (v) {
-                setState(() {
-                  if (v == true) {
-                    _selectedRoles.add(id);
-                  } else {
-                    _selectedRoles.remove(id);
-                  }
-                });
-              },
-            );
-          }).toList(),
-        );
+    return ChipMultiSelector(
+      title: "Roles",
+      items: _roles,
+      selectedIds: _selectedRoles,
+      onChanged: (ids) {
+        setState(() {
+          _selectedRoles = ids;
+        });
       },
     );
   }
@@ -348,17 +320,28 @@ class _UserFormPageState extends State<UserFormPage> {
       builder: (context, state) {
         final loading = state is UserLoading;
 
-        return Container(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          child: ElevatedButton(
-            onPressed: loading ? null : _submit,
-            child: loading
-                ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : Text(isEdit ? "Update User" : "Create User"),
+        return SafeArea(
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              onPressed: loading ? null : _submit,
+              child: loading
+                  ? const SizedBox(
+                      height: 22,
+                      width: 22,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text(
+                      isEdit ? "Update User" : "Create User",
+                      style: const TextStyle(fontSize: 15),
+                    ),
+            ),
           ),
         );
       },
