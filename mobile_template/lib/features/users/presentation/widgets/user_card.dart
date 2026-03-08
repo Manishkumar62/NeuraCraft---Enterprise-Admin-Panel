@@ -19,41 +19,61 @@ class UserCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final canEdit = permissionService.canEdit('/users');
+    final canDelete = permissionService.canDelete('/users');
+    DismissDirection direction = DismissDirection.none;
+
+    if (canEdit && canDelete) {
+      direction = DismissDirection.horizontal;
+    } else if (canEdit) {
+      direction = DismissDirection.startToEnd;
+    } else if (canDelete) {
+      direction = DismissDirection.endToStart;
+    }
+
     return Dismissible(
       key: ValueKey(user.id),
 
-      direction: DismissDirection.horizontal,
+      direction: direction,
 
-      background: Container(
-        alignment: Alignment.centerLeft,
-        padding: const EdgeInsets.only(left: 20),
-        color: Colors.blue,
-        child: const Icon(Icons.edit, color: Colors.white),
-      ),
+      background: canEdit
+          ? Container(
+              alignment: Alignment.centerLeft,
+              padding: const EdgeInsets.only(left: 20),
+              color: Colors.blue,
+              child: const Icon(Icons.edit, color: Colors.white),
+            )
+          : null,
 
-      secondaryBackground: Container(
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
-        color: Colors.red,
-        child: const Icon(Icons.delete, color: Colors.white),
-      ),
+      secondaryBackground: canDelete
+          ? Container(
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 20),
+              color: Colors.red,
+              child: const Icon(Icons.delete, color: Colors.white),
+            )
+          : null,
 
       confirmDismiss: (direction) async {
-        if (direction == DismissDirection.startToEnd) {
+        if (direction == DismissDirection.startToEnd && canEdit) {
           context.push('/users/edit/${user.id}');
           return false;
-        } else {
+        }
+
+        if (direction == DismissDirection.endToStart && canDelete) {
           _confirmDelete(context, user.id);
           return false;
         }
+
+        return false;
       },
 
       child: GestureDetector(
-        onTap: () {
-          if (permissionService.canEdit('/users')) {
-            context.push('/users/edit/${user.id}');
-          }
-        },
+        onTap: canEdit
+          ? () {
+              context.push('/users/edit/${user.id}');
+            }
+          : null,
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -125,14 +145,14 @@ class UserCard extends StatelessWidget {
 
                     const SizedBox(height: 4),
 
-                    /// Email
-                    Text(
-                      user.email,
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 13,
+                    if (permissionService.hasPermission('/users', 'view_email'))
+                      Text(
+                        user.email,
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 13,
+                        ),
                       ),
-                    ),
                     if (user.roleNames.isNotEmpty) ...[
                       const SizedBox(height: 6),
                       Wrap(
@@ -149,7 +169,7 @@ class UserCard extends StatelessWidget {
                             ),
                             child: Text(
                               role,
-    style: const TextStyle(fontSize: 11),
+                              style: const TextStyle(fontSize: 11),
                             ),
                           );
                         }).toList(),

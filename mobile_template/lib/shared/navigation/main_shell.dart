@@ -24,10 +24,10 @@ class MainShell extends StatefulWidget {
   const MainShell({super.key});
 
   @override
-  State<MainShell> createState() => _MainShellState();
+  State<MainShell> createState() => MainShellState();
 }
 
-class _MainShellState extends State<MainShell> {
+class MainShellState extends State<MainShell> {
   int _currentIndex = 0;
   late final ScrollController _scrollController;
   bool _showLeftArrow = false;
@@ -80,6 +80,18 @@ class _MainShellState extends State<MainShell> {
       ),
     );
   }
+
+  void openModule(String path) {
+  final session = getIt<SessionManager>();
+
+  final index = session.modules.indexWhere((m) => m.path == path);
+
+  if (index != -1) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+}
 
   @override
   Widget build(BuildContext context) {
