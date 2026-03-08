@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:neuracraft/shared/navigation/main_shell.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/session/session_manager.dart';

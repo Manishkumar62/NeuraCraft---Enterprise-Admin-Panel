@@ -27,6 +27,18 @@ import '../../features/users/domain/usecases/update_user.dart';
 import '../../features/users/domain/usecases/get_departments.dart';
 import '../../features/users/domain/usecases/get_roles.dart';
 
+import '../../features/roles/data/datasources/role_remote_ds.dart';
+import '../../features/roles/data/repositories/role_repository_impl.dart';
+import '../../features/roles/domain/repositories/role_repository.dart';
+import '../../features/roles/domain/usecases/get_roles.dart';
+import '../../features/roles/domain/usecases/get_role_by_id.dart';
+import '../../features/roles/domain/usecases/create_role.dart';
+import '../../features/roles/domain/usecases/update_role.dart';
+import '../../features/roles/domain/usecases/delete_role.dart';
+import '../../features/roles/domain/usecases/get_role_permissions.dart';
+import '../../features/roles/domain/usecases/update_role_permissions.dart';
+import '../../features/roles/presentation/bloc/role_bloc.dart';
+
 final getIt = GetIt.instance;
 
 Future<void> initDependencies() async {
@@ -74,19 +86,49 @@ Future<void> initDependencies() async {
   getIt.registerLazySingleton(() => CreateUser(getIt()));
   getIt.registerLazySingleton(() => UpdateUser(getIt()));
   getIt.registerLazySingleton(() => DeleteUser(getIt()));
-  getIt.registerLazySingleton(() => GetRoles(getIt()));
+  getIt.registerLazySingleton(() => GetRolesForUser(getIt()));
   getIt.registerLazySingleton(() => GetDepartments(getIt()));
 
   getIt.registerFactoryParam<UserBloc, PermissionService, void>(
-  (permissionService, _) => UserBloc(
-    getUsers: getIt(),
-    getUserById: getIt(),
-    createUser: getIt(),
-    updateUser: getIt(),
-    deleteUser: getIt(),
-    getRoles: getIt(),
-    getDepartments: getIt(),
-    permissionService: permissionService,
-  ),
-);
+    (permissionService, _) => UserBloc(
+      getUsers: getIt(),
+      getUserById: getIt(),
+      createUser: getIt(),
+      updateUser: getIt(),
+      deleteUser: getIt(),
+      getRoles: getIt<GetRolesForUser>(),
+      getDepartments: getIt(),
+      permissionService: permissionService,
+    ),
+  );
+
+  // ROLES
+  getIt.registerLazySingleton<RoleRemoteDataSource>(
+    () => RoleRemoteDataSource(getIt()),
+  );
+
+  getIt.registerLazySingleton<RoleRepository>(
+    () => RoleRepositoryImpl(getIt()),
+  );
+
+  getIt.registerLazySingleton(() => GetAllRoles(getIt()));
+  getIt.registerLazySingleton(() => GetRoleById(getIt()));
+  getIt.registerLazySingleton(() => CreateRole(getIt()));
+  getIt.registerLazySingleton(() => UpdateRole(getIt()));
+  getIt.registerLazySingleton(() => DeleteRole(getIt()));
+  getIt.registerLazySingleton(() => GetRolePermissions(getIt()));
+  getIt.registerLazySingleton(() => UpdateRolePermissions(getIt()));
+
+  getIt.registerFactoryParam<RoleBloc, PermissionService, void>(
+    (permissionService, _) => RoleBloc(
+      getRoles: getIt<GetAllRoles>(),
+      getRoleById: getIt(),
+      createRole: getIt(),
+      updateRole: getIt(),
+      deleteRole: getIt(),
+      getRolePermissions: getIt(),
+      updateRolePermissions: getIt(),
+      permissionService: permissionService,
+    ),
+  );
 }

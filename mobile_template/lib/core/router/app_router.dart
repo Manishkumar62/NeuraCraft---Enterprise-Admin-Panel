@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:neuracraft/features/roles/presentation/pages/role_permissions_page.dart';
 
 import '../../core/di/injection.dart';
 import '../../core/session/session_manager.dart';
@@ -13,6 +14,10 @@ import '../../features/auth/presentation/login_page.dart';
 import '../../features/users/presentation/pages/user_form_page.dart';
 import '../../features/users/presentation/bloc/user_bloc.dart';
 import '../../features/users/presentation/bloc/user_event.dart';
+
+import '../../features/roles/presentation/bloc/role_bloc.dart';
+import '../../features/roles/presentation/bloc/role_event.dart';
+import '../../features/roles/presentation/pages/role_form_page.dart';
 
 GoRouter createRouter() {
   final session = getIt<SessionManager>();
@@ -88,6 +93,53 @@ GoRouter createRouter() {
                 getIt<UserBloc>(param1: permissionService)
                   ..add(LoadUserById(id)),
             child: UserFormPage(userId: id),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: "/roles/add",
+        builder: (context, state) {
+          final session = getIt<SessionManager>();
+          final permissionService = PermissionService(session.modules);
+
+          return BlocProvider(
+            create: (_) => getIt<RoleBloc>(param1: permissionService),
+            child: const RoleFormPage(),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: "/roles/edit/:id",
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters["id"]!);
+
+          final session = getIt<SessionManager>();
+          final permissionService = PermissionService(session.modules);
+
+          return BlocProvider(
+            create: (_) =>
+                getIt<RoleBloc>(param1: permissionService)
+                  ..add(LoadRoleById(id)),
+            child: RoleFormPage(roleId: id),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: "/roles/:id/permissions",
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters["id"]!);
+
+          final session = getIt<SessionManager>();
+          final permissionService = PermissionService(session.modules);
+
+          return BlocProvider(
+            create: (_) =>
+                getIt<RoleBloc>(param1: permissionService)
+                  ..add(LoadRolePermissions(id)),
+            child: RolePermissionsPage(roleId: id),
           );
         },
       ),

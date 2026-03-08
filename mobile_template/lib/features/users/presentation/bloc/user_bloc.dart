@@ -18,7 +18,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   final CreateUser createUser;
   final UpdateUser updateUser;
   final DeleteUser deleteUser;
-  final GetRoles getRoles;
+  final GetRolesForUser getRoles;
   final GetDepartments getDepartments;
   final PermissionService permissionService;
 

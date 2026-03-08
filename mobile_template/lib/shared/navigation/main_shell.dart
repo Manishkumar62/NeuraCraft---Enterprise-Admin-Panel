@@ -6,6 +6,8 @@ import '../../core/session/session_manager.dart';
 import '../../core/di/injection.dart';
 import '../../core/services/permission_service.dart';
 
+import '../../features/menu/domain/models/module_model.dart';
+
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../features/auth/presentation/bloc/auth_event.dart';
 
@@ -14,11 +16,13 @@ import '../../features/dashboard/presentation/bloc/dashboard_bloc.dart';
 import '../../features/dashboard/presentation/bloc/dashboard_event.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
 
-import '../../features/menu/domain/models/module_model.dart';
-
 import '../../features/users/presentation/bloc/user_bloc.dart';
-import '../../features/users/presentation/bloc/user_event.dart';
+import '../../features/users/presentation/bloc/user_event.dart' as user_event;
 import '../../features/users/presentation/pages/user_list_page.dart';
+
+import '../../features/roles/presentation/bloc/role_bloc.dart';
+import '../../features/roles/presentation/bloc/role_event.dart' as role_event;
+import '../../features/roles/presentation/pages/role_list_page.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -82,16 +86,16 @@ class MainShellState extends State<MainShell> {
   }
 
   void openModule(String path) {
-  final session = getIt<SessionManager>();
+    final session = getIt<SessionManager>();
 
-  final index = session.modules.indexWhere((m) => m.path == path);
+    final index = session.modules.indexWhere((m) => m.path == path);
 
-  if (index != -1) {
-    setState(() {
-      _currentIndex = index;
-    });
+    if (index != -1) {
+      setState(() {
+        _currentIndex = index;
+      });
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -324,8 +328,15 @@ class MainShellState extends State<MainShell> {
       case '/users':
         return BlocProvider(
           create: (_) =>
-              getIt<UserBloc>(param1: permissionService)..add(LoadUsers()),
+              getIt<UserBloc>(param1: permissionService)..add(user_event.LoadUsers()),
           child: const UserListPage(),
+        );
+
+      case '/roles':
+        return BlocProvider(
+          create: (_) =>
+              getIt<RoleBloc>(param1: permissionService)..add(role_event.LoadRoles()),
+          child: const RoleListPage(),
         );
 
       default:
