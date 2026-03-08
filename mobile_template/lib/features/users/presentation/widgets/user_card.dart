@@ -133,11 +133,11 @@ class UserCard extends StatelessWidget {
                         fontSize: 13,
                       ),
                     ),
-                    if (user.roles != null && user.roles!.isNotEmpty) ...[
+                    if (user.roleNames.isNotEmpty) ...[
                       const SizedBox(height: 6),
                       Wrap(
                         spacing: 6,
-                        children: user.roles!.map((role) {
+                        children: user.roleNames.map((role) {
                           return Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 8,
@@ -149,7 +149,7 @@ class UserCard extends StatelessWidget {
                             ),
                             child: Text(
                               role,
-                              style: const TextStyle(fontSize: 11),
+    style: const TextStyle(fontSize: 11),
                             ),
                           );
                         }).toList(),

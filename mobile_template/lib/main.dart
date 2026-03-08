@@ -6,7 +6,6 @@ import 'core/di/injection.dart';
 import 'core/router/app_router.dart';
 
 import 'features/auth/presentation/bloc/auth_bloc.dart';
-import 'features/auth/presentation/bloc/auth_event.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

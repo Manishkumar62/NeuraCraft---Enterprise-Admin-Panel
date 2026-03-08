@@ -11,10 +11,22 @@ class UserModel extends UserEntity {
     super.employeeId,
     required super.isActive,
     super.departmentId,
-    super.roleIds,
+    required super.roleIds,
+    required super.roleNames,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    final roles = (json['roles'] as List?) ?? [];
+
+    final roleIds =
+        roles.map((role) => role['id'] as int).toList();
+
+    final roleNames =
+        roles.map((role) => role['name'] as String).toList();
+
+    final department = json['department'];
+
+
     return UserModel(
       id: json['id'],
       username: json['username'],
@@ -24,12 +36,9 @@ class UserModel extends UserEntity {
       phone: json['phone'],
       employeeId: json['employee_id'],
       isActive: json['is_active'],
-
-      departmentId: json['department_id'],
-
-      roleIds: (json['role_ids'] as List?)
-          ?.map((e) => e as int)
-          .toList(),
+      departmentId: department != null ? department['id'] : null,
+      roleIds: roleIds,
+      roleNames: roleNames,
     );
   }
 }

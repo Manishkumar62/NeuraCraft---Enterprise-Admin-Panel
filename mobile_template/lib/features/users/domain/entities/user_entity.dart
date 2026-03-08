@@ -9,7 +9,8 @@ class UserEntity {
   final bool isActive;
 
   final int? departmentId;
-  final List<int>? roleIds;
+  final List<int> roleIds;
+  final List<String> roleNames;
 
   UserEntity({
     required this.id,
@@ -21,6 +22,7 @@ class UserEntity {
     this.employeeId,
     required this.isActive,
     this.departmentId,
-    this.roleIds,
+    required this.roleIds,
+    required this.roleNames,
   });
 }

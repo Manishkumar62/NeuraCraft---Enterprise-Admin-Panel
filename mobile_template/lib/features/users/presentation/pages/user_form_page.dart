@@ -29,16 +29,13 @@ class _UserFormPageState extends State<UserFormPage> {
   final _employeeIdController = TextEditingController();
 
   bool _isActive = true;
+  bool _showPassword = false;
 
   List<Map<String, dynamic>> _roles = [];
   List<Map<String, dynamic>> _departments = [];
 
   List<int> _selectedRoles = [];
   int? _selectedDepartment;
-
-  bool _loadingDropdowns = false;
-
-  bool _saving = false;
 
   @override
   void initState() {
@@ -253,9 +250,11 @@ class _UserFormPageState extends State<UserFormPage> {
     bool obscure = false,
     TextInputType keyboard = TextInputType.text,
   }) {
+    final isPassword = label == "Password";
+
     return TextFormField(
       controller: controller,
-      obscureText: obscure,
+      obscureText: isPassword ? !_showPassword : obscure,
       keyboardType: keyboard,
       style: const TextStyle(fontSize: 14),
       decoration: InputDecoration(
@@ -268,6 +267,20 @@ class _UserFormPageState extends State<UserFormPage> {
           vertical: 10,
           horizontal: 12,
         ),
+
+        /// 👁 Eye button
+        suffixIcon: isPassword
+            ? IconButton(
+                icon: Icon(
+                  _showPassword ? Icons.visibility_off : Icons.visibility,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _showPassword = !_showPassword;
+                  });
+                },
+              )
+            : null,
       ),
       validator: (v) {
         if (label == "Username" && (v == null || v.isEmpty)) {

@@ -193,6 +193,13 @@ class _UserListPageState extends State<UserListPage> {
                 );
               }
 
+              if (state is UserError) {
+                return _ErrorView(
+                  message: state.message,
+                  onRetry: () => context.read<UserBloc>().add(LoadUsers()),
+                );
+              }
+
               /// DATA
               if (state is UserListLoaded) {
                 var users = state.users;
