@@ -12,6 +12,8 @@ abstract class RoleRepository {
 
   Future<void> deleteRole(int id);
 
+  Future<List<Map<String, dynamic>>> getDepartments();
+
   Future<List<ModulePermissionEntity>> getRolePermissions(int roleId);
 
   Future<void> updateRolePermissions(

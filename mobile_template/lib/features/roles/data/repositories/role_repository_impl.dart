@@ -35,6 +35,11 @@ class RoleRepositoryImpl implements RoleRepository {
   }
 
   @override
+  Future<List<Map<String, dynamic>>> getDepartments() async {
+    return await remote.getDepartments();
+  }
+
+  @override
   Future<List<ModulePermissionEntity>> getRolePermissions(int roleId) {
     return remote.getRolePermissions(roleId);
   }

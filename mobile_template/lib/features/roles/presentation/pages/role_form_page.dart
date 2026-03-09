@@ -25,13 +25,20 @@ class _RoleFormPageState extends State<RoleFormPage> {
 
   bool _isActive = true;
 
+  List<Map<String, dynamic>> _departments = [];
+  int? _selectedDepartment;
+
   @override
   void initState() {
     super.initState();
 
+    final bloc = context.read<RoleBloc>();
+
     if (widget.isEdit) {
       context.read<RoleBloc>().add(LoadRoleById(widget.roleId!));
     }
+
+    bloc.add(LoadDepartments());
   }
 
   @override
@@ -50,9 +57,7 @@ class _RoleFormPageState extends State<RoleFormPage> {
     final isEdit = widget.isEdit;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(isEdit ? "Edit Role" : "Create Role"),
-      ),
+      appBar: AppBar(title: Text(isEdit ? "Edit Role" : "Create Role")),
 
       bottomNavigationBar: _buildBottomBar(isEdit),
 
@@ -62,14 +67,20 @@ class _RoleFormPageState extends State<RoleFormPage> {
             _fillForm(state.role);
           }
 
+          if (state is DepartmentsLoaded) {
+            setState(() {
+              _departments = state.departments;
+            });
+          }
+
           if (state is RoleError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
           }
 
           if (state is RoleLoaded) {
-            Navigator.pop(context);
+            Navigator.pop(context, true);
           }
         },
         child: SafeArea(
@@ -88,6 +99,10 @@ class _RoleFormPageState extends State<RoleFormPage> {
 
                   _buildCard([
                     _buildField(_nameController, "Role Name"),
+
+                    const SizedBox(height: 12),
+
+                    _buildDepartmentDropdown(),
 
                     const SizedBox(height: 12),
 
@@ -119,20 +134,21 @@ class _RoleFormPageState extends State<RoleFormPage> {
   }
 
   Widget _buildHeader() {
-    final initials =
-        _displayName.isEmpty ? "R" : _displayName.trim()[0].toUpperCase();
+    final initials = _displayName.isEmpty
+        ? "R"
+        : _displayName.trim()[0].toUpperCase();
 
     return Center(
       child: Column(
         children: [
           CircleAvatar(
             radius: 36,
-            backgroundColor:
-                Theme.of(context).colorScheme.primary.withOpacity(0.15),
+            backgroundColor: Theme.of(
+              context,
+            ).colorScheme.primary.withOpacity(0.15),
             child: Text(
               initials,
-              style:
-                  const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
             ),
           ),
 
@@ -140,8 +156,7 @@ class _RoleFormPageState extends State<RoleFormPage> {
 
           Text(
             _displayName,
-            style:
-                const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
         ],
       ),
@@ -175,6 +190,38 @@ class _RoleFormPageState extends State<RoleFormPage> {
     );
   }
 
+  Widget _buildDepartmentDropdown() {
+    return DropdownButtonFormField<int?>(
+      value: _departments.any((d) => d['id'] == _selectedDepartment)
+          ? _selectedDepartment
+          : null,
+      decoration: InputDecoration(
+        enabled: _departments.isNotEmpty,
+        labelText: "Department",
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        filled: true,
+        fillColor: Colors.white.withOpacity(0.02),
+      ),
+      items: [
+        const DropdownMenuItem<int?>(
+          value: null,
+          child: Text("No Department (Global Role)"),
+        ),
+        ..._departments.map((dept) {
+          return DropdownMenuItem<int?>(
+            value: dept['id'],
+            child: Text(dept['name']),
+          );
+        }),
+      ],
+      onChanged: (value) {
+        setState(() {
+          _selectedDepartment = value;
+        });
+      },
+    );
+  }
+
   Widget _buildField(
     TextEditingController controller,
     String label, {
@@ -188,9 +235,7 @@ class _RoleFormPageState extends State<RoleFormPage> {
         isDense: true,
         filled: true,
         fillColor: Colors.white.withOpacity(0.02),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
       ),
       validator: (v) {
         if (label == "Role Name" && (v == null || v.isEmpty)) {
@@ -238,6 +283,7 @@ class _RoleFormPageState extends State<RoleFormPage> {
   void _fillForm(RoleEntity role) {
     _nameController.text = role.name;
     _descriptionController.text = role.description ?? "";
+    _selectedDepartment = role.departmentId;
     _isActive = role.isActive;
 
     setState(() {});
@@ -249,6 +295,7 @@ class _RoleFormPageState extends State<RoleFormPage> {
     final data = {
       "name": _nameController.text,
       "description": _descriptionController.text,
+      "department": _selectedDepartment,
       "is_active": _isActive,
     };
 

@@ -7,6 +7,7 @@ import '../../domain/usecases/get_roles.dart';
 import '../../domain/usecases/get_role_by_id.dart';
 import '../../domain/usecases/get_role_permissions.dart';
 import '../../domain/usecases/update_role_permissions.dart';
+import '../../domain/usecases/get_departments.dart';
 import 'role_event.dart';
 import 'role_state.dart';
 
@@ -16,6 +17,7 @@ class RoleBloc extends Bloc<RoleEvent, RoleState> {
   final CreateRole createRole;
   final UpdateRole updateRole;
   final DeleteRole deleteRole;
+  final GetDepartmentsForRole getDepartments;
   final GetRolePermissions getRolePermissions;
   final UpdateRolePermissions updateRolePermissions;
   final PermissionService permissionService;
@@ -26,6 +28,7 @@ class RoleBloc extends Bloc<RoleEvent, RoleState> {
     required this.createRole,
     required this.updateRole,
     required this.deleteRole,
+    required this.getDepartments,
     required this.getRolePermissions,
     required this.updateRolePermissions,
     required this.permissionService,
@@ -35,6 +38,7 @@ class RoleBloc extends Bloc<RoleEvent, RoleState> {
     on<CreateRoleEvent>(_onCreateRole);
     on<UpdateRoleEvent>(_onUpdateRole);
     on<DeleteRoleEvent>(_onDeleteRole);
+    on<LoadDepartments>(_onLoadDepartments);
     on<LoadRolePermissions>(_onLoadPermissions);
     on<UpdateRolePermissionsEvent>(_onUpdatePermissions);
   }
@@ -94,6 +98,18 @@ class RoleBloc extends Bloc<RoleEvent, RoleState> {
     try {
       final role = await getRoleById(event.id);
       emit(SingleRoleLoaded(role));
+    } catch (e) {
+      emit(RoleError(e.toString()));
+    }
+  }
+
+  Future<void> _onLoadDepartments(
+    LoadDepartments event,
+    Emitter<RoleState> emit,
+  ) async {
+    try {
+      final departments = await getDepartments();
+      emit(DepartmentsLoaded(departments));
     } catch (e) {
       emit(RoleError(e.toString()));
     }

@@ -13,6 +13,12 @@ class RoleLoaded extends RoleState {
   RoleLoaded(this.roles);
 }
 
+class DepartmentsLoaded extends RoleState {
+  final List<Map<String, dynamic>> departments;
+
+  DepartmentsLoaded(this.departments);
+}
+
 class SingleRoleLoaded extends RoleState {
   final RoleEntity role;
 

@@ -33,6 +33,12 @@ class RoleRemoteDataSource {
     await dioClient.dio.delete('/roles/$id/');
   }
 
+  Future<List<Map<String, dynamic>>> getDepartments() async {
+    final response = await dioClient.dio.get('/departments/');
+
+    return List<Map<String, dynamic>>.from(response.data);
+  }
+
   Future<List<ModulePermissionEntity>> getRolePermissions(int roleId) async {
     final response = await dioClient.dio.get('/roles/$roleId/permissions/');
 

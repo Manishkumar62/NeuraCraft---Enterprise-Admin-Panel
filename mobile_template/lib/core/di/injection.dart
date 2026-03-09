@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:neuracraft/features/roles/domain/usecases/get_departments.dart';
 import '../services/permission_service.dart';
 
 import '../network/dio_client.dart';
@@ -116,6 +117,7 @@ Future<void> initDependencies() async {
   getIt.registerLazySingleton(() => CreateRole(getIt()));
   getIt.registerLazySingleton(() => UpdateRole(getIt()));
   getIt.registerLazySingleton(() => DeleteRole(getIt()));
+  getIt.registerLazySingleton(() => GetDepartmentsForRole(getIt()));
   getIt.registerLazySingleton(() => GetRolePermissions(getIt()));
   getIt.registerLazySingleton(() => UpdateRolePermissions(getIt()));
 
@@ -126,6 +128,7 @@ Future<void> initDependencies() async {
       createRole: getIt(),
       updateRole: getIt(),
       deleteRole: getIt(),
+      getDepartments: getIt<GetDepartmentsForRole>(),
       getRolePermissions: getIt(),
       updateRolePermissions: getIt(),
       permissionService: permissionService,

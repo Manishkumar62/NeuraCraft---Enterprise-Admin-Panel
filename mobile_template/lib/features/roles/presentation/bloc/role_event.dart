@@ -2,6 +2,8 @@ abstract class RoleEvent {}
 
 class LoadRoles extends RoleEvent {}
 
+class LoadDepartments extends RoleEvent {}
+
 class LoadRoleById extends RoleEvent {
   final int id;
   LoadRoleById(this.id);
