@@ -4,10 +4,10 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/services/permission_service.dart';
 import '../../../../core/session/session_manager.dart';
-import '../bloc/role_bloc.dart';
-import '../bloc/role_state.dart';
-import '../widgets/role_card.dart';
-import '../bloc/role_event.dart';
+import '../bloc/department_bloc.dart';
+import '../bloc/department_state.dart';
+import '../bloc/department_event.dart';
+import '../widgets/department_card.dart';
 
 class _ErrorView extends StatelessWidget {
   final String message;
@@ -44,18 +44,18 @@ class _EmptyView extends StatelessWidget {
           Icon(Icons.people_outline, size: 60, color: Colors.grey.shade400),
           const SizedBox(height: 14),
           const Text(
-            "No roles found",
+            "No departments found",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 6),
           Text(
-            "Create your first role",
+            "Create your first department",
             style: TextStyle(color: Colors.grey.shade600),
           ),
           const SizedBox(height: 14),
           ElevatedButton.icon(
             icon: const Icon(Icons.add),
-            label: const Text("Create Role"),
+            label: const Text("Create Department"),
             onPressed: onCreate,
           ),
         ],
@@ -64,14 +64,14 @@ class _EmptyView extends StatelessWidget {
   }
 }
 
-class RoleListPage extends StatefulWidget {
-  const RoleListPage({super.key});
+class DepartmentListPage extends StatefulWidget {
+  const DepartmentListPage({super.key});
 
   @override
-  State<RoleListPage> createState() => _RoleListPageState();
+  State<DepartmentListPage> createState() => _DepartmentListPageState();
 }
 
-class _RoleListPageState extends State<RoleListPage> {
+class _DepartmentListPageState extends State<DepartmentListPage> {
   final TextEditingController _searchController = TextEditingController();
   String _query = "";
 
@@ -97,7 +97,7 @@ class _RoleListPageState extends State<RoleListPage> {
               TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  hintText: "Search roles...",
+                  hintText: "Search departments...",
                   prefixIcon: const Icon(Icons.search),
                   suffixIcon: _query.isNotEmpty
                       ? IconButton(
@@ -123,9 +123,9 @@ class _RoleListPageState extends State<RoleListPage> {
         ),
 
         Expanded(
-          child: BlocBuilder<RoleBloc, RoleState>(
+          child: BlocBuilder<DepartmentBloc, DepartmentState>(
             builder: (context, state) {
-              if (state is RoleLoading) {
+              if (state is DepartmentLoading) {
                 return ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: 6,
@@ -169,43 +169,43 @@ class _RoleListPageState extends State<RoleListPage> {
                 );
               }
 
-              if (state is RoleError) {
+              if (state is DepartmentError) {
                 return _ErrorView(
                   message: state.message,
-                  onRetry: () => context.read<RoleBloc>().add(LoadRoles()),
+                  onRetry: () => context.read<DepartmentBloc>().add(LoadDepartments()),
                 );
               }
 
-              if (state is RoleLoaded) {
-                var roles = state.roles;
+              if (state is DepartmentsLoaded) {
+                var departments = state.departments;
 
                 /// LOCAL SEARCH FILTER
                 if (_query.isNotEmpty) {
-                  roles = roles.where((role) {
-                    final name = role.name.toLowerCase();
+                  departments = departments.where((department) {
+                    final name = department.name.toLowerCase();
 
                     return name.contains(_query);
                   }).toList();
                 }
 
-                if (roles.isEmpty) {
-                  return _EmptyView(onCreate: () => context.push('/roles/add'));
+                if (departments.isEmpty) {
+                  return _EmptyView(onCreate: () => context.push('/departments/add'));
                 }
 
                 return RefreshIndicator(
                   onRefresh: () async {
-                    context.read<RoleBloc>().add(LoadRoles());
+                    context.read<DepartmentBloc>().add(LoadDepartments());
                   },
 
                   child: ListView.builder(
                     padding: const EdgeInsets.all(16),
-                    itemCount: roles.length,
+                    itemCount: departments.length,
                     itemBuilder: (context, index) {
                       return AnimatedContainer(
                         duration: const Duration(milliseconds: 250),
                         margin: const EdgeInsets.only(bottom: 12),
-                        child: RoleCard(
-                          role: roles[index],
+                        child: DepartmentCard(
+                          department: departments[index],
                           permissionService: permissionService,
                         ),
                       );

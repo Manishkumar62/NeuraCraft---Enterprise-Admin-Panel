@@ -40,6 +40,16 @@ import '../../features/roles/domain/usecases/get_role_permissions.dart';
 import '../../features/roles/domain/usecases/update_role_permissions.dart';
 import '../../features/roles/presentation/bloc/role_bloc.dart';
 
+import '../../features/departments/data/datasources/department_remote_ds.dart';
+import '../../features/departments/data/repositories/department_repository_impl.dart';
+import '../../features/departments/domain/repositories/department_repository.dart';
+import '../../features/departments/domain/usecases/get_departments.dart';
+import '../../features/departments/domain/usecases/get_department_by_id.dart';
+import '../../features/departments/domain/usecases/create_department.dart';
+import '../../features/departments/domain/usecases/update_department.dart';
+import '../../features/departments/domain/usecases/delete_department.dart';
+import '../../features/departments/presentation/bloc/department_bloc.dart';
+
 final getIt = GetIt.instance;
 
 Future<void> initDependencies() async {
@@ -131,6 +141,32 @@ Future<void> initDependencies() async {
       getDepartments: getIt<GetDepartmentsForRole>(),
       getRolePermissions: getIt(),
       updateRolePermissions: getIt(),
+      permissionService: permissionService,
+    ),
+  );
+
+  // DEPARTMENTS
+  getIt.registerLazySingleton<DepartmentRemoteDataSource>(
+    () => DepartmentRemoteDataSource(getIt()),
+  );
+
+  getIt.registerLazySingleton<DepartmentRepository>(
+    () => DepartmentRepositoryImpl(getIt()),
+  );
+
+  getIt.registerLazySingleton(() => GetDepartmentsforDepart(getIt()));
+  getIt.registerLazySingleton(() => GetDepartmentById(getIt()));
+  getIt.registerLazySingleton(() => CreateDepartment(getIt()));
+  getIt.registerLazySingleton(() => UpdateDepartment(getIt()));
+  getIt.registerLazySingleton(() => DeleteDepartment(getIt()));
+
+  getIt.registerFactoryParam<DepartmentBloc, PermissionService, void>(
+    (permissionService, _) => DepartmentBloc(
+      getDepartments: getIt<GetDepartmentsforDepart>(),
+      getDepartmentById: getIt<GetDepartmentById>(),
+      createDepartment: getIt<CreateDepartment>(),
+      updateDepartment: getIt<UpdateDepartment>(),
+      deleteDepartment: getIt<DeleteDepartment>(),
       permissionService: permissionService,
     ),
   );

@@ -19,6 +19,9 @@ import '../../features/roles/presentation/bloc/role_bloc.dart';
 import '../../features/roles/presentation/bloc/role_event.dart';
 import '../../features/roles/presentation/pages/role_form_page.dart';
 
+import '../../features/departments/presentation/bloc/department_bloc.dart';
+import '../../features/departments/presentation/bloc/department_event.dart';
+
 GoRouter createRouter() {
   final session = getIt<SessionManager>();
 

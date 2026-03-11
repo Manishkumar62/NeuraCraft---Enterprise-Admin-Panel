@@ -24,6 +24,10 @@ import '../../features/roles/presentation/bloc/role_bloc.dart';
 import '../../features/roles/presentation/bloc/role_event.dart' as role_event;
 import '../../features/roles/presentation/pages/role_list_page.dart';
 
+import '../../features/departments/presentation/bloc/department_bloc.dart';
+import '../../features/departments/presentation/bloc/department_event.dart' as department_event;
+import '../../features/departments/presentation/pages/department_list_page.dart';
+
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
 
@@ -337,6 +341,13 @@ class MainShellState extends State<MainShell> {
           create: (_) =>
               getIt<RoleBloc>(param1: permissionService)..add(role_event.LoadRoles()),
           child: const RoleListPage(),
+        );
+
+      case '/departments':
+        return BlocProvider(
+          create: (_) =>
+              getIt<DepartmentBloc>(param1: permissionService)..add(department_event.LoadDepartments()),
+          child: const DepartmentListPage(),
         );
 
       default:
