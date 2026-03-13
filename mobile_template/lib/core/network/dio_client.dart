@@ -6,7 +6,7 @@ class DioClient {
   final TokenStorage tokenStorage;
 
   bool _isRefreshing = false;
-  final List<RequestOptions> _requestQueue = [];
+  final List<_QueuedRequest> _requestQueue = [];
 
   DioClient(this.tokenStorage)
       : dio = Dio(
@@ -49,10 +49,9 @@ class DioClient {
   }
 
   Future<void> _handle401(
-      DioException error,
-      ErrorInterceptorHandler handler,
-      ) async {
-
+    DioException error,
+    ErrorInterceptorHandler handler,
+  ) async {
     final refreshToken = await tokenStorage.getRefreshToken();
 
     if (refreshToken == null) {
@@ -67,29 +66,56 @@ class DioClient {
       _isRefreshing = false;
 
       if (success) {
-        // Retry all queued requests
-        for (var request in _requestQueue) {
-          final token = await tokenStorage.getAccessToken();
-          request.headers["Authorization"] = "Bearer $token";
-          dio.fetch(request);
-        }
-        _requestQueue.clear();
-
-        // Retry original request
         final newToken = await tokenStorage.getAccessToken();
-        error.requestOptions.headers["Authorization"] =
-            "Bearer $newToken";
 
-        final response = await dio.fetch(error.requestOptions);
-        return handler.resolve(response);
-      } else {
-        await tokenStorage.clear();
-        return handler.next(error);
+        await _resolveQueuedRequests(newToken);
+
+        error.requestOptions.headers["Authorization"] = "Bearer $newToken";
+
+        try {
+          final response = await dio.fetch(error.requestOptions);
+          return handler.resolve(response);
+        } on DioException catch (retryError) {
+          return handler.next(retryError);
+        }
       }
-    } else {
-      // Add request to queue while refreshing
-      _requestQueue.add(error.requestOptions);
-      return;
+
+      await tokenStorage.clear();
+      await _rejectQueuedRequests(error);
+      return handler.next(error);
+    }
+
+    _requestQueue.add(
+      _QueuedRequest(
+        requestOptions: error.requestOptions,
+        handler: handler,
+      ),
+    );
+  }
+
+  Future<void> _resolveQueuedRequests(String? accessToken) async {
+    final pendingRequests = List<_QueuedRequest>.from(_requestQueue);
+    _requestQueue.clear();
+
+    for (final queuedRequest in pendingRequests) {
+      queuedRequest.requestOptions.headers["Authorization"] =
+          "Bearer $accessToken";
+
+      try {
+        final response = await dio.fetch(queuedRequest.requestOptions);
+        queuedRequest.handler.resolve(response);
+      } on DioException catch (error) {
+        queuedRequest.handler.next(error);
+      }
+    }
+  }
+
+  Future<void> _rejectQueuedRequests(DioException error) async {
+    final pendingRequests = List<_QueuedRequest>.from(_requestQueue);
+    _requestQueue.clear();
+
+    for (final queuedRequest in pendingRequests) {
+      queuedRequest.handler.next(error);
     }
   }
 
@@ -113,4 +139,14 @@ class DioClient {
       return false;
     }
   }
+}
+
+class _QueuedRequest {
+  final RequestOptions requestOptions;
+  final ErrorInterceptorHandler handler;
+
+  _QueuedRequest({
+    required this.requestOptions,
+    required this.handler,
+  });
 }

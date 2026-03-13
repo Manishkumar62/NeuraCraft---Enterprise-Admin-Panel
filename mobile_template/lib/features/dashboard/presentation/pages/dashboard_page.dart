@@ -21,12 +21,6 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   @override
-  void initState() {
-    super.initState();
-    context.read<DashboardBloc>().add(LoadDashboard());
-  }
-
-  @override
   Widget build(BuildContext context) {
     final session = getIt<SessionManager>();
 

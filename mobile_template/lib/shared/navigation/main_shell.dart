@@ -38,8 +38,23 @@ class MainShell extends StatefulWidget {
 class MainShellState extends State<MainShell> {
   int _currentIndex = 0;
   late final ScrollController _scrollController;
+  final Map<String, Widget> _loadedPages = {};
   bool _showLeftArrow = false;
   bool _showRightArrow = false;
+
+  void _updateArrowVisibility() {
+    if (!_scrollController.hasClients) return;
+
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final current = _scrollController.offset;
+
+    if (!mounted) return;
+
+    setState(() {
+      _showLeftArrow = current > 5;
+      _showRightArrow = maxScroll > 5 && current < maxScroll - 5;
+    });
+  }
 
   @override
   void initState() {
@@ -47,14 +62,10 @@ class MainShellState extends State<MainShell> {
 
     _scrollController = ScrollController();
 
-    _scrollController.addListener(() {
-      final maxScroll = _scrollController.position.maxScrollExtent;
-      final current = _scrollController.offset;
+    _scrollController.addListener(_updateArrowVisibility);
 
-      setState(() {
-        _showLeftArrow = current > 5;
-        _showRightArrow = current < maxScroll - 5;
-      });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateArrowVisibility();
     });
   }
 
@@ -101,6 +112,13 @@ class MainShellState extends State<MainShell> {
     }
   }
 
+  Widget _getOrCreatePage(AppModule module, PermissionService permissionService) {
+    return _loadedPages.putIfAbsent(
+      module.path,
+      () => _buildPage(module, permissionService),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final session = getIt<SessionManager>();
@@ -129,7 +147,18 @@ class MainShellState extends State<MainShell> {
         ),
         body: IndexedStack(
           index: _currentIndex,
-          children: modules.map((m) => _buildPage(m)).toList(),
+          children: List.generate(modules.length, (index) {
+            final module = modules[index];
+            final shouldBuild =
+                index == _currentIndex || _loadedPages.containsKey(module.path);
+
+            if (!shouldBuild) {
+              return const SizedBox.shrink();
+            }
+
+            final permissionService = PermissionService(session.modules);
+            return _getOrCreatePage(module, permissionService);
+          }),
         ),
         floatingActionButton: _buildFab(modules[_currentIndex]),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -315,10 +344,7 @@ class MainShellState extends State<MainShell> {
     );
   }
 
-  Widget _buildPage(AppModule module) {
-    final session = getIt<SessionManager>();
-    final permissionService = PermissionService(session.modules);
-
+  Widget _buildPage(AppModule module, PermissionService permissionService) {
     switch (module.path) {
       case "/dashboard":
         return BlocProvider(
