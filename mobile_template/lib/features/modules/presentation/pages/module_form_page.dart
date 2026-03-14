@@ -5,6 +5,7 @@ import '../../domain/entities/module_entity.dart';
 import '../bloc/module_bloc.dart';
 import '../bloc/module_event.dart';
 import '../bloc/module_state.dart';
+import '../widgets/module_permission_selector.dart';
 
 class ModuleFormPage extends StatefulWidget {
   final int? moduleId;
@@ -59,14 +60,10 @@ class _ModuleFormPageState extends State<ModuleFormPage> {
   final _nameController = TextEditingController();
   final _pathController = TextEditingController();
   final _orderController = TextEditingController(text: "0");
-  final _customLabelController = TextEditingController();
-  final _customCodenameController = TextEditingController();
 
   String? _selectedIcon;
   int? _selectedParentId;
   bool _isActive = true;
-  bool _showCustomPermission = false;
-  String _customCategory = 'action';
 
   List<ModuleEntity> _parentModules = [];
   List<ModulePermissionEntity> _selectedPermissions = const [
@@ -90,8 +87,6 @@ class _ModuleFormPageState extends State<ModuleFormPage> {
     _nameController.dispose();
     _pathController.dispose();
     _orderController.dispose();
-    _customLabelController.dispose();
-    _customCodenameController.dispose();
     super.dispose();
   }
 
@@ -174,11 +169,16 @@ class _ModuleFormPageState extends State<ModuleFormPage> {
                   _buildCard([
                     _buildPermissionSummary(),
                     const SizedBox(height: 12),
-                    _buildPermissionChips(),
-                    const SizedBox(height: 12),
-                    _buildPresetPermissionWrap(),
-                    const SizedBox(height: 12),
-                    _buildCustomPermissionSection(),
+                    ModulePermissionSelector(
+                      title: "Permissions",
+                      items: _availablePermissions,
+                      selectedPermissions: _selectedPermissions,
+                      onChanged: (permissions) {
+                        setState(() {
+                          _selectedPermissions = permissions;
+                        });
+                      },
+                    ),
                   ]),
                 ],
               ),
@@ -345,144 +345,17 @@ class _ModuleFormPageState extends State<ModuleFormPage> {
     );
   }
 
-  Widget _buildPermissionChips() {
-    if (_selectedPermissions.isEmpty) {
-      return Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.white.withOpacity(0.02),
-        ),
-        child: Text(
-          "No permissions selected",
-          textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.grey.shade500),
-        ),
+  List<ModulePermissionEntity> get _availablePermissions {
+    final customPermissions = _selectedPermissions.where((permission) {
+      return !_presetPermissions.any(
+        (preset) => preset.codename == permission.codename,
       );
-    }
+    });
 
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: _selectedPermissions.map((permission) {
-        return InputChip(
-          label: Text(permission.label),
-          onDeleted: () => _removePermission(permission.codename),
-        );
-      }).toList(),
-    );
-  }
-
-  Widget _buildPresetPermissionWrap() {
-    final availablePresets = _presetPermissions
-        .where(
-          (preset) => !_selectedPermissions.any(
-            (permission) => permission.codename == preset.codename,
-          ),
-        )
-        .toList();
-
-    if (availablePresets.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Quick add",
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-            color: Colors.grey.shade500,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: availablePresets.map((permission) {
-            return ActionChip(
-              label: Text(permission.label),
-              onPressed: () => _addPermission(permission),
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCustomPermissionSection() {
-    if (!_showCustomPermission) {
-      return Align(
-        alignment: Alignment.centerLeft,
-        child: TextButton.icon(
-          onPressed: () {
-            setState(() {
-              _showCustomPermission = true;
-            });
-          },
-          icon: const Icon(Icons.add),
-          label: const Text("Add Custom Permission"),
-        ),
-      );
-    }
-
-    return Column(
-      children: [
-        _buildTextField(_customLabelController, "Permission Label"),
-        const SizedBox(height: 12),
-        _buildTextField(_customCodenameController, "Permission Codename"),
-        const SizedBox(height: 12),
-        DropdownButtonFormField<String>(
-          value: _customCategory,
-          decoration: InputDecoration(
-            labelText: "Category",
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            filled: true,
-            fillColor: Colors.white.withOpacity(0.02),
-          ),
-          items: const [
-            DropdownMenuItem(value: 'crud', child: Text("CRUD")),
-            DropdownMenuItem(value: 'action', child: Text("Action")),
-            DropdownMenuItem(value: 'column', child: Text("Column")),
-            DropdownMenuItem(value: 'component', child: Text("Component")),
-            DropdownMenuItem(value: 'field', child: Text("Field")),
-          ],
-          onChanged: (value) {
-            setState(() {
-              _customCategory = value ?? 'action';
-            });
-          },
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton(
-                onPressed: () {
-                  setState(() {
-                    _showCustomPermission = false;
-                    _customLabelController.clear();
-                    _customCodenameController.clear();
-                    _customCategory = 'action';
-                  });
-                },
-                child: const Text("Cancel"),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: ElevatedButton(
-                onPressed: _addCustomPermission,
-                child: const Text("Add"),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
+    return [
+      ..._presetPermissions,
+      ...customPermissions,
+    ];
   }
 
   Widget _buildBottomBar(bool isEdit) {
@@ -551,60 +424,6 @@ class _ModuleFormPageState extends State<ModuleFormPage> {
             ),
           ];
     setState(() {});
-  }
-
-  void _addPermission(ModulePermissionEntity permission) {
-    if (_selectedPermissions.any((item) => item.codename == permission.codename)) {
-      return;
-    }
-
-    setState(() {
-      _selectedPermissions = [..._selectedPermissions, permission];
-    });
-  }
-
-  void _removePermission(String codename) {
-    setState(() {
-      _selectedPermissions = _selectedPermissions
-          .where((permission) => permission.codename != codename)
-          .toList();
-    });
-  }
-
-  void _addCustomPermission() {
-    final label = _customLabelController.text.trim();
-    final codename = _customCodenameController.text.trim().isEmpty
-        ? label.toLowerCase().replaceAll(RegExp(r'\s+'), '_')
-        : _customCodenameController.text.trim();
-
-    if (label.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Permission label required")));
-      return;
-    }
-
-    if (_selectedPermissions.any((permission) => permission.codename == codename)) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Permission already exists")));
-      return;
-    }
-
-    setState(() {
-      _selectedPermissions = [
-        ..._selectedPermissions,
-        ModulePermissionEntity(
-          codename: codename,
-          label: label,
-          category: _customCategory,
-        ),
-      ];
-      _showCustomPermission = false;
-      _customLabelController.clear();
-      _customCodenameController.clear();
-      _customCategory = 'action';
-    });
   }
 
   void _submit() {

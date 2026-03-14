@@ -87,14 +87,18 @@ class ModuleCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (hasChildren)
-                  IconButton(
-                    icon: Icon(
-                      isExpanded ? Icons.expand_more : Icons.chevron_right,
+                  Padding(
+                    padding: const EdgeInsets.only(right: 6),
+                    child: IconButton(
+                      visualDensity: VisualDensity.compact,
+                      icon: Icon(
+                        isExpanded ? Icons.expand_more : Icons.chevron_right,
+                      ),
+                      onPressed: onToggleExpand,
                     ),
-                    onPressed: onToggleExpand,
                   )
                 else
-                  const SizedBox(width: 40),
+                  const SizedBox(width: 2),
                 CircleAvatar(
                   radius: 24,
                   child: Icon(
