@@ -21,6 +21,7 @@ import '../../features/roles/presentation/pages/role_form_page.dart';
 
 import '../../features/departments/presentation/bloc/department_bloc.dart';
 import '../../features/departments/presentation/bloc/department_event.dart';
+import '../../features/departments/presentation/pages/department_form_page.dart';
 
 GoRouter createRouter() {
   final session = getIt<SessionManager>();
@@ -143,6 +144,36 @@ GoRouter createRouter() {
                 getIt<RoleBloc>(param1: permissionService)
                   ..add(LoadRolePermissions(id)),
             child: RolePermissionsPage(roleId: id),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: "/departments/add",
+        builder: (context, state) {
+          final session = getIt<SessionManager>();
+          final permissionService = PermissionService(session.modules);
+
+          return BlocProvider(
+            create: (_) => getIt<DepartmentBloc>(param1: permissionService),
+            child: const DepartmentFormPage(),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: "/departments/edit/:id",
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters["id"]!);
+
+          final session = getIt<SessionManager>();
+          final permissionService = PermissionService(session.modules);
+
+          return BlocProvider(
+            create: (_) =>
+                getIt<DepartmentBloc>(param1: permissionService)
+                  ..add(LoadDepartmentById(id)),
+            child: DepartmentFormPage(departmentId: id),
           );
         },
       ),
