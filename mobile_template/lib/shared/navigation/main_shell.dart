@@ -28,6 +28,10 @@ import '../../features/departments/presentation/bloc/department_bloc.dart';
 import '../../features/departments/presentation/bloc/department_event.dart' as department_event;
 import '../../features/departments/presentation/pages/department_list_page.dart';
 
+import '../../features/modules/presentation/bloc/module_bloc.dart';
+import '../../features/modules/presentation/bloc/module_event.dart' as module_event;
+import '../../features/modules/presentation/pages/module_list_page.dart';
+
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
 
@@ -376,6 +380,13 @@ class MainShellState extends State<MainShell> {
           child: const DepartmentListPage(),
         );
 
+      case '/modules':
+        return BlocProvider(
+          create: (_) =>
+              getIt<ModuleBloc>(param1: permissionService)..add(module_event.LoadModules()),
+          child: const ModuleListPage(),
+        );
+
       default:
         return Center(
           child: Text(module.moduleName, style: const TextStyle(fontSize: 22)),
@@ -455,6 +466,17 @@ class MainShellState extends State<MainShell> {
             borderRadius: BorderRadius.circular(16),
           ),
           onPressed: () => context.push('/departments/add'),
+          child: const Icon(Icons.add),
+        );
+
+      case '/modules':
+        return FloatingActionButton(
+          backgroundColor: const Color(0xFF7C3AED),
+          elevation: 6,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          onPressed: () => context.push('/modules/add'),
           child: const Icon(Icons.add),
         );
 

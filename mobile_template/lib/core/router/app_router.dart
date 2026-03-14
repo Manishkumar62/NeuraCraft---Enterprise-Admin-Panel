@@ -23,6 +23,10 @@ import '../../features/departments/presentation/bloc/department_bloc.dart';
 import '../../features/departments/presentation/bloc/department_event.dart';
 import '../../features/departments/presentation/pages/department_form_page.dart';
 
+import '../../features/modules/presentation/bloc/module_bloc.dart';
+import '../../features/modules/presentation/bloc/module_event.dart' as module_event;
+import '../../features/modules/presentation/pages/module_form_page.dart';
+
 GoRouter createRouter() {
   final session = getIt<SessionManager>();
 
@@ -174,6 +178,36 @@ GoRouter createRouter() {
                 getIt<DepartmentBloc>(param1: permissionService)
                   ..add(LoadDepartmentById(id)),
             child: DepartmentFormPage(departmentId: id),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: "/modules/add",
+        builder: (context, state) {
+          final session = getIt<SessionManager>();
+          final permissionService = PermissionService(session.modules);
+
+          return BlocProvider(
+            create: (_) => getIt<ModuleBloc>(param1: permissionService),
+            child: const ModuleFormPage(),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: "/modules/edit/:id",
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters["id"]!);
+
+          final session = getIt<SessionManager>();
+          final permissionService = PermissionService(session.modules);
+
+          return BlocProvider(
+            create: (_) =>
+                getIt<ModuleBloc>(param1: permissionService)
+                  ..add(module_event.LoadModuleById(id)),
+            child: ModuleFormPage(moduleId: id),
           );
         },
       ),

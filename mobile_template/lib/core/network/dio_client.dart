@@ -139,6 +139,8 @@ class DioClient {
       return false;
     }
   }
+
+  Future get(String s) async {}
 }
 
 class _QueuedRequest {

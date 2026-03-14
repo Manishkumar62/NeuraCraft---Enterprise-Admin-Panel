@@ -50,6 +50,16 @@ import '../../features/departments/domain/usecases/update_department.dart';
 import '../../features/departments/domain/usecases/delete_department.dart';
 import '../../features/departments/presentation/bloc/department_bloc.dart';
 
+import '../../features/modules/data/datasources/module_remote_ds.dart';
+import '../../features/modules/data/repositories/module_repository_impl.dart';
+import '../../features/modules/domain/repositories/module_repository.dart';
+import '../../features/modules/domain/usecases/get_modules.dart';
+import '../../features/modules/domain/usecases/get_module_by_id.dart';
+import '../../features/modules/domain/usecases/create_module.dart';
+import '../../features/modules/domain/usecases/update_module.dart';
+import '../../features/modules/domain/usecases/delete_module.dart';
+import '../../features/modules/presentation/bloc/module_bloc.dart';
+
 final getIt = GetIt.instance;
 
 Future<void> initDependencies() async {
@@ -170,4 +180,31 @@ Future<void> initDependencies() async {
       permissionService: permissionService,
     ),
   );
+
+  // MODULES
+  getIt.registerLazySingleton<ModuleRemoteDataSource>(
+    () => ModuleRemoteDataSource(getIt()),
+  );
+
+  getIt.registerLazySingleton<ModuleRepository>(
+    () => ModuleRepositoryImpl(getIt()),
+  );
+
+  getIt.registerLazySingleton(() => GetModules(getIt()));
+  getIt.registerLazySingleton(() => GetModuleById(getIt()));
+  getIt.registerLazySingleton(() => CreateModule(getIt()));
+  getIt.registerLazySingleton(() => UpdateModule(getIt()));
+  getIt.registerLazySingleton(() => DeleteModule(getIt()));
+
+  getIt.registerFactoryParam<ModuleBloc, PermissionService, void>(
+    (permissionService, _) => ModuleBloc(
+      getModules: getIt<GetModules>(),
+      getModuleById: getIt<GetModuleById>(),
+      createModule: getIt<CreateModule>(),
+      updateModule: getIt<UpdateModule>(),
+      deleteModule: getIt<DeleteModule>(),
+      permissionService: permissionService,
+    ),
+  );
+
 }
