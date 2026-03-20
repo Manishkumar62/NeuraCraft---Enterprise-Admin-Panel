@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import AuthLayout from '../layouts/AuthLayout';
 import MainLayout from '../layouts/MainLayout';
 import LoginPage from '../auth/LoginPage';
+import SignupPage from '../auth/SignupPage';
 import DashboardPage from '../modules/dashboard/DashboardPage';
 import UserList from '../modules/users/UserList';
 import UserForm from '../modules/users/UserForm';
@@ -19,6 +20,7 @@ const AppRoutes = () => {
       {/* Auth Routes (Login, Register) */}
       <Route element={<AuthLayout />}>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
       </Route>
 
       {/* Protected Routes (Dashboard, Users, etc.) */}

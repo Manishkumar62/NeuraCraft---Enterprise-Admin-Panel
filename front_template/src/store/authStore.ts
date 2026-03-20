@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { User, MenuItem } from '../types';
+import type { RegisterData, User, MenuItem } from '../types';
 import authService from '../auth/authService';
 
 interface AuthState {
@@ -11,6 +11,7 @@ interface AuthState {
 
   // Actions
   login: (username: string, password: string) => Promise<void>;
+  register: (data: RegisterData) => Promise<void>;
   logout: () => void;
   fetchProfile: () => Promise<void>;
   fetchMenu: () => Promise<void>;
@@ -33,6 +34,29 @@ const useAuthStore = create<AuthState>((set) => ({
       set({ user, menu, isAuthenticated: true, isLoading: false });
     } catch (error: any) {
       const message = error.response?.data?.detail || 'Login failed';
+      set({ error: message, isLoading: false });
+      throw error;
+    }
+  },
+
+  register: async (data: RegisterData) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await authService.register(data);
+      const menu = await authService.getMyMenu();
+      set({
+        user: response.user,
+        menu,
+        isAuthenticated: true,
+        isLoading: false,
+      });
+    } catch (error: any) {
+      const message =
+        error.response?.data?.detail ||
+        Object.values(error.response?.data || {})
+          .flat()
+          .join(', ') ||
+        'Signup failed';
       set({ error: message, isLoading: false });
       throw error;
     }

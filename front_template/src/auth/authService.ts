@@ -1,5 +1,5 @@
 import api from '../api/axios';
-import type { LoginCredentials, AuthTokens, RegisterData, User, MenuItem } from '../types';
+import type { LoginCredentials, AuthTokens, AuthResponse, RegisterData, User, MenuItem } from '../types';
 
 const authService = {
   // Login user
@@ -14,8 +14,13 @@ const authService = {
   },
 
   // Register user
-  register: async (data: RegisterData): Promise<User> => {
-    const response = await api.post<User>('/users/register/', data);
+  register: async (data: RegisterData): Promise<AuthResponse> => {
+    const response = await api.post<AuthResponse>('/users/signup/', data);
+    const { access, refresh } = response.data;
+
+    localStorage.setItem('access_token', access);
+    localStorage.setItem('refresh_token', refresh);
+
     return response.data;
   },
 

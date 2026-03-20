@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
 import {
   EyeIcon,
@@ -208,12 +208,12 @@ const LoginPage = () => {
       {/* Register Link */}
       <p className="text-center mt-6 text-[var(--color-text-muted)]">
         Don't have an account?{' '}
-        <a
-          href="/register"
+        <Link
+          to="/signup"
           className="text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] font-medium transition-colors"
         >
           Create one
-        </a>
+        </Link>
       </p>
 
       {/* Terms */}
