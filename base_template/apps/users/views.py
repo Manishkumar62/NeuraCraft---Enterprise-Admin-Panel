@@ -5,7 +5,12 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
 
-from .serializers import UserRegistrationSerializer, UserProfileSerializer, UserSerializer
+from .serializers import (
+    PublicSignupSerializer,
+    UserProfileSerializer,
+    UserRegistrationSerializer,
+    UserSerializer,
+)
 
 User = get_user_model()
 
@@ -24,6 +29,27 @@ class RegisterView(APIView):
             return Response({
                 'message': 'User registered successfully',
                 'user': UserProfileSerializer(user).data
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PublicSignupView(APIView):
+    """
+    API for public self-signup.
+    POST /api/users/signup/
+    """
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = PublicSignupSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                'message': 'Account created successfully',
+                'user': UserProfileSerializer(user).data,
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

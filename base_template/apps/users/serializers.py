@@ -1,5 +1,7 @@
-from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from django.db import transaction
+from rest_framework import serializers
+
 from apps.roles.serializers import RoleSerializer
 from apps.departments.serializers import DepartmentSerializer
 from apps.roles.models import Role
@@ -49,6 +51,43 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             user.department_id = department_id
             user.save()
         
+        return user
+
+
+class PublicSignupSerializer(serializers.ModelSerializer):
+    """
+    Serializer for public self-signup.
+    """
+    password = serializers.CharField(write_only=True, min_length=8)
+    password_confirm = serializers.CharField(write_only=True)
+    phone = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+
+    class Meta:
+        model = User
+        fields = (
+            'username', 'email', 'password', 'password_confirm',
+            'first_name', 'last_name', 'phone'
+        )
+
+    def validate(self, data):
+        if data['password'] != data['password_confirm']:
+            raise serializers.ValidationError({"password": "Passwords do not match."})
+
+        viewer_role_exists = Role.objects.filter(name__iexact='Viewer', department__isnull=True).exists()
+        if not viewer_role_exists:
+            raise serializers.ValidationError({
+                "role": "Default Viewer role is not configured."
+            })
+
+        return data
+
+    @transaction.atomic
+    def create(self, validated_data):
+        validated_data.pop('password_confirm')
+
+        user = User.objects.create_user(**validated_data)
+        viewer_role = Role.objects.get(name__iexact='Viewer', department__isnull=True)
+        user.roles.add(viewer_role)
         return user
 
 
