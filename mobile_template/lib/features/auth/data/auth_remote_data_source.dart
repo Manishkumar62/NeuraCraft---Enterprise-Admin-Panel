@@ -19,6 +19,34 @@ class AuthRemoteDataSource {
     );
   }
 
+  Future<void> signup({
+    required String username,
+    required String email,
+    required String password,
+    required String passwordConfirm,
+    required String firstName,
+    required String lastName,
+    required String phone,
+  }) async {
+    final response = await dioClient.dio.post(
+      "users/signup/",
+      data: {
+        "username": username,
+        "email": email,
+        "password": password,
+        "password_confirm": passwordConfirm,
+        "first_name": firstName,
+        "last_name": lastName,
+        "phone": phone,
+      },
+    );
+
+    await tokenStorage.saveTokens(
+      access: response.data["access"],
+      refresh: response.data["refresh"],
+    );
+  }
+
   Future<Map<String, dynamic>> getProfile() async {
     final response = await dioClient.dio.get("users/profile/");
     return response.data;

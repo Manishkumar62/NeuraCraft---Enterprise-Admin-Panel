@@ -11,6 +11,7 @@ import '../../shared/navigation/main_shell.dart';
 import '../../shared/splash_screen.dart';
 
 import '../../features/auth/presentation/login_page.dart';
+import '../../features/auth/presentation/signup_page.dart';
 import '../../features/users/presentation/pages/user_form_page.dart';
 import '../../features/users/presentation/bloc/user_bloc.dart';
 import '../../features/users/presentation/bloc/user_event.dart';
@@ -44,6 +45,7 @@ GoRouter createRouter() {
 
       final isSplash = state.matchedLocation == "/splash";
       final isLoggingIn = state.matchedLocation == "/login";
+      final isSigningUp = state.matchedLocation == "/signup";
 
       // ⏳ While bootstrapping → stay on splash
       if (!isBootstrapped) {
@@ -53,12 +55,12 @@ GoRouter createRouter() {
       // ✅ After bootstrap finished
 
       // If logged in and on splash or login → go to dashboard
-      if (isLoggedIn && (isSplash || isLoggingIn)) {
+      if (isLoggedIn && (isSplash || isLoggingIn || isSigningUp)) {
         return "/";
       }
 
-      // If not logged in and not on login → go to login
-      if (!isLoggedIn && !isLoggingIn) {
+      // If not logged in and not on auth pages → go to login
+      if (!isLoggedIn && !isLoggingIn && !isSigningUp) {
         return "/login";
       }
 
@@ -72,6 +74,7 @@ GoRouter createRouter() {
       ),
 
       GoRoute(path: "/login", builder: (context, state) => const LoginPage()),
+      GoRoute(path: "/signup", builder: (context, state) => const SignupPage()),
 
       GoRoute(path: "/", builder: (context, state) => const MainShell()),
 

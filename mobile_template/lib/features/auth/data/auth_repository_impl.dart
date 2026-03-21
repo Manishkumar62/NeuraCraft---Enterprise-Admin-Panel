@@ -15,6 +15,27 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<void> signup({
+    required String username,
+    required String email,
+    required String password,
+    required String passwordConfirm,
+    required String firstName,
+    required String lastName,
+    required String phone,
+  }) async {
+    await remote.signup(
+      username: username,
+      email: email,
+      password: password,
+      passwordConfirm: passwordConfirm,
+      firstName: firstName,
+      lastName: lastName,
+      phone: phone,
+    );
+  }
+
+  @override
   Future<Map<String, dynamic>> getProfile() {
     return remote.getProfile();
   }

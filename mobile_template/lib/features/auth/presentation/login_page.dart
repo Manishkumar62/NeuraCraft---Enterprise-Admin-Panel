@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../shared/widgets/app_loader.dart';
@@ -135,7 +136,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         if (state is AuthFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state.message),
+              content: Text(
+                state.message,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
               behavior: SnackBarBehavior.floating,
               backgroundColor: const Color(0xFF1C1430),
               shape: RoundedRectangleBorder(
@@ -480,7 +488,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         const SizedBox(width: 4),
         GestureDetector(
           onTap: () {
-            // TODO: navigate to sign-up
+            context.push('/signup');
           },
           child: const Text(
             "Create account",

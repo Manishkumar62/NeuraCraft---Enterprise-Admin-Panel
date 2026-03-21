@@ -11,6 +11,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   AuthBloc(this.repository) : super(AuthInitial()) {
     on<LoginRequested>(_onLoginRequested);
+    on<SignupRequested>(_onSignupRequested);
     on<LogoutRequested>(_onLogoutRequested);
     on<AppStarted>(_onAppStarted);
   }
@@ -61,6 +62,37 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await repository.logout(); // blacklist refresh token
     } catch (_) {
       // even if API fails, continue logout locally
+    }
+  }
+
+  Future<void> _onSignupRequested(
+    SignupRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+
+    try {
+      await repository.signup(
+        username: event.username,
+        email: event.email,
+        password: event.password,
+        passwordConfirm: event.passwordConfirm,
+        firstName: event.firstName,
+        lastName: event.lastName,
+        phone: event.phone,
+      );
+
+      final user = await repository.getProfile();
+      final menuJson = await repository.getMyMenu();
+
+      final modules = menuJson
+          .map<AppModule>((e) => AppModule.fromJson(e))
+          .toList();
+
+      getIt<SessionManager>().setSession(user: user, modules: modules);
+    } catch (_) {
+      await repository.logout();
+      emit(AuthFailure("Signup failed"));
     }
   }
 
