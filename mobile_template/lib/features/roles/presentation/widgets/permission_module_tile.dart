@@ -27,6 +27,7 @@ class PermissionModuleTile extends StatelessWidget {
         module.availablePermissions.map((p) => p.codename).toList();
 
     final allGranted = granted.length == allPermissions.length;
+    final platformBadge = _getPlatformBadge();
 
     return Container(
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
@@ -63,14 +64,40 @@ class PermissionModuleTile extends StatelessWidget {
 
               /// Name
               Expanded(
-                child: Text(
-                  module.moduleName,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      module.moduleName,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(999),
+                        color: platformBadge.backgroundColor,
+                      ),
+                      child: Text(
+                        platformBadge.label,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: platformBadge.foregroundColor,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
+
+              const SizedBox(width: 10),
 
               /// Counter
               Text(
@@ -130,6 +157,42 @@ class PermissionModuleTile extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  ({
+    String label,
+    Color backgroundColor,
+    Color foregroundColor,
+  }) _getPlatformBadge() {
+    if (module.availableOnWeb && module.availableOnMobile) {
+      return (
+        label: 'Web + Mobile',
+        backgroundColor: Colors.green.withOpacity(0.15),
+        foregroundColor: Colors.green,
+      );
+    }
+
+    if (module.availableOnWeb) {
+      return (
+        label: 'Web Only',
+        backgroundColor: Colors.blue.withOpacity(0.15),
+        foregroundColor: Colors.blue,
+      );
+    }
+
+    if (module.availableOnMobile) {
+      return (
+        label: 'Mobile Only',
+        backgroundColor: Colors.orange.withOpacity(0.15),
+        foregroundColor: Colors.orange,
+      );
+    }
+
+    return (
+      label: 'Hidden',
+      backgroundColor: Colors.grey.withOpacity(0.15),
+      foregroundColor: Colors.grey,
     );
   }
 }

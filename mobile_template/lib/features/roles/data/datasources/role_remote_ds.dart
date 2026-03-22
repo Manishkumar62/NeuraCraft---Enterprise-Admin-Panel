@@ -42,27 +42,33 @@ class RoleRemoteDataSource {
   Future<List<ModulePermissionEntity>> getRolePermissions(int roleId) async {
     final response = await dioClient.dio.get('/roles/$roleId/permissions/');
 
-    final data = response.data as List;
+    final data = List<Map<String, dynamic>>.from(response.data as List);
 
-    List<ModulePermissionEntity> parseModules(List modules) {
+    List<ModulePermissionEntity> parseModules(List<Map<String, dynamic>> modules) {
       return modules.map((m) {
         return ModulePermissionEntity(
-          moduleId: m['module_id'],
-          moduleName: m['module_name'],
-          availablePermissions: (m['available_permissions'] as List)
+          moduleId: m['module_id'] as int,
+          moduleName: m['module_name'] as String,
+          availableOnWeb: m['available_on_web'] as bool? ?? true,
+          availableOnMobile: m['available_on_mobile'] as bool? ?? true,
+          availablePermissions: List<Map<String, dynamic>>.from(
+                m['available_permissions'] as List,
+              )
               .map(
                 (p) => PermissionEntity(
-                  id: p['id'],
-                  codename: p['codename'],
-                  label: p['label'],
-                  category: p['category'],
+                  id: p['id'] as int,
+                  codename: p['codename'] as String,
+                  label: p['label'] as String,
+                  category: p['category'] as String,
                 ),
               )
               .toList(),
-          grantedPermissions: (m['granted_permissions'] as List)
-              .map<String>((e) => e)
-              .toList(),
-          children: m['children'] != null ? parseModules(m['children']) : [],
+          grantedPermissions: List<String>.from(m['granted_permissions'] as List),
+          children: m['children'] != null
+              ? parseModules(
+                  List<Map<String, dynamic>>.from(m['children'] as List),
+                )
+              : [],
         );
       }).toList();
     }

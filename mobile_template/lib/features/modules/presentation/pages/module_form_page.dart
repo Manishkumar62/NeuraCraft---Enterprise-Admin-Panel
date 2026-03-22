@@ -160,9 +160,9 @@ class _ModuleFormPageState extends State<ModuleFormPage> {
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
                       title: const Text("Active"),
-                      subtitle: const Text(
-                        "Globally enables this module. If off, it stays hidden on every platform.",
-                      ),
+                      // subtitle: const Text(
+                      //   "Globally enables this module. If off, it stays hidden on every platform.",
+                      // ),
                       value: _isActive,
                       onChanged: (value) {
                         setState(() => _isActive = value);
@@ -171,9 +171,9 @@ class _ModuleFormPageState extends State<ModuleFormPage> {
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
                       title: const Text("Show on web"),
-                      subtitle: const Text(
-                        "Allow this module to appear in the web app when it is active.",
-                      ),
+                      // subtitle: const Text(
+                      //   "Allow this module to appear in the web app when it is active.",
+                      // ),
                       value: _availableOnWeb,
                       onChanged: (value) {
                         setState(() => _availableOnWeb = value);
@@ -182,9 +182,9 @@ class _ModuleFormPageState extends State<ModuleFormPage> {
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
                       title: const Text("Show on mobile"),
-                      subtitle: const Text(
-                        "Allow this module to appear in the mobile app when it is active.",
-                      ),
+                      // subtitle: const Text(
+                      //   "Allow this module to appear in the mobile app when it is active.",
+                      // ),
                       value: _availableOnMobile,
                       onChanged: (value) {
                         setState(() => _availableOnMobile = value);
