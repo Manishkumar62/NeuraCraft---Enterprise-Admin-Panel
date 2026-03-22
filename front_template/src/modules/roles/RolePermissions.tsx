@@ -28,6 +28,34 @@ const categoryConfig: Record<string, { label: string; color: string }> = {
 
 const categoryOrder = ['crud', 'column', 'component', 'action', 'field'];
 
+const getPlatformBadge = (perm: ModulePermission) => {
+  if (perm.available_on_web && perm.available_on_mobile) {
+    return {
+      label: 'Web + Mobile',
+      className: 'bg-emerald-500/15 text-emerald-400',
+    };
+  }
+
+  if (perm.available_on_web) {
+    return {
+      label: 'Web Only',
+      className: 'bg-sky-500/15 text-sky-400',
+    };
+  }
+
+  if (perm.available_on_mobile) {
+    return {
+      label: 'Mobile Only',
+      className: 'bg-amber-500/15 text-amber-400',
+    };
+  }
+
+  return {
+    label: 'Hidden',
+    className: 'bg-[var(--color-surface)] text-[var(--color-text-muted)]',
+  };
+};
+
 const RolePermissions = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -211,6 +239,7 @@ const RolePermissions = () => {
     isChild: boolean = false,
     parentId?: number
   ) => {
+    const platformBadge = getPlatformBadge(perm);
     const grouped = groupByCategory(perm.available_permissions);
     const allGranted =
       perm.available_permissions.length > 0 &&
@@ -260,6 +289,9 @@ const RolePermissions = () => {
             </span>
             <span className="ml-2 text-xs text-[var(--color-text-muted)]">
               {perm.granted_permissions.length}/{perm.available_permissions.length}
+            </span>
+            <span className={`ml-2 inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold ${platformBadge.className}`}>
+              {platformBadge.label}
             </span>
           </div>
 

@@ -135,6 +135,8 @@ class RolePermissionsView(APIView):
         return {
             'module_id': module.id,
             'module_name': module.name,
+            'available_on_web': module.available_on_web,
+            'available_on_mobile': module.available_on_mobile,
             'available_permissions': [
                 {
                     'id': perm.id,

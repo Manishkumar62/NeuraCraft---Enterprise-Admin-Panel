@@ -45,6 +45,8 @@ export interface Module {
   parent: number | null;
   order: number;
   is_active: boolean;
+  available_on_web: boolean;
+  available_on_mobile: boolean;
   children?: Module[];
 }
 

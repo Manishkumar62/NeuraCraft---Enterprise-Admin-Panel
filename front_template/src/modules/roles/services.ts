@@ -27,6 +27,8 @@ export interface AvailablePermission {
 export interface ModulePermission {
   module_id: number;
   module_name: string;
+  available_on_web: boolean;
+  available_on_mobile: boolean;
   available_permissions: AvailablePermission[];
   granted_permissions: string[];  // codenames that are granted
   children?: ModulePermission[];

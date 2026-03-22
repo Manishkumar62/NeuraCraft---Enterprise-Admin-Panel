@@ -10,7 +10,18 @@ class ModuleSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Module
-        fields = ('id', 'name', 'icon', 'path', 'parent', 'order', 'is_active', 'children')
+        fields = (
+            'id',
+            'name',
+            'icon',
+            'path',
+            'parent',
+            'order',
+            'is_active',
+            'available_on_web',
+            'available_on_mobile',
+            'children',
+        )
         read_only_fields = ('id',)
     
     def get_children(self, obj):
@@ -39,7 +50,19 @@ class ModuleWithPermissionsSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Module
-        fields = ('id', 'name', 'icon', 'path', 'parent', 'order', 'is_active', 'available_permissions', 'children')
+        fields = (
+            'id',
+            'name',
+            'icon',
+            'path',
+            'parent',
+            'order',
+            'is_active',
+            'available_on_web',
+            'available_on_mobile',
+            'available_permissions',
+            'children',
+        )
         read_only_fields = ('id',)
     
     def get_children(self, obj):

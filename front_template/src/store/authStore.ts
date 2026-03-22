@@ -9,7 +9,6 @@ interface AuthState {
   isLoading: boolean;
   error: string | null;
 
-  // Actions
   login: (username: string, password: string) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => void;
@@ -30,7 +29,7 @@ const useAuthStore = create<AuthState>((set) => ({
     try {
       await authService.login({ username, password });
       const user = await authService.getProfile();
-      const menu = await authService.getMyMenu();
+      const menu = await authService.getMyMenu('web');
       set({ user, menu, isAuthenticated: true, isLoading: false });
     } catch (error: any) {
       const message = error.response?.data?.detail || 'Login failed';
@@ -43,7 +42,7 @@ const useAuthStore = create<AuthState>((set) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await authService.register(data);
-      const menu = await authService.getMyMenu();
+      const menu = await authService.getMyMenu('web');
       set({
         user: response.user,
         menu,
@@ -79,7 +78,7 @@ const useAuthStore = create<AuthState>((set) => ({
 
   fetchMenu: async () => {
     try {
-      const menu = await authService.getMyMenu();
+      const menu = await authService.getMyMenu('web');
       set({ menu });
     } catch (error) {
       console.error('Failed to fetch menu:', error);

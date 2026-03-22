@@ -17,6 +17,8 @@ export interface ModuleWithPermissions {
   parent: number | null;
   order: number;
   is_active: boolean;
+  available_on_web: boolean;
+  available_on_mobile: boolean;
   permissions: PermissionData[];
 }
 
@@ -27,6 +29,8 @@ export interface CreateModuleData {
   parent?: number | null;
   order?: number;
   is_active?: boolean;
+  available_on_web?: boolean;
+  available_on_mobile?: boolean;
   permissions?: PermissionData[];
 }
 
@@ -37,6 +41,8 @@ export interface UpdateModuleData {
   parent?: number | null;
   order?: number;
   is_active?: boolean;
+  available_on_web?: boolean;
+  available_on_mobile?: boolean;
   permissions?: PermissionData[];
 }
 

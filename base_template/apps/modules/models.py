@@ -19,6 +19,8 @@ class Module(models.Model):
     )
     order = models.IntegerField(default=0)  # For sorting menu items
     is_active = models.BooleanField(default=True)
+    available_on_web = models.BooleanField(default=True)
+    available_on_mobile = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

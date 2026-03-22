@@ -22,6 +22,8 @@ class ModuleEntity {
   final int? parent;
   final int order;
   final bool isActive;
+  final bool availableOnWeb;
+  final bool availableOnMobile;
   final List<ModulePermissionEntity> permissions;
   final List<ModuleEntity> children;
 
@@ -33,6 +35,8 @@ class ModuleEntity {
     required this.parent,
     required this.order,
     required this.isActive,
+    this.availableOnWeb = true,
+    this.availableOnMobile = true,
     this.permissions = const [],
     this.children = const [],
   });

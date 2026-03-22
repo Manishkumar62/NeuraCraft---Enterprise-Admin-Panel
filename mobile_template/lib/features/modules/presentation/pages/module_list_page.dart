@@ -257,6 +257,8 @@ class _ModuleListPageState extends State<ModuleListPage> {
       parent: module.parent,
       order: module.order,
       isActive: module.isActive,
+      availableOnWeb: module.availableOnWeb,
+      availableOnMobile: module.availableOnMobile,
       permissions: module.permissions,
       children: filteredChildren,
     );

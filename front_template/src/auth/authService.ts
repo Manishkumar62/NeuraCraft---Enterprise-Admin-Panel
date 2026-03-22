@@ -31,8 +31,10 @@ const authService = {
   },
 
   // Get user's menu based on role
-  getMyMenu: async (): Promise<MenuItem[]> => {
-    const response = await api.get<MenuItem[]>('/modules/my-menu/');
+  getMyMenu: async (platform: 'web' | 'mobile' = 'web'): Promise<MenuItem[]> => {
+    const response = await api.get<MenuItem[]>('/modules/my-menu/', {
+      params: { platform },
+    });
     return response.data;
   },
 

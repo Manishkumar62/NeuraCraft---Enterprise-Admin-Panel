@@ -109,7 +109,7 @@ const ModuleList = () => {
     return acc + countActive(mod);
   }, 0);
 
-  const renderModule = (module: Module, level: number = 0, isLast: boolean = false) => {
+  const renderModule = (module: Module, level: number = 0) => {
     const hasChildren = module.children && module.children.length > 0;
     const isExpanded = expandedModules.includes(module.id);
 
@@ -164,10 +164,16 @@ const ModuleList = () => {
               <span className="text-sm font-medium text-[var(--color-text-primary)] truncate">
                 {module.name}
               </span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--color-surface-elevated)] text-[var(--color-text-muted)]">
-                {module.icon}
-              </span>
-            </div>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--color-surface-elevated)] text-[var(--color-text-muted)]">
+                        {module.icon}
+                      </span>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded ${module.available_on_web ? 'bg-sky-500/15 text-sky-400' : 'bg-[var(--color-surface-elevated)] text-[var(--color-text-muted)]'}`}>
+                        Web
+                      </span>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded ${module.available_on_mobile ? 'bg-amber-500/15 text-amber-400' : 'bg-[var(--color-surface-elevated)] text-[var(--color-text-muted)]'}`}>
+                        Mobile
+                      </span>
+                    </div>
             <div className="flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
               <span className="truncate">{module.path}</span>
               <span>•</span>
@@ -183,11 +189,11 @@ const ModuleList = () => {
           </span>
 
           {/* Actions */}
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="flex items-center gap-1">
             {canEdit && (
               <Link
                 to={`/modules/edit/${module.id}`}
-                className="p-1.5 text-[var(--color-text-muted)] hover:text-[var(--color-accent)] hover:bg-[var(--color-accent-muted)] rounded-lg transition-colors"
+                className="p-1.5 text-[var(--color-text-muted)] rounded-lg"
                 title="Edit"
               >
                 <PencilSquareIcon className="w-4 h-4" />
@@ -196,7 +202,7 @@ const ModuleList = () => {
             {canDelete && (
               <button
                 onClick={() => handleDelete(module.id, module.name)}
-                className="p-1.5 text-[var(--color-text-muted)] hover:text-[var(--color-error)] hover:bg-[var(--color-error-muted)] rounded-lg transition-colors"
+                className="p-1.5 text-[var(--color-text-muted)] rounded-lg"
                 title="Delete"
               >
                 <TrashIcon className="w-4 h-4" />
@@ -213,9 +219,7 @@ const ModuleList = () => {
               className="absolute left-[1.35rem] top-0 bottom-4 w-px bg-[var(--color-border)]"
               style={{ marginLeft: `${level * 24}px` }}
             />
-            {module.children!.map((child, idx) =>
-              renderModule(child, level + 1, idx === module.children!.length - 1)
-            )}
+            {module.children!.map((child) => renderModule(child, level + 1))}
           </div>
         )}
       </div>
@@ -345,7 +349,7 @@ const ModuleList = () => {
             </div>
           ) : (
             <div className="space-y-1">
-              {filteredModules.map((module, idx) => renderModule(module, 0, idx === filteredModules.length - 1))}
+              {filteredModules.map((module) => renderModule(module, 0))}
             </div>
           )}
         </div>

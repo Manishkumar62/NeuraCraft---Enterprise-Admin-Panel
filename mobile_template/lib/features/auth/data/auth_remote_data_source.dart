@@ -53,7 +53,10 @@ class AuthRemoteDataSource {
   }
 
   Future<List<dynamic>> getMyMenu() async {
-    final response = await dioClient.dio.get("modules/my-menu/");
+    final response = await dioClient.dio.get(
+      "modules/my-menu/",
+      queryParameters: {"platform": "mobile"},
+    );
     return response.data;
   }
 

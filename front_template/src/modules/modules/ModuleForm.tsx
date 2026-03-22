@@ -66,6 +66,8 @@ const ModuleForm = () => {
     parent: '',
     order: '0',
     is_active: true,
+    available_on_web: true,
+    available_on_mobile: true,
   });
 
   const [permissions, setPermissions] = useState<PermissionData[]>([
@@ -104,6 +106,8 @@ const ModuleForm = () => {
         parent: module.parent?.toString() || '',
         order: module.order.toString(),
         is_active: module.is_active,
+        available_on_web: module.available_on_web,
+        available_on_mobile: module.available_on_mobile,
       });
       setPermissions(
         module.permissions.length > 0
@@ -118,11 +122,13 @@ const ModuleForm = () => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
-    });
+    const target = e.target as HTMLInputElement;
+    const { name, type } = target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? target.checked : target.value,
+    }));
   };
 
   const addPresetPermission = (preset: PermissionData) => {
@@ -169,6 +175,8 @@ const ModuleForm = () => {
         parent: formData.parent ? Number(formData.parent) : null,
         order: Number(formData.order),
         is_active: formData.is_active,
+        available_on_web: formData.available_on_web,
+        available_on_mobile: formData.available_on_mobile,
         permissions: permissions.map((p, idx) => ({ ...p, order: idx + 1 })),
       };
 
@@ -200,6 +208,49 @@ const ModuleForm = () => {
     acc[perm.category].push(perm);
     return acc;
   }, {} as Record<string, PermissionData[]>);
+
+  const renderToggleRow = ({
+    name,
+    label,
+    checked,
+    activeColorClass,
+  }: {
+    name: 'is_active' | 'available_on_web' | 'available_on_mobile';
+    label: string;
+    checked: boolean;
+    activeColorClass: string;
+  }) => (
+    <div
+      onClick={() =>
+        setFormData((prev) => ({
+          ...prev,
+          [name]: !prev[name],
+        }))
+      }
+      className={`w-full flex items-center justify-between gap-3 p-3 rounded-xl border cursor-pointer transition-all
+      ${checked
+          ? `${activeColorClass} border-transparent`
+          : 'border-[var(--color-border)]'}
+    `}
+    >
+      <span className="text-sm font-medium text-[var(--color-text-primary)]">
+        {label}
+      </span>
+
+      {/* Toggle Switch */}
+      <div
+        className={`relative w-10 h-5 rounded-full transition-colors
+        ${checked ? 'bg-[var(--color-accent)]' : 'bg-gray-300'}
+      `}
+      >
+        <div
+          className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform
+          ${checked ? 'translate-x-5' : ''}
+        `}
+        />
+      </div>
+    </div>
+  );
 
   if (loading) {
     return (
@@ -360,20 +411,31 @@ const ModuleForm = () => {
                   </div>
                 </div>
                 <div className="space-y-1.5 flex items-end">
-                  <label className="flex items-center gap-3 cursor-pointer p-3 rounded-xl border border-[var(--color-border)] hover:border-[var(--color-border-hover)] transition-colors w-full">
-                    <div className="relative">
-                      <input
-                        type="checkbox"
-                        name="is_active"
-                        checked={formData.is_active}
-                        onChange={handleChange}
-                        className="peer sr-only"
-                      />
-                      <div className="w-9 h-5 bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-full peer-checked:bg-[var(--color-success)] peer-checked:border-[var(--color-success)] transition-all" />
-                      <div className="absolute top-0.5 left-0.5 w-4 h-4 bg-[var(--color-text-muted)] rounded-full peer-checked:translate-x-4 peer-checked:bg-white transition-all" />
-                    </div>
-                    <span className="text-sm text-[var(--color-text-primary)]">Active</span>
-                  </label>
+                  {renderToggleRow({
+                    name: 'is_active',
+                    label: 'Active',
+                    checked: formData.is_active,
+                    activeColorClass: 'bg-emerald-500/15',
+                  })}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5 flex items-end">
+                  {renderToggleRow({
+                    name: 'available_on_web',
+                    label: 'Show On Web',
+                    checked: formData.available_on_web,
+                    activeColorClass: 'bg-sky-500/15',
+                  })}
+                </div>
+                <div className="space-y-1.5 flex items-end">
+                  {renderToggleRow({
+                    name: 'available_on_mobile',
+                    label: 'Show On Mobile',
+                    checked: formData.available_on_mobile,
+                    activeColorClass: 'bg-amber-500/15',
+                  })}
                 </div>
               </div>
             </div>

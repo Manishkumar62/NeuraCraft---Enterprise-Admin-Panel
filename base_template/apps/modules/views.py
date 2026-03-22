@@ -165,9 +165,11 @@ class UserMenuView(APIView):
     }
     """
     permission_classes = [IsAuthenticated]
+    VALID_PLATFORMS = {'web', 'mobile'}
     
     def get(self, request):
         user = request.user
+        platform = self._get_platform(request)
         
         # Get all user's roles
         user_roles = user.roles.all()
@@ -177,14 +179,18 @@ class UserMenuView(APIView):
             return Response([])
         
         # Get all permissions for ALL user's roles and merge them
-        merged_permissions = self._get_merged_permissions(user_roles)
+        merged_permissions = self._get_merged_permissions(user_roles, platform)
         
         # Build menu from merged permissions
         menu = self._build_menu(merged_permissions)
         
         return Response(menu)
     
-    def _get_merged_permissions(self, roles):
+    def _get_platform(self, request):
+        platform = request.query_params.get('platform')
+        return platform if platform in self.VALID_PLATFORMS else None
+
+    def _get_merged_permissions(self, roles, platform=None):
         """
         Get all permissions from all roles and merge using OR logic.
         Returns: {module_id: {'module': Module, 'permissions': set()}}
@@ -192,9 +198,17 @@ class UserMenuView(APIView):
         merged = {}
         
         # Get all RoleModulePermissions for all user roles, with related data
+        filters = {
+            'role__in': roles,
+            'module__is_active': True,
+        }
+        if platform == 'web':
+            filters['module__available_on_web'] = True
+        elif platform == 'mobile':
+            filters['module__available_on_mobile'] = True
+
         role_module_perms = RoleModulePermission.objects.filter(
-            role__in=roles,
-            module__is_active=True
+            **filters
         ).select_related('module').prefetch_related('granted_permissions')
         
         for rmp in role_module_perms:
@@ -314,6 +328,8 @@ class ModuleCreateWithPermissionsView(APIView):
             'parent': module.parent_id,
             'order': module.order,
             'is_active': module.is_active,
+            'available_on_web': module.available_on_web,
+            'available_on_mobile': module.available_on_mobile,
             'permissions': list(module.available_permissions.values('id', 'codename', 'label', 'category', 'order')),
         }, status=status.HTTP_201_CREATED)
 
@@ -374,6 +390,8 @@ class ModuleUpdateWithPermissionsView(APIView):
             'parent': module.parent_id,
             'order': module.order,
             'is_active': module.is_active,
+            'available_on_web': module.available_on_web,
+            'available_on_mobile': module.available_on_mobile,
             'permissions': list(module.available_permissions.values('id', 'codename', 'label', 'category', 'order')),
         })
 
@@ -400,5 +418,7 @@ class ModuleDetailWithPermissionsView(APIView):
             'parent': module.parent_id,
             'order': module.order,
             'is_active': module.is_active,
+            'available_on_web': module.available_on_web,
+            'available_on_mobile': module.available_on_mobile,
             'permissions': list(module.available_permissions.order_by('order').values('id', 'codename', 'label', 'category', 'order')),
         })

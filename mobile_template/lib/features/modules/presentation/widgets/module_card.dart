@@ -160,6 +160,23 @@ class ModuleCard extends StatelessWidget {
                           fontSize: 12,
                         ),
                       ),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          _buildPlatformChip(
+                            label: 'Web',
+                            enabled: module.availableOnWeb,
+                            activeColor: Colors.blue,
+                          ),
+                          _buildPlatformChip(
+                            label: 'Mobile',
+                            enabled: module.availableOnMobile,
+                            activeColor: Colors.orange,
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -190,6 +207,33 @@ class ModuleCard extends StatelessWidget {
             child: const Text("Delete"),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildPlatformChip({
+    required String label,
+    required bool enabled,
+    required Color activeColor,
+  }) {
+    final backgroundColor = enabled
+        ? activeColor.withOpacity(0.15)
+        : Colors.grey.withOpacity(0.12);
+    final foregroundColor = enabled ? activeColor : Colors.grey;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: foregroundColor,
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }

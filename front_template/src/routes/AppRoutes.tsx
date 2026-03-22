@@ -13,6 +13,7 @@ import DepartmentList from '../modules/departments/DepartmentList';
 import DepartmentForm from '../modules/departments/DepartmentForm';
 import ModuleList from '../modules/modules/ModuleList';
 import ModuleForm from '../modules/modules/ModuleForm';
+import ProtectedRoute from './ProtectedRoute';
 
 const AppRoutes = () => {
   return (
@@ -24,29 +25,71 @@ const AppRoutes = () => {
       </Route>
 
       {/* Protected Routes (Dashboard, Users, etc.) */}
-      <Route element={<MainLayout />}>
-        <Route path="/dashboard" element={<DashboardPage />} />
+      <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
+        <Route
+          path="/dashboard"
+          element={<ProtectedRoute requiredPath="/dashboard"><DashboardPage /></ProtectedRoute>}
+        />
 
         {/* Users Routes */}
-        <Route path="/users" element={<UserList />} />
-        <Route path="/users/add" element={<UserForm />} />
-        <Route path="/users/edit/:id" element={<UserForm />} />
+        <Route
+          path="/users"
+          element={<ProtectedRoute requiredPath="/users"><UserList /></ProtectedRoute>}
+        />
+        <Route
+          path="/users/add"
+          element={<ProtectedRoute requiredPath="/users"><UserForm /></ProtectedRoute>}
+        />
+        <Route
+          path="/users/edit/:id"
+          element={<ProtectedRoute requiredPath="/users"><UserForm /></ProtectedRoute>}
+        />
 
         {/* Roles Routes */}
-        <Route path="/roles" element={<RoleList />} />
-        <Route path="/roles/add" element={<RoleForm />} />
-        <Route path="/roles/edit/:id" element={<RoleForm />} />
-        <Route path="/roles/:id/permissions" element={<RolePermissions />} />
+        <Route
+          path="/roles"
+          element={<ProtectedRoute requiredPath="/roles"><RoleList /></ProtectedRoute>}
+        />
+        <Route
+          path="/roles/add"
+          element={<ProtectedRoute requiredPath="/roles"><RoleForm /></ProtectedRoute>}
+        />
+        <Route
+          path="/roles/edit/:id"
+          element={<ProtectedRoute requiredPath="/roles"><RoleForm /></ProtectedRoute>}
+        />
+        <Route
+          path="/roles/:id/permissions"
+          element={<ProtectedRoute requiredPath="/roles"><RolePermissions /></ProtectedRoute>}
+        />
 
         {/* Departments Routes */}
-        <Route path="/departments" element={<DepartmentList />} />
-        <Route path="/departments/add" element={<DepartmentForm />} />
-        <Route path="/departments/edit/:id" element={<DepartmentForm />} />
+        <Route
+          path="/departments"
+          element={<ProtectedRoute requiredPath="/departments"><DepartmentList /></ProtectedRoute>}
+        />
+        <Route
+          path="/departments/add"
+          element={<ProtectedRoute requiredPath="/departments"><DepartmentForm /></ProtectedRoute>}
+        />
+        <Route
+          path="/departments/edit/:id"
+          element={<ProtectedRoute requiredPath="/departments"><DepartmentForm /></ProtectedRoute>}
+        />
 
         {/* Modules Routes */}
-        <Route path="/modules" element={<ModuleList />} />
-        <Route path="/modules/add" element={<ModuleForm />} />
-        <Route path="/modules/edit/:id" element={<ModuleForm />} />
+        <Route
+          path="/modules"
+          element={<ProtectedRoute requiredPath="/modules"><ModuleList /></ProtectedRoute>}
+        />
+        <Route
+          path="/modules/add"
+          element={<ProtectedRoute requiredPath="/modules"><ModuleForm /></ProtectedRoute>}
+        />
+        <Route
+          path="/modules/edit/:id"
+          element={<ProtectedRoute requiredPath="/modules"><ModuleForm /></ProtectedRoute>}
+        />
       </Route>
 
       {/* Default Redirect */}

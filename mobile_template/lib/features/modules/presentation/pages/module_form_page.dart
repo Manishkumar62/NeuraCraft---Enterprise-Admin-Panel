@@ -64,6 +64,8 @@ class _ModuleFormPageState extends State<ModuleFormPage> {
   String? _selectedIcon;
   int? _selectedParentId;
   bool _isActive = true;
+  bool _availableOnWeb = true;
+  bool _availableOnMobile = true;
 
   List<ModuleEntity> _parentModules = [];
   List<ModulePermissionEntity> _selectedPermissions = const [
@@ -158,9 +160,34 @@ class _ModuleFormPageState extends State<ModuleFormPage> {
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
                       title: const Text("Active"),
+                      subtitle: const Text(
+                        "Globally enables this module. If off, it stays hidden on every platform.",
+                      ),
                       value: _isActive,
                       onChanged: (value) {
                         setState(() => _isActive = value);
+                      },
+                    ),
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text("Show on web"),
+                      subtitle: const Text(
+                        "Allow this module to appear in the web app when it is active.",
+                      ),
+                      value: _availableOnWeb,
+                      onChanged: (value) {
+                        setState(() => _availableOnWeb = value);
+                      },
+                    ),
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text("Show on mobile"),
+                      subtitle: const Text(
+                        "Allow this module to appear in the mobile app when it is active.",
+                      ),
+                      value: _availableOnMobile,
+                      onChanged: (value) {
+                        setState(() => _availableOnMobile = value);
                       },
                     ),
                   ]),
@@ -414,6 +441,8 @@ class _ModuleFormPageState extends State<ModuleFormPage> {
     _selectedIcon = module.icon;
     _selectedParentId = module.parent;
     _isActive = module.isActive;
+    _availableOnWeb = module.availableOnWeb;
+    _availableOnMobile = module.availableOnMobile;
     _selectedPermissions = module.permissions.isNotEmpty
         ? List<ModulePermissionEntity>.from(module.permissions)
         : const [
@@ -443,6 +472,8 @@ class _ModuleFormPageState extends State<ModuleFormPage> {
       "parent": _selectedParentId,
       "order": int.tryParse(_orderController.text.trim()) ?? 0,
       "is_active": _isActive,
+      "available_on_web": _availableOnWeb,
+      "available_on_mobile": _availableOnMobile,
       "permissions": _selectedPermissions.asMap().entries.map((entry) {
         final permission = entry.value;
         return {

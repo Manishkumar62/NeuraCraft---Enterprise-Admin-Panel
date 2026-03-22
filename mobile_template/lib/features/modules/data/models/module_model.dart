@@ -29,6 +29,8 @@ class ModuleModel extends ModuleEntity {
     required super.parent,
     required super.order,
     required super.isActive,
+    required super.availableOnWeb,
+    required super.availableOnMobile,
     super.permissions,
     super.children,
   });
@@ -42,6 +44,8 @@ class ModuleModel extends ModuleEntity {
       parent: json['parent'],
       order: json['order'] ?? 0,
       isActive: json['is_active'] ?? true,
+      availableOnWeb: json['available_on_web'] ?? true,
+      availableOnMobile: json['available_on_mobile'] ?? true,
       permissions: (json['permissions'] as List?)
               ?.map((e) => ModulePermissionModel.fromJson(e))
               .toList() ??

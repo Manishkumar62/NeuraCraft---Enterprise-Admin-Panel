@@ -4,8 +4,17 @@ from .models import Module, ModulePermission, RoleModulePermission
 
 @admin.register(Module)
 class ModuleAdmin(admin.ModelAdmin):
-    list_display = ('name', 'path', 'icon', 'parent', 'order', 'is_active')
-    list_filter = ('is_active', 'parent')
+    list_display = (
+        'name',
+        'path',
+        'icon',
+        'parent',
+        'order',
+        'is_active',
+        'available_on_web',
+        'available_on_mobile',
+    )
+    list_filter = ('is_active', 'available_on_web', 'available_on_mobile', 'parent')
     search_fields = ('name', 'path')
     ordering = ('order', 'name')
 
