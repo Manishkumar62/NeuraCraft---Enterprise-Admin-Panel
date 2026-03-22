@@ -50,7 +50,9 @@ class ModuleCard extends StatelessWidget {
                 color: Colors.blue,
                 child: const Icon(Icons.edit, color: Colors.white),
               )
-            : null,
+            : canDelete
+                ? Container(color: Colors.transparent)
+                : null,
         secondaryBackground: canDelete
             ? Container(
                 alignment: Alignment.centerRight,

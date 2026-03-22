@@ -43,14 +43,18 @@ class DepartmentCard extends StatelessWidget {
               color: Colors.blue,
               child: const Icon(Icons.edit, color: Colors.white),
             )
-          : null,
+          : canDelete
+              ? Container(color: Colors.transparent)
+              : null,
 
-      secondaryBackground: Container(
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
-        color: Colors.red,
-        child: const Icon(Icons.delete, color: Colors.white),
-      ),
+      secondaryBackground: canDelete
+          ? Container(
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 20),
+              color: Colors.red,
+              child: const Icon(Icons.delete, color: Colors.white),
+            )
+          : null,
 
       confirmDismiss: (direction) async {
         if (direction == DismissDirection.startToEnd && canEdit) {
