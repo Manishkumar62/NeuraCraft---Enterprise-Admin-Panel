@@ -478,24 +478,27 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
   // ── Sign-up row ────────────────────────────
   Widget _buildSignupRow() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Wrap(
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 4,
       children: [
         const Text(
           "Don't have an account?",
           style: TextStyle(fontSize: 13.5, color: _signupText),
         ),
-        const SizedBox(width: 4),
         GestureDetector(
-          onTap: () {
-            context.push('/signup');
-          },
-          child: const Text(
-            "Create account",
-            style: TextStyle(
-              fontSize: 13.5,
-              fontWeight: FontWeight.w700,
-              color: _signupLink,
+          behavior: HitTestBehavior.opaque,
+          onTap: () => context.go('/signup'),
+          child: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+            child: Text(
+              "Create account",
+              style: TextStyle(
+                fontSize: 13.5,
+                fontWeight: FontWeight.w700,
+                color: _signupLink,
+              ),
             ),
           ),
         ),

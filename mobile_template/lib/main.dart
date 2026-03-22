@@ -6,6 +6,7 @@ import 'core/di/injection.dart';
 import 'core/router/app_router.dart';
 
 import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/auth/presentation/bloc/auth_event.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,20 +17,17 @@ void main() async {
 class NeuraCraftApp extends StatelessWidget {
   const NeuraCraftApp({super.key});
 
+  static final _router = createRouter();
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => getIt<AuthBloc>(),
-      child: Builder(
-        builder: (context) {
-          final router = createRouter(); // 🔥 No bool
-
-          return MaterialApp.router(
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.darkTheme,
-            routerConfig: router,
-          );
-        },
+      lazy: false,
+      create: (_) => getIt<AuthBloc>()..add(AppStarted()),
+      child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.darkTheme,
+        routerConfig: _router,
       ),
     );
   }

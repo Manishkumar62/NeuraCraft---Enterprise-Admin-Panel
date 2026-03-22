@@ -435,22 +435,27 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
   }
 
   Widget _buildLoginRow(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Wrap(
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 4,
       children: [
         const Text(
           "Already have an account?",
           style: TextStyle(fontSize: 13.5, color: _signupText),
         ),
-        const SizedBox(width: 4),
         GestureDetector(
-          onTap: () => context.pop(),
-          child: const Text(
-            "Sign in",
-            style: TextStyle(
-              fontSize: 13.5,
-              fontWeight: FontWeight.w700,
-              color: _signupLink,
+          behavior: HitTestBehavior.opaque,
+          onTap: () => context.go('/login'),
+          child: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+            child: Text(
+              "Sign in",
+              style: TextStyle(
+                fontSize: 13.5,
+                fontWeight: FontWeight.w700,
+                color: _signupLink,
+              ),
             ),
           ),
         ),
