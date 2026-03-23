@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../domain/entities/module_permission_entity.dart';
 import '../bloc/role_bloc.dart';
 import '../bloc/role_event.dart';
 import '../bloc/role_state.dart';
@@ -43,22 +44,11 @@ class _RolePermissionsPageState extends State<RolePermissionsPage> {
             }
 
             if (state is RolePermissionsLoaded) {
-              final modules = state.modules;
+              _initializeExpansionState(state.modules);
 
-              /// 🔍 Filter modules based on search
-              final filteredModules = modules.where((module) {
-                if (query.isEmpty) return true;
-
-                if (module.moduleName.toLowerCase().contains(query)) {
-                  return true;
-                }
-
-                return module.availablePermissions.any(
-                  (p) =>
-                      p.label.toLowerCase().contains(query) ||
-                      p.codename.toLowerCase().contains(query),
-                );
-              }).toList();
+              final filteredModules = state.modules
+                  .where(_matchesModuleOrChildren)
+                  .toList();
 
               return Column(
                 children: [
@@ -95,127 +85,7 @@ class _RolePermissionsPageState extends State<RolePermissionsPage> {
                   Expanded(
                     child: ListView(
                       padding: const EdgeInsets.fromLTRB(16, 4, 16, 80),
-
-                      children: filteredModules.map((module) {
-                        final granted =
-                            selected[module.moduleId] ??
-                            module.grantedPermissions.toSet();
-
-                        final isExpanded = expanded[module.moduleId] ?? true;
-
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 10),
-
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(14),
-                            color: Theme.of(context).colorScheme.surface,
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.06),
-                            ),
-                          ),
-
-                          child: Column(
-                            children: [
-                              /// MODULE HEADER
-                              InkWell(
-                                borderRadius: BorderRadius.circular(14),
-
-                                onTap: () {
-                                  setState(() {
-                                    expanded[module.moduleId] = !isExpanded;
-                                  });
-                                },
-
-                                child: Padding(
-                                  padding: const EdgeInsets.all(12),
-
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        isExpanded
-                                            ? Icons.expand_less
-                                            : Icons.expand_more,
-                                        size: 18,
-                                      ),
-
-                                      const SizedBox(width: 8),
-
-                                      Expanded(
-                                        child: Text(
-                                          module.moduleName,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ),
-
-                                      Text(
-                                        "${granted.length}/${module.availablePermissions.length}",
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          color: Colors.grey.shade500,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-
-                              /// MODULE BODY
-                              if (isExpanded)
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                    12,
-                                    0,
-                                    12,
-                                    12,
-                                  ),
-
-                                  child: PermissionModuleTile(
-                                    module: module,
-                                    granted: granted,
-
-                                    onToggle: (codename) {
-                                      setState(() {
-                                        selected.putIfAbsent(
-                                          module.moduleId,
-                                          () =>
-                                              module.grantedPermissions.toSet(),
-                                        );
-
-                                        if (selected[module.moduleId]!.contains(
-                                          codename,
-                                        )) {
-                                          selected[module.moduleId]!.remove(
-                                            codename,
-                                          );
-                                        } else {
-                                          selected[module.moduleId]!.add(
-                                            codename,
-                                          );
-                                        }
-                                      });
-                                    },
-
-                                    onSelectAll: (values) {
-                                      setState(() {
-                                        selected[module.moduleId] = values
-                                            .toSet();
-                                      });
-                                    },
-
-                                    onSelectCategory: (values) {
-                                      setState(() {
-                                        selected[module.moduleId] = values
-                                            .toSet();
-                                      });
-                                    },
-                                  ),
-                                ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
+                      children: _buildModuleSections(filteredModules),
                     ),
                   ),
                 ],
@@ -230,15 +100,223 @@ class _RolePermissionsPageState extends State<RolePermissionsPage> {
           },
         ),
       ),
-
       floatingActionButton: FloatingActionButton.extended(
         icon: const Icon(Icons.save),
         label: const Text("Save Permissions"),
         onPressed: _save,
       ),
-
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
+  }
+
+  void _initializeExpansionState(List<ModulePermissionEntity> modules) {
+    if (expanded.isNotEmpty) return;
+
+    for (var index = 0; index < modules.length; index++) {
+      _seedExpansion(modules[index], isExpanded: index == 0);
+    }
+  }
+
+  void _seedExpansion(
+    ModulePermissionEntity module, {
+    required bool isExpanded,
+  }) {
+    expanded.putIfAbsent(module.moduleId, () => isExpanded);
+
+    for (final child in module.children) {
+      _seedExpansion(child, isExpanded: false);
+    }
+  }
+
+  List<Widget> _buildModuleSections(
+    List<ModulePermissionEntity> modules, {
+    int depth = 0,
+  }) {
+    return modules
+        .expand((module) => _buildModuleSection(module, depth: depth))
+        .toList();
+  }
+
+  List<Widget> _buildModuleSection(
+    ModulePermissionEntity module, {
+    int depth = 0,
+  }) {
+    final granted =
+        selected[module.moduleId] ?? module.grantedPermissions.toSet();
+    final isExpanded = expanded[module.moduleId] ?? false;
+    final visibleChildren = module.children
+        .where(_matchesModuleOrChildren)
+        .toList();
+
+    final widgets = <Widget>[
+      Container(
+        margin: EdgeInsets.only(left: depth * 16, bottom: 10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          color: Theme.of(context).colorScheme.surface,
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.06),
+                            ),
+        ),
+
+        child: Column(
+          children: [
+                              /// MODULE HEADER
+            InkWell(
+              borderRadius: BorderRadius.circular(14),
+
+              onTap: () {
+                setState(() {
+                  expanded[module.moduleId] = !isExpanded;
+                });
+              },
+
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+
+                child: Row(
+                  children: [
+                    Icon(
+                                        isExpanded
+                                            ? Icons.expand_less
+                                            : Icons.expand_more,
+                      size: 18,
+                    ),
+
+                    const SizedBox(width: 8),
+
+                    Expanded(
+                      child: Text(
+                        module.moduleName,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                      ),
+                    ),
+
+                    Text(
+                      "${granted.length}/${module.availablePermissions.length}",
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey.shade500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+                              /// MODULE BODY
+            if (isExpanded)
+              Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    12,
+                                    0,
+                                    12,
+                                    12,
+                                  ),
+
+                child: PermissionModuleTile(
+                  module: module,
+                  granted: granted,
+
+                  onToggle: (codename) {
+                    setState(() {
+                      selected.putIfAbsent(
+                        module.moduleId,
+                                          () =>
+                                              module.grantedPermissions.toSet(),
+                      );
+
+                                        if (selected[module.moduleId]!.contains(
+                                          codename,
+                                        )) {
+                                          selected[module.moduleId]!.remove(
+                                            codename,
+                                          );
+                      } else {
+                                          selected[module.moduleId]!.add(
+                                            codename,
+                                          );
+                      }
+                    });
+                  },
+
+                  onSelectAll: (values) {
+                    setState(() {
+                                        selected[module.moduleId] = values
+                                            .toSet();
+                    });
+                  },
+
+                  onSelectCategory: (values) {
+                    setState(() {
+                                        selected[module.moduleId] = values
+                                            .toSet();
+                    });
+                  },
+                ),
+              ),
+          ],
+        ),
+      ),
+    ];
+
+    if (visibleChildren.isNotEmpty) {
+      widgets.add(
+        Padding(
+          padding: EdgeInsets.only(
+            left: (depth * 16) + 16,
+            right: 4,
+            bottom: 8,
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  depth == 0 ? "Child Modules" : "Nested Child Modules",
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+
+      widgets.addAll(_buildModuleSections(visibleChildren, depth: depth + 1));
+    }
+
+    return widgets;
+  }
+
+  bool _matchesModuleOrChildren(ModulePermissionEntity module) {
+    if (query.isEmpty) return true;
+
+    final matchesSelf =
+        module.moduleName.toLowerCase().contains(query) ||
+        module.availablePermissions.any(
+          (permission) =>
+              permission.label.toLowerCase().contains(query) ||
+              permission.codename.toLowerCase().contains(query),
+        );
+
+    if (matchesSelf) {
+      return true;
+    }
+
+    return module.children.any(_matchesModuleOrChildren);
   }
 
   void _save() {
