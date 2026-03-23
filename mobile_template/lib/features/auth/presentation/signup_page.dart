@@ -61,49 +61,13 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
-  late final AnimationController _blobCtrl;
-  late final Animation<double> _blobAnim;
-  late final AnimationController _entranceCtrl;
-  late final Animation<double> _entranceFade;
-  late final Animation<Offset> _entranceSlide;
-
   @override
   void initState() {
     super.initState();
-
-    _blobCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 16),
-    )..repeat(reverse: true);
-    _blobAnim = CurvedAnimation(parent: _blobCtrl, curve: Curves.easeInOut);
-
-    _entranceCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 650),
-    )..forward();
-    _entranceFade = CurvedAnimation(parent: _entranceCtrl, curve: Curves.easeOut);
-    _entranceSlide = Tween<Offset>(
-      begin: const Offset(0, 0.06),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _entranceCtrl, curve: Curves.easeOut));
-
-    for (final focusNode in [
-      _usernameFocus,
-      _emailFocus,
-      _passwordFocus,
-      _confirmPasswordFocus,
-      _firstNameFocus,
-      _lastNameFocus,
-      _phoneFocus,
-    ]) {
-      focusNode.addListener(() => setState(() {}));
-    }
   }
 
   @override
   void dispose() {
-    _blobCtrl.dispose();
-    _entranceCtrl.dispose();
     _usernameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
@@ -195,27 +159,24 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
 
   Widget _buildPage(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: _bg,
       body: Stack(
         children: [
-          AnimatedBuilder(
-            animation: _blobAnim,
-            builder: (_, __) => CustomPaint(
-              size: MediaQuery.of(context).size,
-              painter: _BlobPainter(_blobAnim.value),
-            ),
+          CustomPaint(
+            size: MediaQuery.of(context).size,
+            painter: const _BlobPainter(),
           ),
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-                child: FadeTransition(
-                  opacity: _entranceFade,
-                  child: SlideTransition(
-                    position: _entranceSlide,
-                    child: _buildCard(context),
-                  ),
+                padding: EdgeInsets.fromLTRB(
+                  20,
+                  24,
+                  20,
+                  24 + MediaQuery.viewInsetsOf(context).bottom,
                 ),
+                child: _buildCard(context),
               ),
             ),
           ),
@@ -228,19 +189,12 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
     return ClipRRect(
       borderRadius: BorderRadius.circular(36),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 50, sigmaY: 50),
+        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
         child: Container(
           decoration: BoxDecoration(
             color: _cardBg,
             borderRadius: BorderRadius.circular(36),
             border: Border.all(color: _cardBorder),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0xA6000000),
-                blurRadius: 80,
-                offset: Offset(0, 30),
-              ),
-            ],
           ),
           padding: const EdgeInsets.fromLTRB(28, 36, 28, 32),
           child: Column(
@@ -255,7 +209,6 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
                       controller: _firstNameController,
                       focusNode: _firstNameFocus,
                       hint: 'First name',
-                      isFocused: _firstNameFocus.hasFocus,
                       prefixIcon: const Icon(Icons.badge_outlined, size: 20, color: _inputIcon),
                       focusedIcon: const Icon(Icons.badge_outlined, size: 20, color: _accentA),
                     ),
@@ -266,7 +219,6 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
                       controller: _lastNameController,
                       focusNode: _lastNameFocus,
                       hint: 'Last name',
-                      isFocused: _lastNameFocus.hasFocus,
                       prefixIcon: const Icon(Icons.badge_rounded, size: 20, color: _inputIcon),
                       focusedIcon: const Icon(Icons.badge_rounded, size: 20, color: _accentA),
                     ),
@@ -278,7 +230,6 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
                 controller: _usernameController,
                 focusNode: _usernameFocus,
                 hint: 'Username',
-                isFocused: _usernameFocus.hasFocus,
                 prefixIcon: const Icon(Icons.person_outline_rounded, size: 20, color: _inputIcon),
                 focusedIcon: const Icon(Icons.person_outline_rounded, size: 20, color: _accentA),
               ),
@@ -287,7 +238,6 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
                 controller: _emailController,
                 focusNode: _emailFocus,
                 hint: 'Email address',
-                isFocused: _emailFocus.hasFocus,
                 prefixIcon: const Icon(Icons.alternate_email_rounded, size: 20, color: _inputIcon),
                 focusedIcon: const Icon(Icons.alternate_email_rounded, size: 20, color: _accentA),
               ),
@@ -296,7 +246,6 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
                 controller: _phoneController,
                 focusNode: _phoneFocus,
                 hint: 'Phone number',
-                isFocused: _phoneFocus.hasFocus,
                 prefixIcon: const Icon(Icons.phone_outlined, size: 20, color: _inputIcon),
                 focusedIcon: const Icon(Icons.phone_outlined, size: 20, color: _accentA),
               ),
@@ -306,7 +255,6 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
                 focusNode: _passwordFocus,
                 hint: 'Password',
                 obscureText: _obscurePassword,
-                isFocused: _passwordFocus.hasFocus,
                 prefixIcon: const Icon(Icons.lock_outline_rounded, size: 20, color: _inputIcon),
                 focusedIcon: const Icon(Icons.lock_outline_rounded, size: 20, color: _accentA),
                 suffix: GestureDetector(
@@ -328,7 +276,6 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
                 focusNode: _confirmPasswordFocus,
                 hint: 'Confirm password',
                 obscureText: _obscureConfirmPassword,
-                isFocused: _confirmPasswordFocus.hasFocus,
                 prefixIcon: const Icon(Icons.verified_user_outlined, size: 20, color: _inputIcon),
                 focusedIcon: const Icon(Icons.verified_user_outlined, size: 20, color: _accentA),
                 suffix: GestureDetector(
@@ -385,23 +332,11 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
   Widget _buildSignupButton() {
     return SizedBox(
       width: double.infinity,
-      height: 54,
+      height: 45,
       child: DecoratedBox(
         decoration: BoxDecoration(
           gradient: _grad,
           borderRadius: BorderRadius.circular(20),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x737C4DFF),
-              blurRadius: 28,
-              offset: Offset(0, 10),
-            ),
-            BoxShadow(
-              color: Color(0x334C64FF),
-              blurRadius: 12,
-              offset: Offset(0, 4),
-            ),
-          ],
         ),
         child: Material(
           color: Colors.transparent,
@@ -464,61 +399,17 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
   }
 }
 
-class _LogoBox extends StatefulWidget {
+class _LogoBox extends StatelessWidget {
   const _LogoBox();
 
   @override
-  State<_LogoBox> createState() => _LogoBoxState();
-}
-
-class _LogoBoxState extends State<_LogoBox> with SingleTickerProviderStateMixin {
-  late final AnimationController _ctrl;
-  late final Animation<double> _pulse;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    )..repeat(reverse: true);
-    _pulse = CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut);
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _pulse,
-      builder: (_, child) => Container(
-        width: 80,
-        height: 80,
-        decoration: BoxDecoration(
-          gradient: _grad,
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: Color.lerp(
-                const Color(0x737C4DFF),
-                const Color(0x997C4DFF),
-                _pulse.value,
-              )!,
-              blurRadius: lerpDouble(36, 52, _pulse.value)!,
-              offset: const Offset(0, 12),
-            ),
-            BoxShadow(
-              color: const Color(0x334C9BE8),
-              blurRadius: lerpDouble(12, 22, _pulse.value)!,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: child,
+    return Container(
+      width: 80,
+      height: 80,
+      decoration: BoxDecoration(
+        gradient: _grad,
+        borderRadius: BorderRadius.circular(24),
       ),
       child: Stack(
         children: [
@@ -582,7 +473,6 @@ class _InputField extends StatelessWidget {
   final FocusNode focusNode;
   final String hint;
   final bool obscureText;
-  final bool isFocused;
   final Widget prefixIcon;
   final Widget focusedIcon;
   final Widget? suffix;
@@ -591,7 +481,6 @@ class _InputField extends StatelessWidget {
     required this.controller,
     required this.focusNode,
     required this.hint,
-    required this.isFocused,
     required this.prefixIcon,
     required this.focusedIcon,
     this.obscureText = false,
@@ -600,117 +489,102 @@ class _InputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 250),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-      decoration: BoxDecoration(
-        color: _inputBg,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: isFocused ? _inputFocus : _inputBorder,
-          width: 1.5,
+    return ListenableBuilder(
+      listenable: focusNode,
+      child: TextField(
+        controller: controller,
+        focusNode: focusNode,
+        obscureText: obscureText,
+        style: const TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+          color: _inputText,
+          height: 1.4,
         ),
-        boxShadow: isFocused
-            ? [
-                BoxShadow(
-                  color: _accentA.withOpacity(0.10),
-                  blurRadius: 14,
-                  spreadRadius: 1,
-                ),
-              ]
-            : [],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 20,
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              child: isFocused
-                  ? KeyedSubtree(key: const ValueKey('f'), child: focusedIcon)
-                  : KeyedSubtree(key: const ValueKey('u'), child: prefixIcon),
-            ),
+        decoration: const InputDecoration(
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          isDense: true,
+          contentPadding: EdgeInsets.symmetric(vertical: 10),
+        ).copyWith(
+          hintText: hint,
+          hintStyle: const TextStyle(
+            fontSize: 15,
+            color: _inputHint,
+            fontWeight: FontWeight.w400,
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: TextField(
-              controller: controller,
-              focusNode: focusNode,
-              obscureText: obscureText,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-                color: _inputText,
-                height: 1.4,
-              ),
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(vertical: 15),
-              ).copyWith(
-                hintText: hint,
-                hintStyle: const TextStyle(
-                  fontSize: 15,
-                  color: _inputHint,
-                  fontWeight: FontWeight.w400,
+        ),
+      ),
+      builder: (context, child) {
+        final isFocused = focusNode.hasFocus;
+
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+          decoration: BoxDecoration(
+            color: _inputBg,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: isFocused ? _inputFocus : _inputBorder,
+              width: 1.5,
+            ),
+            boxShadow: isFocused
+                ? [
+                    BoxShadow(
+                      color: _accentA.withOpacity(0.10),
+                      blurRadius: 14,
+                      spreadRadius: 1,
+                    ),
+                  ]
+                : [],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 20,
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  child: isFocused
+                      ? KeyedSubtree(key: const ValueKey('f'), child: focusedIcon)
+                      : KeyedSubtree(key: const ValueKey('u'), child: prefixIcon),
                 ),
               ),
-            ),
+              const SizedBox(width: 12),
+              Expanded(child: child!),
+              if (suffix != null) ...[const SizedBox(width: 8), suffix!],
+            ],
           ),
-          if (suffix != null) ...[const SizedBox(width: 8), suffix!],
-        ],
-      ),
+        );
+      },
     );
   }
 }
 
 class _BlobPainter extends CustomPainter {
-  final double t;
-  const _BlobPainter(this.t);
+  const _BlobPainter();
 
   @override
   void paint(Canvas canvas, Size size) {
     _blob(
       canvas,
       center: Offset(
-        -60 + 25 * math.sin(t * math.pi),
-        -80 + 30 * math.cos(t * math.pi * 0.7),
+        -35,
+        -55,
       ),
-      radius: 220,
+      radius: 180,
       color: const Color(0x487C4DFF),
     );
 
     _blob(
       canvas,
       center: Offset(
-        size.width + 40 - 20 * math.cos(t * math.pi * 0.9),
-        size.height + 40 - 30 * math.sin(t * math.pi * 1.1),
-      ),
-      radius: 190,
-      color: const Color(0x334C9BE8),
-    );
-
-    _blob(
-      canvas,
-      center: Offset(
-        size.width * 0.5 + 15 * math.sin(t * math.pi * 1.3),
-        size.height * 0.38 + 20 * math.cos(t * math.pi * 0.8),
+        size.width + 55,
+        size.height + 55,
       ),
       radius: 150,
-      color: const Color(0x247C4DFF),
-    );
-
-    _blob(
-      canvas,
-      center: Offset(
-        size.width + 20 - 18 * math.cos(t * math.pi * 1.5),
-        size.height * 0.12 + 12 * math.sin(t * math.pi),
-      ),
-      radius: 125,
-      color: const Color(0x1F14B4A0),
+      color: const Color(0x334C9BE8),
     );
   }
 
@@ -725,10 +599,10 @@ class _BlobPainter extends CustomPainter {
       radius,
       Paint()
         ..color = color
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 60),
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 28),
     );
   }
 
   @override
-  bool shouldRepaint(covariant _BlobPainter old) => old.t != t;
+  bool shouldRepaint(covariant _BlobPainter oldDelegate) => false;
 }

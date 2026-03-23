@@ -1,4 +1,4 @@
-import 'dart:math' as math;
+﻿import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -12,9 +12,9 @@ import './bloc/auth_bloc.dart';
 import './bloc/auth_event.dart';
 import './bloc/auth_state.dart';
 
-// ─────────────────────────────────────────────
+// ---------------------------------------------
 //  Colour tokens (dark only)
-// ─────────────────────────────────────────────
+// ---------------------------------------------
 const _bg          = Color(0xFF0B0E17);
 const _cardBg      = Color(0x0DFFFFFF);
 const _cardBorder  = Color(0x17FFFFFF);
@@ -23,7 +23,7 @@ const _accentB     = Color(0xFF5A6EFF);
 const _accentC     = Color(0xFF4C9BE8);
 const _appName     = Color(0xFFE8F0FF);
 const _appSub      = Color(0x80B4C8F0);
-const _inputBg     = Color(0x0EFFFFFF);   // ← same for both states
+const _inputBg     = Color(0x0EFFFFFF);   // ? same for both states
 const _inputBorder = Color(0x13FFFFFF);
 const _inputFocus  = Color(0x997C4DFF);
 const _inputText   = Color(0xFFDCE8FF);
@@ -46,9 +46,9 @@ const _grad = LinearGradient(
   end: Alignment.bottomRight,
 );
 
-// ─────────────────────────────────────────────
+// ---------------------------------------------
 //  LoginPage
-// ─────────────────────────────────────────────
+// ---------------------------------------------
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -65,41 +65,14 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   bool _rememberMe      = false;
   bool _obscurePassword = true;
 
-  late final AnimationController _blobCtrl;
-  late final Animation<double>   _blobAnim;
-  late final AnimationController _entranceCtrl;
-  late final Animation<double>   _entranceFade;
-  late final Animation<Offset>   _entranceSlide;
-
   @override
   void initState() {
     super.initState();
     _loadSavedUsername();
-
-    _blobCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 16),
-    )..repeat(reverse: true);
-    _blobAnim = CurvedAnimation(parent: _blobCtrl, curve: Curves.easeInOut);
-
-    _entranceCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 650),
-    )..forward();
-    _entranceFade  = CurvedAnimation(parent: _entranceCtrl, curve: Curves.easeOut);
-    _entranceSlide = Tween<Offset>(
-      begin: const Offset(0, 0.06),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _entranceCtrl, curve: Curves.easeOut));
-
-    _usernameFocus.addListener(() => setState(() {}));
-    _passwordFocus.addListener(() => setState(() {}));
   }
 
   @override
   void dispose() {
-    _blobCtrl.dispose();
-    _entranceCtrl.dispose();
     _usernameController.dispose();
     _passwordController.dispose();
     _usernameFocus.dispose();
@@ -128,7 +101,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     }
   }
 
-  // ── Build ──────────────────────────────────
+  // -- Build ----------------------------------
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
@@ -166,29 +139,24 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
   Widget _buildPage(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: _bg,
       body: Stack(
         children: [
-          // Animated blobs
-          AnimatedBuilder(
-            animation: _blobAnim,
-            builder: (_, __) => CustomPaint(
-              size: MediaQuery.of(context).size,
-              painter: _BlobPainter(_blobAnim.value),
-            ),
+          CustomPaint(
+            size: MediaQuery.of(context).size,
+            painter: const _BlobPainter(),
           ),
-          // Card
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 32),
-                child: FadeTransition(
-                  opacity: _entranceFade,
-                  child: SlideTransition(
-                    position: _entranceSlide,
-                    child: _buildCard(context),
-                  ),
+                padding: EdgeInsets.fromLTRB(
+                  20,
+                  32,
+                  20,
+                  32 + MediaQuery.viewInsetsOf(context).bottom,
                 ),
+                child: _buildCard(context),
               ),
             ),
           ),
@@ -197,24 +165,17 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     );
   }
 
-  // ── Glass card ─────────────────────────────
+  // -- Glass card -----------------------------
   Widget _buildCard(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(36),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 50, sigmaY: 50),
+        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
         child: Container(
           decoration: BoxDecoration(
             color: _cardBg,
             borderRadius: BorderRadius.circular(36),
             border: Border.all(color: _cardBorder),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0xA6000000),
-                blurRadius: 80,
-                offset: Offset(0, 30),
-              ),
-            ],
           ),
           padding: const EdgeInsets.fromLTRB(28, 36, 28, 32),
           child: Column(
@@ -226,7 +187,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 controller: _usernameController,
                 focusNode: _usernameFocus,
                 hint: 'Username',
-                isFocused: _usernameFocus.hasFocus,
                 prefixIcon: const Icon(Icons.person_outline_rounded,
                     size: 20, color: _inputIcon),
                 focusedIcon: const Icon(Icons.person_outline_rounded,
@@ -238,7 +198,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                 focusNode: _passwordFocus,
                 hint: 'Password',
                 obscureText: _obscurePassword,
-                isFocused: _passwordFocus.hasFocus,
                 prefixIcon: const Icon(Icons.lock_outline_rounded,
                     size: 20, color: _inputIcon),
                 focusedIcon: const Icon(Icons.lock_outline_rounded,
@@ -275,7 +234,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     );
   }
 
-  // ── Card top ───────────────────────────────
+  // -- Card top -------------------------------
   Widget _buildCardTop() {
     return const Column(
       children: [
@@ -299,7 +258,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     );
   }
 
-  // ── Remember row  (no animation) ───────────
+  // -- Remember row  (no animation) -----------
   Widget _buildRememberRow() {
     return Align(
       alignment: Alignment.centerLeft,
@@ -344,27 +303,15 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     );
   }
 
-  // ── Login button ───────────────────────────
+  // -- Login button ---------------------------
   Widget _buildLoginButton(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 54,
+      height: 45,
       child: DecoratedBox(
         decoration: BoxDecoration(
           gradient: _grad,
           borderRadius: BorderRadius.circular(20),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x737C4DFF),
-              blurRadius: 28,
-              offset: Offset(0, 10),
-            ),
-            BoxShadow(
-              color: Color(0x334C64FF),
-              blurRadius: 12,
-              offset: Offset(0, 4),
-            ),
-          ],
         ),
         child: Material(
           color: Colors.transparent,
@@ -406,7 +353,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     );
   }
 
-  // ── Divider ────────────────────────────────
+  // -- Divider --------------------------------
   Widget _buildDivider() {
     return const Row(
       children: [
@@ -428,15 +375,15 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     );
   }
 
-  // ── Google button ──────────────────────────
+  // -- Google button --------------------------
   Widget _buildGoogleButton() {
     return SizedBox(
       width: double.infinity,
-      height: 52,
+      height: 45,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
           child: Container(
             decoration: BoxDecoration(
               color: _googleBg,
@@ -476,7 +423,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     );
   }
 
-  // ── Sign-up row ────────────────────────────
+  // -- Sign-up row ----------------------------
   Widget _buildSignupRow() {
     return Wrap(
       alignment: WrapAlignment.center,
@@ -507,64 +454,20 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   }
 }
 
-// ─────────────────────────────────────────────
+// ---------------------------------------------
 //  Animated logo box with pulse glow
-// ─────────────────────────────────────────────
-class _LogoBox extends StatefulWidget {
+// ---------------------------------------------
+class _LogoBox extends StatelessWidget {
   const _LogoBox();
-  @override
-  State<_LogoBox> createState() => _LogoBoxState();
-}
-
-class _LogoBoxState extends State<_LogoBox>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _ctrl;
-  late final Animation<double> _pulse;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    )..repeat(reverse: true);
-    _pulse = CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut);
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _pulse,
-      builder: (_, child) => Container(
-        width: 80,
-        height: 80,
-        decoration: BoxDecoration(
-          gradient: _grad,
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: Color.lerp(
-                const Color(0x737C4DFF),
-                const Color(0x997C4DFF),
-                _pulse.value,
-              )!,
-              blurRadius: lerpDouble(36, 52, _pulse.value)!,
-              offset: const Offset(0, 12),
-            ),
-            BoxShadow(
-              color: const Color(0x334C9BE8),
-              blurRadius: lerpDouble(12, 22, _pulse.value)!,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: child,
+    return Container(
+      width: 80,
+      height: 80,
+      decoration: BoxDecoration(
+        gradient: _grad,
+        borderRadius: BorderRadius.circular(24),
       ),
       child: Stack(
         children: [
@@ -624,17 +527,16 @@ class _SparklesPainter extends CustomPainter {
   bool shouldRepaint(_) => false;
 }
 
-// ─────────────────────────────────────────────
+// ---------------------------------------------
 //  Reusable input field
 //  • background stays _inputBg regardless of focus
 //  • only border colour and icon colour change on focus
-// ─────────────────────────────────────────────
+// ---------------------------------------------
 class _InputField extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final String hint;
   final bool obscureText;
-  final bool isFocused;
   final Widget prefixIcon;
   final Widget focusedIcon;
   final Widget? suffix;
@@ -643,7 +545,6 @@ class _InputField extends StatelessWidget {
     required this.controller,
     required this.focusNode,
     required this.hint,
-    required this.isFocused,
     required this.prefixIcon,
     required this.focusedIcon,
     this.obscureText = false,
@@ -652,113 +553,108 @@ class _InputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 250),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-      decoration: BoxDecoration(
-        color: _inputBg,                          // ← always the same
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: isFocused ? _inputFocus : _inputBorder,
-          width: 1.5,
+    return ListenableBuilder(
+      listenable: focusNode,
+      child: TextField(
+        controller: controller,
+        focusNode: focusNode,
+        obscureText: obscureText,
+        style: const TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+          color: _inputText,
+          height: 1.4,
         ),
-        boxShadow: isFocused
-            ? [
-                BoxShadow(
-                  color: _accentA.withOpacity(0.10),
-                  blurRadius: 14,
-                  spreadRadius: 1,
-                ),
-              ]
-            : [],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Icon swaps colour on focus, size stays fixed
-          SizedBox(
-            width: 20,
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              child: isFocused
-                  ? KeyedSubtree(key: const ValueKey('f'), child: focusedIcon)
-                  : KeyedSubtree(key: const ValueKey('u'), child: prefixIcon),
-            ),
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: const TextStyle(
+            fontSize: 15,
+            color: _inputHint,
+            fontWeight: FontWeight.w400,
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: TextField(
-              controller: controller,
-              focusNode: focusNode,
-              obscureText: obscureText,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-                color: _inputText,
-                height: 1.4,
-              ),
-              decoration: InputDecoration(
-                hintText: hint,
-                hintStyle: const TextStyle(
-                  fontSize: 15,
-                  color: _inputHint,
-                  fontWeight: FontWeight.w400,
-                ),
-                border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                isDense: true,
-                contentPadding: const EdgeInsets.symmetric(vertical: 15),
-              ),
-            ),
-          ),
-          if (suffix != null) ...[const SizedBox(width: 8), suffix!],
-        ],
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          isDense: true,
+          contentPadding: const EdgeInsets.symmetric(vertical: 10),
+        ),
       ),
+      builder: (context, child) {
+        final isFocused = focusNode.hasFocus;
+
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+          decoration: BoxDecoration(
+            color: _inputBg,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: isFocused ? _inputFocus : _inputBorder,
+              width: 1.5,
+            ),
+            boxShadow: isFocused
+                ? [
+                    BoxShadow(
+                      color: _accentA.withOpacity(0.10),
+                      blurRadius: 14,
+                      spreadRadius: 1,
+                    ),
+                  ]
+                : [],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 20,
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  child: isFocused
+                      ? KeyedSubtree(
+                          key: const ValueKey('f'),
+                          child: focusedIcon,
+                        )
+                      : KeyedSubtree(
+                          key: const ValueKey('u'),
+                          child: prefixIcon,
+                        ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(child: child!),
+              if (suffix != null) ...[const SizedBox(width: 8), suffix!],
+            ],
+          ),
+        );
+      },
     );
   }
+
 }
 
-// ─────────────────────────────────────────────
+// ---------------------------------------------
 //  Background blob painter
-// ─────────────────────────────────────────────
+// ---------------------------------------------
 class _BlobPainter extends CustomPainter {
-  final double t;
-  const _BlobPainter(this.t);
+  const _BlobPainter();
 
   @override
   void paint(Canvas canvas, Size size) {
     _blob(canvas,
         center: Offset(
-          -60 + 25 * math.sin(t * math.pi),
-          -80 + 30 * math.cos(t * math.pi * 0.7),
+          -35,
+          -55,
         ),
-        radius: 220,
+        radius: 180,
         color: const Color(0x487C4DFF));
 
     _blob(canvas,
         center: Offset(
-          size.width  + 40 - 20 * math.cos(t * math.pi * 0.9),
-          size.height + 40 - 30 * math.sin(t * math.pi * 1.1),
-        ),
-        radius: 190,
-        color: const Color(0x334C9BE8));
-
-    _blob(canvas,
-        center: Offset(
-          size.width  * 0.5 + 15 * math.sin(t * math.pi * 1.3),
-          size.height * 0.38 + 20 * math.cos(t * math.pi * 0.8),
+          size.width + 55,
+          size.height + 55,
         ),
         radius: 150,
-        color: const Color(0x247C4DFF));
-
-    _blob(canvas,
-        center: Offset(
-          size.width  + 20 - 18 * math.cos(t * math.pi * 1.5),
-          size.height * 0.12 + 12 * math.sin(t * math.pi),
-        ),
-        radius: 125,
-        color: const Color(0x1F14B4A0));
+        color: const Color(0x334C9BE8));
   }
 
   void _blob(Canvas canvas,
@@ -768,17 +664,17 @@ class _BlobPainter extends CustomPainter {
       radius,
       Paint()
         ..color = color
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 60),
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 28),
     );
   }
 
   @override
-  bool shouldRepaint(covariant _BlobPainter old) => old.t != t;
+  bool shouldRepaint(covariant _BlobPainter oldDelegate) => false;
 }
 
-// ─────────────────────────────────────────────
+// ---------------------------------------------
 //  Google logo (four-colour sectors)
-// ─────────────────────────────────────────────
+// ---------------------------------------------
 class _GoogleLogo extends StatelessWidget {
   const _GoogleLogo();
 
@@ -840,3 +736,5 @@ class _GoogleLogoPainter extends CustomPainter {
   @override
   bool shouldRepaint(_) => false;
 }
+
+
