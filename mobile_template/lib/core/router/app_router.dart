@@ -11,6 +11,7 @@ import '../../shared/navigation/main_shell.dart';
 import '../../shared/splash_screen.dart';
 
 import '../../features/auth/presentation/login_page.dart';
+import '../../features/auth/presentation/profile_page.dart';
 import '../../features/auth/presentation/signup_page.dart';
 import '../../features/users/presentation/pages/user_form_page.dart';
 import '../../features/users/presentation/bloc/user_bloc.dart';
@@ -75,6 +76,10 @@ GoRouter createRouter() {
 
       GoRoute(path: "/login", builder: (context, state) => const LoginPage()),
       GoRoute(path: "/signup", builder: (context, state) => const SignupPage()),
+      GoRoute(
+        path: "/profile",
+        builder: (context, state) => const ProfilePage(),
+      ),
 
       GoRoute(path: "/", builder: (context, state) => const MainShell()),
 

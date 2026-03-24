@@ -138,6 +138,13 @@ class MainShellState extends State<MainShell> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
+          leadingWidth: 64,
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 12),
+            child: Center(
+              child: _buildProfileButton(context, session),
+            ),
+          ),
           title: Text(
             modules[_currentIndex].moduleName,
             style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
@@ -483,6 +490,27 @@ class MainShellState extends State<MainShell> {
       default:
         return null;
     }
+  }
+
+  Widget _buildProfileButton(BuildContext context, SessionManager session) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(999),
+        onTap: () => context.push('/profile'),
+        child: SizedBox(
+          width: 40,
+          height: 40,
+          child: Center(
+            child: Icon(
+              Icons.account_circle,
+              size: 25,
+              color: Colors.blueGrey.shade100,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   IconData _mapIconData(String iconName) {
