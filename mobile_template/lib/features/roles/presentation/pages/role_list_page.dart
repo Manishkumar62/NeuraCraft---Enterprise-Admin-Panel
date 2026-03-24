@@ -127,7 +127,7 @@ class _RoleListPageState extends State<RoleListPage> {
             builder: (context, state) {
               if (state is RoleLoading) {
                 return ListView.builder(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
                   itemCount: 6,
                   itemBuilder: (_, __) {
                     return Container(
@@ -198,7 +198,7 @@ class _RoleListPageState extends State<RoleListPage> {
                   },
 
                   child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
                     itemCount: roles.length,
                     itemBuilder: (context, index) {
                       return AnimatedContainer(

@@ -128,7 +128,7 @@ class _ModuleListPageState extends State<ModuleListPage> {
             builder: (context, state) {
               if (state is ModuleLoading) {
                 return ListView.builder(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
                   itemCount: 6,
                   itemBuilder: (_, __) {
                     return Container(
@@ -202,7 +202,7 @@ class _ModuleListPageState extends State<ModuleListPage> {
                     context.read<ModuleBloc>().add(LoadModules());
                   },
                   child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
                     itemCount: modules.length,
                     itemBuilder: (context, index) {
                       return Padding(

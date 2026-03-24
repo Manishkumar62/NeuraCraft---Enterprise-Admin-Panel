@@ -151,7 +151,7 @@ class _UserListPageState extends State<UserListPage> {
               /// LOADING
               if (state is UserLoading) {
                 return ListView.builder(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
                   itemCount: 6,
                   itemBuilder: (_, __) {
                     return Container(
@@ -227,7 +227,7 @@ class _UserListPageState extends State<UserListPage> {
                   },
 
                   child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
                     itemCount: users.length,
                     itemBuilder: (context, index) {
                       final user = users[index];

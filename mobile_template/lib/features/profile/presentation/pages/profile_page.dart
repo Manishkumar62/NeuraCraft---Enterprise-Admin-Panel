@@ -1,7 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 
-import '../../../core/di/injection.dart';
-import '../../../core/session/session_manager.dart';
+import '../../../../core/di/injection.dart';
+import '../../../../core/session/session_manager.dart';
 
 class ProfilePage extends StatelessWidget {
   final Map<String, dynamic>? user;

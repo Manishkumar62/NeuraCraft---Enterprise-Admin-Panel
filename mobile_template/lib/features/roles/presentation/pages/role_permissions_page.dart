@@ -154,14 +154,12 @@ class _RolePermissionsPageState extends State<RolePermissionsPage> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
           color: Theme.of(context).colorScheme.surface,
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.06),
-                            ),
+          border: Border.all(color: Colors.white.withOpacity(0.06)),
         ),
 
         child: Column(
           children: [
-                              /// MODULE HEADER
+            /// MODULE HEADER
             InkWell(
               borderRadius: BorderRadius.circular(14),
 
@@ -177,9 +175,7 @@ class _RolePermissionsPageState extends State<RolePermissionsPage> {
                 child: Row(
                   children: [
                     Icon(
-                                        isExpanded
-                                            ? Icons.expand_less
-                                            : Icons.expand_more,
+                      isExpanded ? Icons.expand_less : Icons.expand_more,
                       size: 18,
                     ),
 
@@ -188,9 +184,7 @@ class _RolePermissionsPageState extends State<RolePermissionsPage> {
                     Expanded(
                       child: Text(
                         module.moduleName,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                        style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ),
 
@@ -206,15 +200,10 @@ class _RolePermissionsPageState extends State<RolePermissionsPage> {
               ),
             ),
 
-                              /// MODULE BODY
+            /// MODULE BODY
             if (isExpanded)
               Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                    12,
-                                    0,
-                                    12,
-                                    12,
-                                  ),
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
 
                 child: PermissionModuleTile(
                   module: module,
@@ -224,35 +213,26 @@ class _RolePermissionsPageState extends State<RolePermissionsPage> {
                     setState(() {
                       selected.putIfAbsent(
                         module.moduleId,
-                                          () =>
-                                              module.grantedPermissions.toSet(),
+                        () => module.grantedPermissions.toSet(),
                       );
 
-                                        if (selected[module.moduleId]!.contains(
-                                          codename,
-                                        )) {
-                                          selected[module.moduleId]!.remove(
-                                            codename,
-                                          );
+                      if (selected[module.moduleId]!.contains(codename)) {
+                        selected[module.moduleId]!.remove(codename);
                       } else {
-                                          selected[module.moduleId]!.add(
-                                            codename,
-                                          );
+                        selected[module.moduleId]!.add(codename);
                       }
                     });
                   },
 
                   onSelectAll: (values) {
                     setState(() {
-                                        selected[module.moduleId] = values
-                                            .toSet();
+                      selected[module.moduleId] = values.toSet();
                     });
                   },
 
                   onSelectCategory: (values) {
                     setState(() {
-                                        selected[module.moduleId] = values
-                                            .toSet();
+                      selected[module.moduleId] = values.toSet();
                     });
                   },
                 ),
@@ -278,7 +258,9 @@ class _RolePermissionsPageState extends State<RolePermissionsPage> {
                   vertical: 5,
                 ),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.12),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(

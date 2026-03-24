@@ -105,7 +105,7 @@ class _DashboardPageState extends State<DashboardPage> {
             },
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
               child: Column(
                 children: [
                   /// Stats Grid
@@ -171,7 +171,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       );
                     },
                   ),
-                  const SizedBox(height: 24),
+                  // const SizedBox(height: 24),
 
                   const UserGrowthChart(),
 

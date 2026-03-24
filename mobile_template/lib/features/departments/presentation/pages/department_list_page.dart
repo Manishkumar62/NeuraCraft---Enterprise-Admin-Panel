@@ -127,7 +127,7 @@ class _DepartmentListPageState extends State<DepartmentListPage> {
             builder: (context, state) {
               if (state is DepartmentLoading) {
                 return ListView.builder(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
                   itemCount: 6,
                   itemBuilder: (_, __) {
                     return Container(
@@ -198,7 +198,7 @@ class _DepartmentListPageState extends State<DepartmentListPage> {
                   },
 
                   child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
                     itemCount: departments.length,
                     itemBuilder: (context, index) {
                       return AnimatedContainer(

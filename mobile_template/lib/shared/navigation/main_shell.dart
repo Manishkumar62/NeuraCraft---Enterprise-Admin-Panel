@@ -135,6 +135,7 @@ class MainShellState extends State<MainShell> {
 
     return SafeArea(
       child: Scaffold(
+        extendBody: true,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -180,17 +181,24 @@ class MainShellState extends State<MainShell> {
 
   Widget _buildStyledScrollableNav(List<AppModule> modules) {
     return Padding(
-      padding: const EdgeInsets.all(14),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(26),
-        child: Container(
-          height: 72,
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
-            borderRadius: BorderRadius.circular(26),
-            border: Border.all(color: Colors.white.withOpacity(0.08)),
-          ),
-          child: Stack(
+      padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(26),
+          child: Container(
+            height: 72,
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(232, 22, 27, 34),
+              borderRadius: BorderRadius.circular(26),
+              border: Border.all(color: Colors.white.withOpacity(0.12)),
+              // boxShadow: [
+              //   BoxShadow(
+              //     color: Colors.black.withOpacity(0.24),
+              //     blurRadius: 24,
+              //     offset: const Offset(0, 12),
+              //   ),
+              // ],
+            ),
+            child: Stack(
             children: [
               /// 🔥 Scrollable Nav Items
               LayoutBuilder(
@@ -444,47 +452,59 @@ class MainShellState extends State<MainShell> {
 
     switch (module.path) {
       case '/users':
-        return FloatingActionButton(
-          backgroundColor: const Color(0xFF7C3AED),
-          elevation: 6,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 20),
+          child: FloatingActionButton(
+            backgroundColor: const Color(0xFF7C3AED),
+            elevation: 6,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            onPressed: () => context.push('/users/add'),
+            child: const Icon(Icons.add),
           ),
-          onPressed: () => context.push('/users/add'),
-          child: const Icon(Icons.add),
         );
 
       case '/roles':
-        return FloatingActionButton(
-          backgroundColor: const Color(0xFF7C3AED),
-          elevation: 6,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 20),
+          child: FloatingActionButton(
+            backgroundColor: const Color(0xFF7C3AED),
+            elevation: 6,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            onPressed: () => context.push('/roles/add'),
+            child: const Icon(Icons.add),
           ),
-          onPressed: () => context.push('/roles/add'),
-          child: const Icon(Icons.add),
         );
 
       case '/departments':
-        return FloatingActionButton(
-          backgroundColor: const Color(0xFF7C3AED),
-          elevation: 6,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 20),
+          child: FloatingActionButton(
+            backgroundColor: const Color(0xFF7C3AED),
+            elevation: 6,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            onPressed: () => context.push('/departments/add'),
+            child: const Icon(Icons.add),
           ),
-          onPressed: () => context.push('/departments/add'),
-          child: const Icon(Icons.add),
         );
 
       case '/modules':
-        return FloatingActionButton(
-          backgroundColor: const Color(0xFF7C3AED),
-          elevation: 6,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 20),
+          child: FloatingActionButton(
+            backgroundColor: const Color(0xFF7C3AED),
+            elevation: 6,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            onPressed: () => context.push('/modules/add'),
+            child: const Icon(Icons.add),
           ),
-          onPressed: () => context.push('/modules/add'),
-          child: const Icon(Icons.add),
         );
 
       default:
