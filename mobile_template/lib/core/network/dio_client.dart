@@ -11,9 +11,9 @@ class DioClient {
   DioClient(this.tokenStorage)
       : dio = Dio(
           BaseOptions(
-            baseUrl: "https://neuracraft-enterprise-admin-panel-backend-production.up.railway.app/api/",
+            // baseUrl: "https://neuracraft-enterprise-admin-panel-backend-production.up.railway.app/api/",
             // baseUrl: "http://192.168.1.2:8000/api/",
-            // baseUrl: "http://127.0.0.1:8000/api/",
+            baseUrl: "http://127.0.0.1:8000/api/",
             connectTimeout: const Duration(seconds: 10),
             receiveTimeout: const Duration(seconds: 10),
           ),

@@ -1,191 +1,266 @@
 # NeuraCraft - Enterprise Admin Panel
 
 <div align="center">
-  <h3>🧠 NeuraCraft</h3>
-  <p><strong>AI-Assisted Enterprise Role-Based Access Control Admin Panel</strong></p>
-  <p>Built with React, TypeScript, Django REST Framework</p>
-  
+  <h3>NeuraCraft</h3>
+  <p><strong>Enterprise RBAC Admin Panel with React Web, Django REST API, and Flutter Mobile App</strong></p>
+  <p>Built by Manishkumar Vishwakarma with AI-assisted development</p>
+
   ![Python](https://img.shields.io/badge/Python-3.13+-blue?style=flat-square&logo=python)
-  ![Django](https://img.shields.io/badge/Django-5.0+-green?style=flat-square&logo=django)
-  ![React](https://img.shields.io/badge/React-18+-61DAFB?style=flat-square&logo=react)
-  ![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=flat-square&logo=typescript)
-  ![TailwindCSS](https://img.shields.io/badge/Tailwind-3.0+-38B2AC?style=flat-square&logo=tailwind-css)
+  ![Django](https://img.shields.io/badge/Django-6.0-green?style=flat-square&logo=django)
+  ![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)
+  ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat-square&logo=typescript)
+  ![TailwindCSS](https://img.shields.io/badge/Tailwind-4.1-38B2AC?style=flat-square&logo=tailwind-css)
+  ![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?style=flat-square&logo=flutter)
 </div>
 
 ---
 
-## 📖 About
+## About
 
-**NeuraCraft** is a production-ready enterprise admin panel featuring a sophisticated role-based access control (RBAC) system. It demonstrates modern full-stack development practices with a clean, modular architecture.
+**NeuraCraft** is a full-stack enterprise admin platform focused on role-based access control, modular navigation, and reusable business administration workflows. The project now includes:
 
-### 🌟 Why "NeuraCraft"?
-- **Neura** - Neural/AI: This project was collaboratively built with AI assistance
-- **Craft** - Inspired by Vishwakarma (divine craftsman): Representing careful craftsmanship in code
+- A **Django REST Framework backend** with JWT authentication, RBAC, dynamic module permissions, dashboard APIs, and OpenAPI documentation.
+- A **React + TypeScript web admin panel** with protected routes, permission-aware UI, theming, and module CRUD screens.
+- A **Flutter mobile application** that replicates the core admin features using the same backend API and permission model.
 
-### 👨‍💻 Creator
-**Manishkumar Vishwakarma** - Project Founder & Developer
+The name combines **Neura** for AI-assisted development and **Craft** for careful software craftsmanship.
+
+**Creator:** Manishkumar Vishwakarma
 
 ---
 
-## ✨ Features
+## Key Features
 
-### 🔐 Authentication & Security
-- JWT-based authentication (Access + Refresh tokens)
-- Token auto-refresh mechanism
-- Secure logout with token blacklisting
+### Authentication and Security
 
-### 👥 User Management
-- Complete CRUD operations for users
-- Multiple roles per user support
-- Department assignment
-- Active/Inactive status management
+- JWT login with access and refresh tokens
+- Token refresh flow on web and mobile
+- Secure logout with refresh-token blacklisting
+- Protected routes and session bootstrap handling
+- Public signup plus controlled user registration
 
-### 🛡️ Role-Based Access Control (RBAC)
-- **Department-specific roles** - Same role name, different departments (e.g., "Manager" in Sales vs HR)
-- **Multiple roles per user** - Users can have multiple roles with merged permissions
-- **Dynamic permissions per module** - Define custom permissions when creating modules
-- **Permission categories** - CRUD, Column visibility, Component visibility, Actions, Field access
-- **OR logic permission merging** - If ANY role has permission, user gets it
-- **Dynamic sidebar** - Shows only permitted modules
-- **Granular UI control** - Hide/show columns, buttons, cards based on permissions
+### Role-Based Access Control
 
-### 📦 Module Management
+- Department-specific roles, such as Sales Manager and HR Manager
+- Multiple roles per user
+- OR-based permission merging across assigned roles
+- Dynamic module permissions instead of fixed hard-coded permission fields
+- Permission categories for CRUD, columns, components, actions, and fields
+- Permission-aware menus, buttons, columns, cards, forms, and actions
+
+### Module Management
+
 - Parent-child module hierarchy
-- Dynamic menu generation
-- Icon and path configuration
-- Order-based sorting
-- **Define permissions per module** - Add custom permissions (e.g., export_pdf, view_salary)
-- **Permission presets** - Quick-add common permissions (CRUD, export, import)
+- Dynamic sidebar and mobile bottom navigation
+- Icon, path, order, and active-state configuration
+- Web/mobile availability flags per module
+- Custom permission definitions per module
+- Module create/update screens with permission setup
 
-### 🏢 Department Management
-- Department CRUD operations
-- Department code support
-- Link roles to departments
+### User, Role, and Department Management
 
-### 📊 Dashboard
-- Statistics overview
-- Recent users display
-- Quick access cards
+- User CRUD with department and multiple-role assignment
+- Role CRUD with department linking
+- Role permission editor grouped by module and permission category
+- Department CRUD with department codes
+- Active/inactive user handling
 
-### 🎨 UI/UX
-- Clean, modern interface with Tailwind CSS
-- Fixed header, sidebar, and footer
-- Independent scroll areas
-- Responsive design
-- Loading states and error handling
+### Dashboard
+
+- Admin statistics overview
+- Recent users
+- User growth and department distribution visualizations
+- Permission-aware dashboard widgets
+
+### Web Experience
+
+- React 19 + TypeScript + Vite
+- Tailwind CSS 4 styling
+- Zustand state management
+- TanStack Query provider
+- Axios API client with token handling
+- Light/dark theme store and theme initializer
+- Responsive admin layout with header, sidebar, footer, and protected routes
+
+### Mobile Experience
+
+- Flutter app under `mobile_template`
+- Feature parity for login, signup, dashboard, users, roles, role permissions, departments, modules, and profile
+- Clean architecture style with data, domain, and presentation layers
+- BLoC state management
+- Dependency injection with GetIt
+- Dio API client with JWT interceptor and queued retry after token refresh
+- Secure token storage
+- GoRouter navigation with splash/session redirects
+- Dynamic permission-aware mobile navigation
+- Charts with Syncfusion Flutter Charts
 
 ---
 
-## 🏗️ Tech Stack
+## Tech Stack
 
 ### Backend
-| Technology | Purpose |
-|------------|---------|
-| Python 3.13+ | Programming Language |
-| Django 5.0+ | Web Framework |
-| Django REST Framework | API Development |
-| SimpleJWT | JWT Authentication |
-| SQLite | Database (Development) |
 
-### Frontend
 | Technology | Purpose |
-|------------|---------|
-| React 18 | UI Library |
-| TypeScript | Type Safety |
-| Vite | Build Tool |
-| Tailwind CSS | Styling |
-| Zustand | State Management |
-| Axios | HTTP Client |
-| React Router | Routing |
+| --- | --- |
+| Python 3.13+ | Backend language |
+| Django 6.0 | Web framework |
+| Django REST Framework | REST API |
+| SimpleJWT | JWT authentication |
+| drf-spectacular | OpenAPI schema, Swagger, and Redoc |
+| django-cors-headers | CORS support |
+| WhiteNoise | Static file serving |
+| Gunicorn | Production server |
+| PostgreSQL / SQLite | Production / local database support |
+
+### Web Frontend
+
+| Technology | Purpose |
+| --- | --- |
+| React 19 | UI library |
+| TypeScript 5.9 | Type safety |
+| Vite 7 | Development and build tooling |
+| Tailwind CSS 4 | Styling |
+| Zustand | Client state |
+| TanStack Query | Async server-state foundation |
+| Axios | HTTP client |
+| React Router 7 | Routing |
 | Heroicons | Icons |
 
+### Mobile App
+
+| Technology | Purpose |
+| --- | --- |
+| Flutter / Dart | Cross-platform mobile app |
+| flutter_bloc | State management |
+| Dio | API client |
+| GetIt | Dependency injection |
+| GoRouter | Routing |
+| flutter_secure_storage | Secure token storage |
+| shared_preferences | Local preferences |
+| Syncfusion Flutter Charts | Dashboard charts |
+| Google Fonts / Flutter SVG | UI assets |
+
 ---
 
-## 📁 Project Structure
-```
+## Project Structure
+
+```text
 neuracraft/
-├── base_template/              # Django Backend
-│   ├── apps/
-│   │   ├── common/             # Shared utilities & management commands
-│   │   │   └── management/
-│   │   │       └── commands/
-│   │   │           └── seed_data.py   # Database seeder
-│   │   ├── users/              # User management & auth
-│   │   ├── roles/              # Role management
-│   │   ├── departments/        # Department management
-│   │   └── modules/            # Module & dynamic permissions
-│   ├── core/
-│   │   ├── settings.py
-│   │   └── urls.py
-│   ├── requirements.txt        # Python dependencies
-│   └── manage.py
-│
-├── front_template/             # React Frontend
-│   ├── src/
-│   │   ├── api/                # Axios configuration
-│   │   ├── auth/               # Authentication pages
-│   │   ├── components/         # Shared components
-│   │   ├── hooks/              # Custom hooks
-│   │   ├── layouts/            # Page layouts
-│   │   ├── modules/            # Feature modules
-│   │   │   ├── dashboard/
-│   │   │   ├── users/
-│   │   │   ├── roles/
-│   │   │   ├── departments/
-│   │   │   └── modules/
-│   │   ├── routes/             # Route configuration
-│   │   ├── store/              # Zustand store
-│   │   ├── types/              # TypeScript interfaces
-│   │   └── utils/              # Utility functions
-│   └── package.json
-│
-├── .gitignore
-└── README.md
+|-- base_template/                 # Django REST backend
+|   |-- apps/
+|   |   |-- common/                # Shared utilities and seed command
+|   |   |-- dashboard/             # Dashboard statistics API
+|   |   |-- departments/           # Department management
+|   |   |-- modules/               # Dynamic modules and permissions
+|   |   |-- roles/                 # Role and role-permission management
+|   |   `-- users/                 # Custom user model, auth, profile, CRUD
+|   |-- core/                      # Django settings, URLs, ASGI, WSGI
+|   |-- requirements.txt
+|   `-- manage.py
+|
+|-- front_template/                # React web admin
+|   |-- src/
+|   |   |-- api/                   # Axios client
+|   |   |-- auth/                  # Login and signup
+|   |   |-- components/            # Shared UI and layout pieces
+|   |   |-- hooks/                 # Theme and permission hooks
+|   |   |-- layouts/               # Auth and main layouts
+|   |   |-- modules/               # Dashboard, users, roles, departments, modules
+|   |   |-- providers/             # Query provider
+|   |   |-- routes/                # App routes and protected routes
+|   |   |-- store/                 # Zustand stores
+|   |   |-- types/                 # TypeScript types
+|   |   `-- utils/                 # Utilities
+|   `-- package.json
+|
+|-- mobile_template/               # Flutter mobile app
+|   |-- lib/
+|   |   |-- core/                  # DI, network, router, session, theme, permissions
+|   |   |-- features/              # Auth, dashboard, users, roles, departments, modules, profile
+|   |   `-- shared/                # Reusable widgets and shell navigation
+|   |-- assets/images/
+|   |-- android/
+|   |-- ios/
+|   |-- web/
+|   |-- windows/
+|   |-- macos/
+|   |-- linux/
+|   `-- pubspec.yaml
+|
+|-- screenshots/
+`-- README.md
 ```
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
+
 - Python 3.13+
 - Node.js 18+
-- npm or yarn
+- npm
+- Flutter SDK 3.x
+- Android Studio or Xcode for mobile builds
 
 ### Backend Setup
-```bash
-# Navigate to backend
-cd base_template
 
-# Create virtual environment
+```bash
+cd base_template
 python -m venv venv
 
-# Activate virtual environment
 # Windows
 venv\Scripts\activate
-# Mac/Linux
+
+# macOS/Linux
 source venv/bin/activate
 
-# Install dependencies
 pip install -r requirements.txt
-
-# Run migrations
 python manage.py makemigrations
 python manage.py migrate
-
-# Seed the database with test data
 python manage.py seed_data --flush
-
-# Start server
 python manage.py runserver
 ```
 
-### Seeder Commands
+### Web Frontend Setup
+
 ```bash
-# Seed everything (with flush)
+cd front_template
+npm install
+npm run dev
+```
+
+### Mobile App Setup
+
+```bash
+cd mobile_template
+flutter pub get
+flutter run
+```text
+mobile_template/lib/core/network/dio_client.dart
+```
+
+Use your machine LAN IP for a physical device, Android emulator host mapping when needed, or `http://127.0.0.1:8000/api/` for desktop/web targets that can reach localhost directly.
+
+### Useful URLs
+
+- Web app: `http://localhost:5173`
+- Backend API: `http://127.0.0.1:8000/api/`
+- Django Admin: `http://127.0.0.1:8000/admin/`
+- Swagger API docs: `http://127.0.0.1:8000/api/docs/`
+- Redoc API docs: `http://127.0.0.1:8000/api/redoc/`
+- OpenAPI schema: `http://127.0.0.1:8000/api/schema/`
+
+---
+
+## Seeder Commands
+
+```bash
+# Seed everything after clearing existing seeded data
 python manage.py seed_data --flush
 
-# Seed only specific targets
+# Seed selected targets
 python manage.py seed_data --only departments roles
 python manage.py seed_data --only users
 
@@ -193,241 +268,238 @@ python manage.py seed_data --only users
 python manage.py seed_data --list
 ```
 
-### Frontend Setup
-```bash
-# Navigate to frontend
-cd front_template
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-```
-
-### Access the Application
-- **Frontend**: http://localhost:5173
-- **Backend API**: http://127.0.0.1:8000/api/
-- **Django Admin**: http://127.0.0.1:8000/admin/
-
 ---
 
-## 📡 API Endpoints
+## API Endpoints
 
-### Authentication
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/users/login/` | JWT Login |
-| POST | `/api/users/register/` | User Registration |
-| POST | `/api/users/logout/` | Logout (blacklist token) |
-| POST | `/api/users/token/refresh/` | Refresh JWT token |
-| GET | `/api/users/profile/` | Get current user profile |
+### Authentication and Users
 
-### Users
 | Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/users/` | List all users |
+| --- | --- | --- |
+| POST | `/api/users/login/` | Get JWT access and refresh tokens |
+| POST | `/api/users/token/refresh/` | Refresh access token |
+| POST | `/api/users/signup/` | Public signup |
+| POST | `/api/users/register/` | Register user |
+| GET | `/api/users/profile/` | Current user profile |
+| POST | `/api/users/logout/` | Logout and blacklist refresh token |
+| GET | `/api/users/` | List users |
 | GET | `/api/users/<id>/` | Get user details |
-| PUT | `/api/users/<id>/` | Update user |
+| PUT/PATCH | `/api/users/<id>/` | Update user |
 | DELETE | `/api/users/<id>/` | Delete user |
 
 ### Roles
+
 | Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/roles/` | List all roles |
+| --- | --- | --- |
+| GET | `/api/roles/` | List roles |
 | POST | `/api/roles/` | Create role |
 | GET | `/api/roles/<id>/` | Get role details |
-| PUT | `/api/roles/<id>/` | Update role |
+| PUT/PATCH | `/api/roles/<id>/` | Update role |
 | DELETE | `/api/roles/<id>/` | Delete role |
 | GET | `/api/roles/<id>/permissions/` | Get role permissions |
 | POST | `/api/roles/<id>/permissions/` | Update role permissions |
 
 ### Departments
+
 | Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/departments/` | List all departments |
+| --- | --- | --- |
+| GET | `/api/departments/` | List departments |
 | POST | `/api/departments/` | Create department |
 | GET | `/api/departments/<id>/` | Get department details |
-| PUT | `/api/departments/<id>/` | Update department |
+| PUT/PATCH | `/api/departments/<id>/` | Update department |
 | DELETE | `/api/departments/<id>/` | Delete department |
 
-### Modules
+### Modules and Permissions
+
 | Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/modules/` | List all modules |
+| --- | --- | --- |
+| GET | `/api/modules/` | List modules |
 | POST | `/api/modules/` | Create module |
 | GET | `/api/modules/<id>/` | Get module details |
-| PUT | `/api/modules/<id>/` | Update module |
+| PUT/PATCH | `/api/modules/<id>/` | Update module |
 | DELETE | `/api/modules/<id>/` | Delete module |
-| GET | `/api/modules/my-menu/` | Get user's dynamic menu |
+| GET | `/api/modules/my-menu/` | Get current user's permitted menu |
+| GET | `/api/modules/all-with-permissions/` | Get modules with available permissions |
+| POST | `/api/modules/create-with-permissions/` | Create module with permission definitions |
+| GET | `/api/modules/<id>/with-permissions/` | Get module with permission definitions |
+| PUT/PATCH | `/api/modules/<id>/update-with-permissions/` | Update module with permission definitions |
+| GET/POST | `/api/modules/<id>/permissions/` | Manage permissions for a module |
+| GET/PUT/PATCH/DELETE | `/api/modules/permissions/<id>/` | Manage a single module permission |
 
-### Dashboard
+### Dashboard and Documentation
+
 | Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/dashboard/stats/` | Get dashboard statistics |
+| --- | --- | --- |
+| GET | `/api/dashboard/stats/` | Dashboard statistics |
+| GET | `/api/schema/` | OpenAPI schema |
+| GET | `/api/docs/` | Swagger UI |
+| GET | `/api/redoc/` | Redoc documentation |
 
 ---
 
-## 🔐 Permission System
+## Permission System
 
-### How It Works
+NeuraCraft uses dynamic module permissions. Each module owns the permissions that make sense for that feature, and each role receives selected permissions for selected modules.
 
-1. **Create Modules** with their available permissions (CRUD + custom)
-2. **Create Departments** (IT, HR, Sales, etc.)
-3. **Create Roles** with optional department link
-4. **Assign Module Permissions** to roles (select from module's available permissions)
-5. **Assign Roles to Users** (multiple roles supported)
-6. **Permissions Merge** automatically using OR logic
-
-### Dynamic Permissions
-
-Each module defines its own available permissions:
-```
+```text
 Module: Users
-├── CRUD Permissions
-│   ├── view - Can View
-│   ├── add - Can Add
-│   ├── edit - Can Edit
-│   └── delete - Can Delete
-├── Column Permissions
-│   ├── view_email - View Email Column
-│   ├── view_phone - View Phone Column
-│   └── view_salary - View Salary Column
-└── Action Permissions
-    ├── export_csv - Export CSV
-    ├── export_pdf - Export PDF
-    └── reset_password - Reset User Password
+|-- CRUD
+|   |-- view
+|   |-- add
+|   |-- edit
+|   `-- delete
+|-- Column visibility
+|   |-- view_email
+|   |-- view_phone
+|   `-- view_salary
+`-- Actions
+    |-- export_csv
+    |-- export_pdf
+    `-- reset_password
 ```
 
-### Permission Categories
+Final user permissions are merged from all assigned roles. If any role grants a permission, the user receives it.
 
-| Category | Purpose | Example |
-|----------|---------|---------|
-| `crud` | Basic operations | view, add, edit, delete |
-| `column` | Table column visibility | view_email, view_salary |
-| `component` | UI component visibility | view_revenue_card, view_analytics |
-| `action` | Action buttons/features | export_csv, reset_password |
-| `field` | Form field access | edit_role, edit_department |
+```text
+User: multi_role
+|-- Role: IT Developer
+|   `-- Users: view, view_email
+|-- Role: HR Staff
+|   `-- Users: view, view_phone
+`-- Final merged Users permissions: view, view_email, view_phone
+```
 
-### Frontend Usage
+On the frontend, permissions are consumed through helpers such as:
+
 ```tsx
 const { hasPermission, canView, canEdit } = usePermissions('/users');
 
-// Basic CRUD
 {canEdit && <EditButton />}
-
-// Custom permissions
 {hasPermission('view_email') && <td>{user.email}</td>}
 {hasPermission('export_csv') && <ExportCSVButton />}
 ```
 
-### Permission Merging Example
-```
-User: John
-├── Role 1: IT Developer
-│   └── Users Module: view ✅, view_email ✅
-├── Role 2: Team Lead
-│   └── Users Module: view ✅, add ✅, edit ✅, export_csv ✅
-│
-└── Final Permissions (OR merged):
-    └── Users Module: view ✅, add ✅, edit ✅, view_email ✅, export_csv ✅
-```
-
-### Department-Specific Roles
-```
-Role: "Manager"
-├── Department: Sales → Can access Sales Reports, Clients
-├── Department: HR → Can access Employee Records, Payroll
-└── Department: None (Global) → Access based on assigned modules
-```
+The mobile app uses the same permission payload through its `PermissionService`, so the web and mobile experiences stay aligned with the backend RBAC rules.
 
 ---
 
-## 🧪 Test Users
+## Test Users
 
-Run `python manage.py seed_data --flush` to create these test users:
+Run `python manage.py seed_data --flush` to create demo accounts.
 
 | Username | Password | Roles | Access Level |
-|----------|----------|-------|--------------|
-| superadmin | Test@1234 | Super Admin | Full access to everything |
-| john_it | Test@1234 | IT Manager | Dashboard, Users (CRUD + export), Roles, Modules |
-| mike_dev | Test@1234 | IT Developer | Dashboard (analytics), Users (view + email), Modules (view) |
-| sarah_hr | Test@1234 | HR Manager | Dashboard (user stats), Users (CRUD + salary + export), Departments |
-| lisa_hr | Test@1234 | HR Staff | Dashboard (user stats), Users (view + email/phone), Departments (view) |
-| tom_sales | Test@1234 | Sales Manager | Dashboard (revenue), Users (view/add/edit + email/phone) |
-| viewer1 | Test@1234 | Viewer | View-only access to Dashboard, Users, Roles, Departments |
-| multi_role | Test@1234 | IT Developer + HR Staff | Merged permissions from both roles |
-| manager_combo | Test@1234 | IT Manager + Sales Manager | Cross-department merged permissions |
+| --- | --- | --- | --- |
+| `superadmin` | `Test@1234` | Super Admin | Full access |
+| `john_it` | `Test@1234` | IT Manager | Dashboard, Users, Roles, Modules |
+| `mike_dev` | `Test@1234` | IT Developer | Dashboard, limited Users, Modules view |
+| `sarah_hr` | `Test@1234` | HR Manager | Dashboard, Users, Departments |
+| `lisa_hr` | `Test@1234` | HR Staff | Dashboard, limited Users, Departments view |
+| `tom_sales` | `Test@1234` | Sales Manager | Dashboard and Sales-oriented user permissions |
+| `viewer1` | `Test@1234` | Viewer | View-only access |
+| `multi_role` | `Test@1234` | IT Developer + HR Staff | Merged cross-role permissions |
+| `manager_combo` | `Test@1234` | IT Manager + Sales Manager | Cross-department merged permissions |
 
-> ⚠️ **Note:** Change all passwords before deploying to production!
+Change seeded passwords before deploying to production.
 
 ---
 
-## 📸 Screenshots
-
-<details>
-<summary>Click to view screenshots</summary>
+## Web Screenshots
 
 ### Login Page
-![Login](screenshots/login.png)
+
+![Login page](screenshots/login.png)
+
+![Sign up page](screenshots/sign-up.png)
 
 ### Dashboard
-![Dashboard Dark](screenshots/dashboard-dark.png)
-![Dashboard Light](screenshots/dashboard-light.png)
 
-### Users List
-![Users List](screenshots/users-list.png)
-![Users Edit](screenshots/user-edit.png)
+![Dashboard dark theme](screenshots/dashboard-dark.png)
 
-### Role Permissions
-![Manage Permissions](screenshots/manage-permission.png)
+![Dashboard light theme](screenshots/dashboard-light.png)
 
-### Edit Module
-![Module Edit](screenshots/module-edit.png)
+### Users
 
-</details>
+![Users list](screenshots/users-list.png)
+
+![User edit form](screenshots/user-edit.png)
+
+### Roles and Permissions
+
+![Manage permissions](screenshots/manage-permission.png)
+
+### Modules
+
+![Module list](screenshots/module-list.png)
+
+![Module edit form](screenshots/module-edit.png)
+
+## Mobile Screenshots
+
+### Login Page
+
+![Login page](screenshots/mobile-login.jpg)
+
+![Sign up page](screenshots/mobile-signup.jpg)
+
+### Dashboard
+
+![Dashboard](screenshots/mobile-dashboard.jpg)
+
+### Users
+
+![Users list](screenshots/mobile-userlist.jpg)
+
+![User create form](screenshots/mobile-createuser.jpg)
+
+![User profile](screenshots/mobile-profile.jpg)
+
+### Roles and Permissions
+
+![Manage permissions](screenshots/mobile-managepermission.jpg)
+
+### Modules
+
+![Module list](screenshots/mobile-modulelist.jpg)
+
+![Module edit form](screenshots/mobile-editmodule.jpg)
 
 ---
 
-## 🛣️ Roadmap
+## Deployment Notes
+
+- Backend dependencies include Gunicorn, WhiteNoise, `dj-database-url`, and `psycopg2-binary` for production deployment.
+- A `Procfile` is included under `base_template`.
+- Configure Django environment variables for production values such as `SECRET_KEY`, database URL, allowed hosts, CORS origins, and debug mode.
+- The mobile app can target either the deployed API or a local development API by changing the Dio base URL.
+
+---
+
+## Roadmap
 
 - [ ] Password reset via email
-- [ ] User profile page
-- [ ] Dark mode toggle
-- [ ] Pagination for lists
-- [ ] Search and filter functionality
 - [ ] Audit logs
-- [ ] Export to CSV/Excel
-- [ ] PostgreSQL support
-- [ ] Docker containerization
-- [ ] Unit tests
+- [ ] Advanced search and filters across list screens
+- [ ] Pagination and server-side sorting improvements
+- [ ] Export to CSV/Excel/PDF
+- [ ] Automated backend, web, and mobile tests
+- [ ] Docker Compose for local full-stack startup
+- [ ] CI workflow for lint, build, and test
 
 ---
 
-## 🤝 Contributing
+## Acknowledgments
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
-## 🙏 Acknowledgments
-
-- **Manish Kumar Vishwakarma** - Project Founder & Developer
+- Manishkumar Vishwakarma - Project Founder and Developer
 - AI Development Assistant
-- [Django](https://www.djangoproject.com/) - Backend Framework
-- [React](https://reactjs.org/) - Frontend Library
-- [Tailwind CSS](https://tailwindcss.com/) - CSS Framework
-- [Heroicons](https://heroicons.com/) - Icons
+- Django and Django REST Framework
+- React, TypeScript, and Vite
+- Flutter and Dart
+- Tailwind CSS
 
 ---
 
 <div align="center">
   <p>Made with ❤️ and 🤖 AI</p>
-  <p><strong>NeuraCraft</strong> - Crafted with Neural Intelligence</p>
+  <p><strong>NeuraCraft</strong></p>
+  <p>Crafted with full-stack engineering, mobile-first expansion, and AI-assisted development.</p>
 </div>
