@@ -407,61 +407,61 @@ Change seeded passwords before deploying to production.
 
 ### Login Page
 
-![Login page](screenshots/login.png)
+<img src="screenshots/login.png" alt="Login page" width="760">
 
-![Sign up page](screenshots/sign-up.png)
+<img src="screenshots/sign-up.png" alt="Sign up page" width="760">
 
 ### Dashboard
 
-![Dashboard dark theme](screenshots/dashboard-dark.png)
+<img src="screenshots/dashboard-dark.png" alt="Dashboard dark theme" width="760">
 
-![Dashboard light theme](screenshots/dashboard-light.png)
+<img src="screenshots/dashboard-light.png" alt="Dashboard light theme" width="760">
 
 ### Users
 
-![Users list](screenshots/users-list.png)
+<img src="screenshots/users-list.png" alt="Users list" width="760">
 
-![User edit form](screenshots/user-edit.png)
+<img src="screenshots/user-edit.png" alt="User edit form" width="760">
 
 ### Roles and Permissions
 
-![Manage permissions](screenshots/manage-permission.png)
+<img src="screenshots/manage-permission.png" alt="Manage permissions" width="760">
 
 ### Modules
 
-![Module list](screenshots/module-list.png)
+<img src="screenshots/module-list.png" alt="Module list" width="760">
 
-![Module edit form](screenshots/module-edit.png)
+<img src="screenshots/module-edit.png" alt="Module edit form" width="760">
 
 ## Mobile Screenshots
 
 ### Login Page
 
-![Login page](screenshots/mobile-login.jpg)
+<img src="screenshots/mobile-login.jpg" alt="Mobile login page" width="260">
 
-![Sign up page](screenshots/mobile-signup.jpg)
+<img src="screenshots/mobile-signup.jpg" alt="Mobile sign up page" width="260">
 
 ### Dashboard
 
-![Dashboard](screenshots/mobile-dashboard.jpg)
+<img src="screenshots/mobile-dashboard.jpg" alt="Mobile dashboard" width="260">
 
 ### Users
 
-![Users list](screenshots/mobile-userlist.jpg)
+<img src="screenshots/mobile-userlist.jpg" alt="Mobile users list" width="260">
 
-![User create form](screenshots/mobile-createuser.jpg)
+<img src="screenshots/mobile-createuser.jpg" alt="Mobile user create form" width="260">
 
-![User profile](screenshots/mobile-profile.jpg)
+<img src="screenshots/mobile-profile.jpg" alt="Mobile user profile" width="260">
 
 ### Roles and Permissions
 
-![Manage permissions](screenshots/mobile-managepermission.jpg)
+<img src="screenshots/mobile-managepermission.jpg" alt="Mobile manage permissions" width="260">
 
 ### Modules
 
-![Module list](screenshots/mobile-modulelist.jpg)
+<img src="screenshots/mobile-modulelist.jpg" alt="Mobile module list" width="260">
 
-![Module edit form](screenshots/mobile-editmodule.jpg)
+<img src="screenshots/mobile-editmodule.jpg" alt="Mobile module edit form" width="260">
 
 ---
 
