@@ -437,31 +437,37 @@ Change seeded passwords before deploying to production.
 
 ### Login Page
 
-<img src="screenshots/mobile-login.jpg" alt="Mobile login page" width="260">
-
-<img src="screenshots/mobile-signup.jpg" alt="Mobile sign up page" width="260">
+<p align="center">
+  <img src="screenshots/mobile-login.jpg" alt="Mobile login page" width="240">
+  <img src="screenshots/mobile-signup.jpg" alt="Mobile sign up page" width="240">
+</p>
 
 ### Dashboard
 
-<img src="screenshots/mobile-dashboard.jpg" alt="Mobile dashboard" width="260">
+<p align="center">
+  <img src="screenshots/mobile-dashboard.jpg" alt="Mobile dashboard" width="240">
+</p>
 
 ### Users
 
-<img src="screenshots/mobile-userlist.jpg" alt="Mobile users list" width="260">
-
-<img src="screenshots/mobile-createuser.jpg" alt="Mobile user create form" width="260">
-
-<img src="screenshots/mobile-profile.jpg" alt="Mobile user profile" width="260">
+<p align="center">
+  <img src="screenshots/mobile-userlist.jpg" alt="Mobile users list" width="240">
+  <img src="screenshots/mobile-createuser.jpg" alt="Mobile user create form" width="240">
+  <img src="screenshots/mobile-profile.jpg" alt="Mobile user profile" width="240">
+</p>
 
 ### Roles and Permissions
 
-<img src="screenshots/mobile-managepermission.jpg" alt="Mobile manage permissions" width="260">
+<p align="center">
+  <img src="screenshots/mobile-managepermission.jpg" alt="Mobile manage permissions" width="240">
+</p>
 
 ### Modules
 
-<img src="screenshots/mobile-modulelist.jpg" alt="Mobile module list" width="260">
-
-<img src="screenshots/mobile-editmodule.jpg" alt="Mobile module edit form" width="260">
+<p align="center">
+  <img src="screenshots/mobile-modulelist.jpg" alt="Mobile module list" width="240">
+  <img src="screenshots/mobile-editmodule.jpg" alt="Mobile module edit form" width="240">
+</p>
 
 ---
 
